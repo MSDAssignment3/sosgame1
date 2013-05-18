@@ -1,3 +1,5 @@
+// TODO: Credit http://www.learnopengles.com/ License? Apache
+// TODO: Do we need this?
 package com.example.sosgame1;
 
 public class ShapeBuilder 

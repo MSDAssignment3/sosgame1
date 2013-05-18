@@ -1,3 +1,4 @@
+// TODO: Credit http://www.learnopengles.com/ License? Apache
 package com.example.sosgame1;
 
 import android.opengl.GLES20;

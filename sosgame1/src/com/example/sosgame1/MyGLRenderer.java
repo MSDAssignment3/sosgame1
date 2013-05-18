@@ -1,3 +1,4 @@
+// TODO: Credit http://www.learnopengles.com/ License? Apache
 package com.example.sosgame1;
 
 
@@ -24,6 +25,7 @@ import android.util.Log;
  */
 public class MyGLRenderer implements GLSurfaceView.Renderer 
 {	
+	// TODO: Delete this?
 	/** Used for debug logs. */
 	private static final String TAG = "LessonFourRenderer";
 	
@@ -135,6 +137,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	/** Far clipping plane used in frustum/projection matrix. Declared here
 	 * so we can use it in gluunproject calculations.*/
 	private final float far = 10;
+	
+	/** This is used to set the cube z coordinate and also for the 
+	 * ModelView calculation for touch to world coordinate calculations.*/
+	private final float cubeZ = -5;
+	
+	/** Scales the cube z dimensions. */
+	private final float cubeZScaleFactor = 0.25f;
 	
 	/**
 	 * Initialize the model data.
@@ -675,7 +684,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         
         // Calculate position of the light. Rotate and then push into the distance.
         Matrix.setIdentityM(mLightModelMatrix, 0);
-        Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, -5.0f);      
+        Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, cubeZ);      
 //        Matrix.rotateM(mLightModelMatrix, 0, angleInDegrees, 0.0f, 1.0f, 0.0f);
         Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
                
@@ -685,10 +694,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         // Draw some cubes.
         for (Cube cube: cubes) {
     		Matrix.setIdentityM(mModelMatrix, 0);
-    		Matrix.translateM(mModelMatrix, 0, cube.x, cube.y, -5.0f + cube.z);
+    		Matrix.translateM(mModelMatrix, 0, cube.x, cube.y, cubeZ + cube.z);
     		Matrix.rotateM(mModelMatrix, 0, cube.yRotation, 0.0f, 1.0f, 0.0f);
     		Matrix.rotateM(mModelMatrix, 0, cube.zRotation, 0.0f, 0.0f, 1.0f);
-    		Matrix.scaleM(mModelMatrix, 0, 0.9f, 0.9f, 0.25f);
+    		Matrix.scaleM(mModelMatrix, 0, 0.9f, 0.9f, cubeZScaleFactor);
     		cube.draw(mModelMatrix);
         }
         
@@ -802,10 +811,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	/** Get the ModelView matrix needed for gluunproject calculations.
 	 * @return The model matrix multiplied by the view matrix.
 	 */
-	public float[] getModelViewMatrix() {
+	private float[] getModelViewMatrix() {
 		float[] modelViewMatrix = new float[16];
 		Matrix.setIdentityM(modelViewMatrix, 0);
-		Matrix.translateM(modelViewMatrix, 0, 0, 0, -5.0f);
+		// This sets the depth to the face of the cubes
+		Matrix.translateM(modelViewMatrix, 0, 0, 0, cubeZ + cubeZScaleFactor);
         Matrix.multiplyMM(modelViewMatrix, 0, mViewMatrix, 0, modelViewMatrix, 0);   
 		return modelViewMatrix;
 	}
