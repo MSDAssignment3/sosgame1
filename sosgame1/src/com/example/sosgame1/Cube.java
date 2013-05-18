@@ -23,18 +23,39 @@ public class Cube {
 		this.renderer = renderer;
 	}
 	
+	public Cube(Context context, MyGLRenderer renderer, float x, float y) {
+		activityContext = context;
+		this.renderer = renderer;
+		this.x = x;
+		this.y = y;
+	}
+	
+	// TODO: Constructor as above plus front face?
+
+	/** Setter required for object animation of this property.
+	 * @param angle Angle of rotation about Y axis.
+	 */
 	public void setYRotation(float angle) {
 		yRotation = angle;
 	}
 	
+	/** Setter required for object animation of this property.
+	 * @param angle Angle of rotation about X axis.
+	 */
 	public void setXRotation(float angle) {
 		xRotation = angle;
 	}
 
+	/** Setter required for object animation of this property.
+	 * @param angle Angle of rotation about Z axis.
+	 */
 	public void setZRotation(float angle) {
 		zRotation = angle;
 	}
 
+	/** Setter required for object animation of this property.
+	 * @param z Z coordinate.
+	 */
 	public void setZ(float z) {
 		this.z = z;
 	}

@@ -54,11 +54,19 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	 */
 	public float[] mLightModelMatrix = new float[16];	
 	
-	/** Store our model data in a float buffer. */
+	/** Stores cube vertex coordinates. */
 	public final FloatBuffer mCubePositions;
+	
+	/** Stores cube vertex colours. */
 	public final FloatBuffer mCubeColors;
+	
+	/** Stores line vertex colours. */
 	public final FloatBuffer lineColors;
+	
+	/** Stores cube vertex normals. */
 	public final FloatBuffer mCubeNormals;
+	
+	/** Stores cube texture coordinates. */
 	public final FloatBuffer mCubeTextureCoordinates;
 	
 	/** This will be used to pass in the transformation matrix. */
@@ -122,6 +130,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	/** This is a handle to our texture data. */
 	public int mTextureDataHandle;
 	
+	/** Stores the cube objects. */
 	public ArrayList<Cube> cubes = new ArrayList<Cube>();
 	
 	/** Viewport width. */
@@ -294,13 +303,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 				1.0f, 0.0f, 0.0f, 1.0f,				
 				1.0f, 0.0f, 0.0f, 1.0f,
 				1.0f, 0.0f, 0.0f, 1.0f,
-//				// Front face (white)
-//				1.0f, 1.0f, 1.0f, 1.0f,				
-//				1.0f, 1.0f, 1.0f, 1.0f,
-//				1.0f, 1.0f, 1.0f, 1.0f,
-//				1.0f, 1.0f, 1.0f, 1.0f,				
-//				1.0f, 1.0f, 1.0f, 1.0f,
-//				1.0f, 1.0f, 1.0f, 1.0f,
 				
 				// Right face (green)
 				0.0f, 1.0f, 0.0f, 1.0f,				
@@ -317,28 +319,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 				0.0f, 0.0f, 1.0f, 1.0f,				
 				0.0f, 0.0f, 1.0f, 1.0f,
 				0.0f, 0.0f, 1.0f, 1.0f,
-//				// Back face (white)
-//				1.0f, 1.0f, 1.0f, 1.0f,				
-//				1.0f, 1.0f, 1.0f, 1.0f,
-//				1.0f, 1.0f, 1.0f, 1.0f,
-//				1.0f, 1.0f, 1.0f, 1.0f,				
-//				1.0f, 1.0f, 1.0f, 1.0f,
-//				1.0f, 1.0f, 1.0f, 1.0f,
 				
-//				// Left face (yellow)
-//				1.0f, 1.0f, 0.0f, 1.0f,				
-//				1.0f, 1.0f, 0.0f, 1.0f,
-//				1.0f, 1.0f, 0.0f, 1.0f,
-//				1.0f, 1.0f, 0.0f, 1.0f,				
-//				1.0f, 1.0f, 0.0f, 1.0f,
-//				1.0f, 1.0f, 0.0f, 1.0f,
-				// Left face (white)
-				1.0f, 1.0f, 1.0f, 1.0f,				
-				1.0f, 1.0f, 1.0f, 1.0f,
-				1.0f, 1.0f, 1.0f, 1.0f,
-				1.0f, 1.0f, 1.0f, 1.0f,				
-				1.0f, 1.0f, 1.0f, 1.0f,
-				1.0f, 1.0f, 1.0f, 1.0f,
+				// Left face (yellow)
+				1.0f, 1.0f, 0.0f, 1.0f,				
+				1.0f, 1.0f, 0.0f, 1.0f,
+				1.0f, 1.0f, 0.0f, 1.0f,
+				1.0f, 1.0f, 0.0f, 1.0f,				
+				1.0f, 1.0f, 0.0f, 1.0f,
+				1.0f, 1.0f, 0.0f, 1.0f,
 				
 				// Top face (cyan)
 				0.0f, 1.0f, 1.0f, 1.0f,				
@@ -440,12 +428,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 //				0.0f, 1.0f,
 //				1.0f, 1.0f,
 //				1.0f, 0.0f,	
-				0.0f, 0.0f, 				
-				0.0f, 0.0f,
-				0.0f, 0.0f,
-				0.0f, 0.0f,
-				0.0f, 0.0f,
-				0.0f, 0.0f,
+				0.71f, 0.71f, 				
+				0.71f, 1.0f,
+				1.0f, 0.71f,
+				0.71f, 1.0f,
+				1.0f, 1.0f,
+				1.0f, 0.71f,	
 				
 				// Back face 
 //				0.0f, 0.0f, 				
@@ -525,25 +513,22 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		.order(ByteOrder.nativeOrder()).asFloatBuffer();
 		mCubeTextureCoordinates.put(cubeTextureCoordinateData).position(0);
 		
+		// Make some cubes
         for (float x = -4; x < 5; x += 2) {
         	for (float y = -4; y < 5; y += 2) {
-        		Cube cube = new Cube(mActivityContext, this);
-        		cube.x = x;
-        		cube.y = y;
-        		cubes.add(cube);
+        		cubes.add(new Cube(mActivityContext, this, x, y));
         	}
         }
 		
 	}
 	
-	protected String getVertexShader()
+	/** Gets shader code from a text file.
+	 * @param resId The resource ID of the text file.
+	 * @return The shader code in a string.
+	 */
+	protected String getShader(int resId)
 	{
-		return RawResourceReader.readTextFileFromRawResource(mActivityContext, R.raw.per_pixel_vertex_shader);
-	}
-	
-	protected String getFragmentShader()
-	{
-		return RawResourceReader.readTextFileFromRawResource(mActivityContext, R.raw.per_pixel_fragment_shader);
+		return RawResourceReader.readTextFileFromRawResource(mActivityContext, resId);
 	}
 	
 	@Override
@@ -582,8 +567,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		// view matrix. In OpenGL 2, we can keep track of these matrices separately if we choose.
 		Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ);		
 
-		final String vertexShader = getVertexShader();   		
- 		final String fragmentShader = getFragmentShader();			
+		// The per_pixel_vertex_shader_tex_and_light and per_pixel_fragment_shader_tex_and_light
+		// shaders do not pass in colour data. The per_pixel_vertex_shader and per_pixel_fragment_shader
+		// do pass in colour data so the textures colours may be modified.
+		final String vertexShader = getShader(R.raw.per_pixel_vertex_shader);   		
+ 		final String fragmentShader = getShader(R.raw.per_pixel_fragment_shader);			
 		
 		final int vertexShaderHandle = ShaderHelper.compileShader(GLES20.GL_VERTEX_SHADER, vertexShader);		
 		final int fragmentShaderHandle = ShaderHelper.compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentShader);		
@@ -592,8 +580,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 				new String[] {"a_Position",  "a_Color", "a_Normal", "a_TexCoordinate"});								                                							       
         
         // Define a simple shader program for our point.
-        final String pointVertexShader = RawResourceReader.readTextFileFromRawResource(mActivityContext, R.raw.point_vertex_shader);        	       
-        final String pointFragmentShader = RawResourceReader.readTextFileFromRawResource(mActivityContext, R.raw.point_fragment_shader);
+        final String pointVertexShader = getShader(R.raw.point_vertex_shader);        	       
+        final String pointFragmentShader = getShader(R.raw.point_fragment_shader);
         
         final int pointVertexShaderHandle = ShaderHelper.compileShader(GLES20.GL_VERTEX_SHADER, pointVertexShader);
         final int pointFragmentShaderHandle = ShaderHelper.compileShader(GLES20.GL_FRAGMENT_SHADER, pointFragmentShader);
@@ -601,8 +589,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         		new String[] {"a_Position"}); 
         
         // Define a shader program without texture.
-        final String noTexVertexShader = RawResourceReader.readTextFileFromRawResource(mActivityContext, R.raw.per_pixel_vertex_shader_no_tex);        	       
-        final String noTexFragmentShader = RawResourceReader.readTextFileFromRawResource(mActivityContext, R.raw.per_pixel_fragment_shader_no_tex);
+        final String noTexVertexShader = getShader(R.raw.per_pixel_vertex_shader_no_tex);        	       
+        final String noTexFragmentShader = getShader(R.raw.per_pixel_fragment_shader_no_tex);
         
         final int noTexVertexShaderHandle = ShaderHelper.compileShader(GLES20.GL_VERTEX_SHADER, noTexVertexShader);
         final int noTexFragmentShaderHandle = ShaderHelper.compileShader(GLES20.GL_FRAGMENT_SHADER, noTexFragmentShader);
@@ -765,9 +753,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	 * @return A PointF object with x and y coordinates in the 3D world space.
 	 */
 	public PointF getWorldXY(float x, float y) {
-		// 
-		// 
-		// 
 		float[] nearPos = new float[4];
 		float[] farPos = new float[4];
 		float[] modelViewMatrix = new float[16];
@@ -794,7 +779,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 			Log.v("nearPos", ""+nearPos[0]+", "+nearPos[1]+", "+nearPos[2]+", "+nearPos[3]);
 			Log.v("farPos", ""+farPos[0]+", "+farPos[1]+", "+farPos[2]+", "+farPos[3]);
 
-			// Use the near and far instead of the assumed camera position
+			// Use the near and far instead of the assumed camera position.
+			// TODO: More description of the interpolation used here. 
 			float perspectiveNear = near;
 			float perspectiveFar = far;
 			unprojectedX = (((farPos[0] - nearPos[0]) 
@@ -806,6 +792,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 			Log.v("unprojectedXY", ""+(unprojectedX)+", "+(unprojectedY));
 		}
 		return new PointF(unprojectedX, unprojectedY);
+		// TODO: Handling cases where gluUnProject returns GL_FALSE?
 	}
 	
 	/** Get the ModelView matrix needed for gluunproject calculations.
@@ -832,6 +819,17 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         }
         return result;
     }
+    
+    public Cube getSelectedCube(PointF p) {
+		for (Cube cube: cubes) {
+			if (p.x >= cube.x - 1 && p.x <= cube.x + 1
+					&& p.y >= cube.y - 1 && p.y <= cube.y + 1) {
+				return cube;
+			}
+		}
+		return null;
+    }
+    
 	/**
 	 * Draws a point representing the position of the light.
 	 */

@@ -23,6 +23,9 @@ public class Line {
 		this.renderer = renderer;
 	}
 	
+	// TODO: Constructor taking start and end points or centre and length?
+	// TODO: Constructor as above plus front face?
+	
 	public void setYRotation(float angle) {
 		yRotation = angle;
 	}

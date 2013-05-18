@@ -57,13 +57,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
         	switch (e.getAction()) {
         	case MotionEvent.ACTION_DOWN:
         		PointF p = mRenderer.getWorldXY(x, y);
-        		Cube foo = null;
-        		for (Cube aCube: mRenderer.cubes) {
-        			if (p.x >= aCube.x - 1 && p.x <= aCube.x + 1
-        					&& p.y >= aCube.y - 1 && p.y <= aCube.y + 1) {
-        				foo = aCube;
-        			}
-        		}
+        		Cube foo = mRenderer.getSelectedCube(p);
         		
         		if (foo != null) {
         			animationInProgress = true;
