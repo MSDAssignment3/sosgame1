@@ -145,14 +145,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	
 	/** Far clipping plane used in frustum/projection matrix. Declared here
 	 * so we can use it in gluunproject calculations.*/
-	private final float far = 10;
+	private final float far = 25;
 	
 	/** This is used to set the cube z coordinate and also for the 
 	 * ModelView calculation for touch to world coordinate calculations.*/
-	private final float cubeZ = -5;
+	public final float cubeZ = -5;
 	
 	/** Scales the cube z dimensions. */
-	private final float cubeZScaleFactor = 0.25f;
+	public final float cubeZScaleFactor = 0.25f;
 	
 	/**
 	 * Initialize the model data.
@@ -514,8 +514,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		mCubeTextureCoordinates.put(cubeTextureCoordinateData).position(0);
 		
 		// Make some cubes
-        for (float x = -4; x < 5; x += 2) {
-        	for (float y = -4; y < 5; y += 2) {
+        for (float x = -8; x < 9; x += 2) {
+        	for (float y = -8; y < 9; y += 2) {
         		cubes.add(new Cube(mActivityContext, this, x, y));
         	}
         }
@@ -549,8 +549,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 			
 		// Position the eye in front of the origin.
 		final float eyeX = 0.0f;
-		final float eyeY = 0.0f;
-		final float eyeZ = -0.5f;
+		final float eyeY = -4.0f;
+		// TODO: eyeZ cannot be a final if we change it for different grid sizes
+		// TODO: Code to change eyeZ when grid size changes
+//		final float eyeZ = 6.0f; // For 5x5
+		final float eyeZ = 14.0f; // 14 seems ok for 9x9
 
 		// We are looking toward the distance
 		final float lookX = 0.0f;
@@ -613,7 +616,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 
 		// Create a new perspective projection matrix. The height will stay the same
 		// while the width will vary as per aspect ratio.
-		float scaleFactor = 2.2f;
+		float scaleFactor = 1;//2.2f;
 		final float ratio = (float) width / height;
 		Log.v("ratio", ""+ratio);
 		final float left;// = -ratio;
@@ -745,14 +748,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 //        drawLight();
 	}				
 	
-	/** Calculate world coordinates from touch coordinates.<br>
-	 * gluUnProject code adapted from:<br>
+	/** Calculate world coordinates from touch coordinates. gluUnProject code 
+	 * adapted (with one major change to interpolation code) from:<br>
 	 * http://gamedev.stackexchange.com/questions/26292/opengl-es-2-0-gluunproject
 	 * @param x Touch x.
 	 * @param y Touch y.
+	 * @param knownZ The known z value for the 3D object clicked on.
 	 * @return A PointF object with x and y coordinates in the 3D world space.
 	 */
-	public PointF getWorldXY(float x, float y) {
+	public PointF getWorldXY(float x, float y, float knownZ) {
 		float[] nearPos = new float[4];
 		float[] farPos = new float[4];
 		float[] modelViewMatrix = new float[16];
@@ -779,32 +783,46 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 			Log.v("nearPos", ""+nearPos[0]+", "+nearPos[1]+", "+nearPos[2]+", "+nearPos[3]);
 			Log.v("farPos", ""+farPos[0]+", "+farPos[1]+", "+farPos[2]+", "+farPos[3]);
 
-			// Use the near and far instead of the assumed camera position.
-			// TODO: More description of the interpolation used here. 
-			float perspectiveNear = near;
-			float perspectiveFar = far;
-			unprojectedX = (((farPos[0] - nearPos[0]) 
-					/ (perspectiveFar - perspectiveNear)) * nearPos[2]) 
-					+ nearPos[0];
-			unprojectedY = (((farPos[1] - nearPos[1]) 
-					/ (perspectiveFar - perspectiveNear)) * nearPos[2])  
-					+ nearPos[1];
+			// The following interpolation code from the original example on
+			// gamedev.stackexchange.com is commented out because it is
+			// incorrect, at least in our application.
+//			// Use the near and far instead of the assumed camera position.
+//			float perspectiveNear = near;
+//			float perspectiveFar = far;
+//			unprojectedX = (((farPos[0] - nearPos[0]) 
+//					/ (perspectiveFar - perspectiveNear)) * nearPos[2]) 
+//					+ nearPos[0];
+//			unprojectedY = (((farPos[1] - nearPos[1]) 
+//					/ (perspectiveFar - perspectiveNear)) * nearPos[2])  
+//					+ nearPos[1];
+
+			// This is the correct way to get the final x, y values.
+			// After we get two 3D points from gluUnProject we need to
+			// interpolate along the z axis to get the correct x and y
+			// coordinates using the known z value for the 3D object we clicked
+			// on.
+			float u = (knownZ - nearPos[2]) / (farPos[2] - nearPos[2]);
+			unprojectedX = nearPos[0] + u * (farPos[0] - nearPos[0]);
+			unprojectedY = nearPos[1] + u * (farPos[1] - nearPos[1]);
+			
 			Log.v("unprojectedXY", ""+(unprojectedX)+", "+(unprojectedY));
 		}
 		return new PointF(unprojectedX, unprojectedY);
 		// TODO: Handling cases where gluUnProject returns GL_FALSE?
 	}
 	
-	/** Get the ModelView matrix needed for gluunproject calculations.
+	/** Get the ModelView matrix needed for gluUnProject calculations.
 	 * @return The model matrix multiplied by the view matrix.
 	 */
 	private float[] getModelViewMatrix() {
 		float[] modelViewMatrix = new float[16];
+		float[] resultMatrix = new float[16];
 		Matrix.setIdentityM(modelViewMatrix, 0);
+		// TODO: Words about why we an identity matrix for the modelViewMatrix
 		// This sets the depth to the face of the cubes
-		Matrix.translateM(modelViewMatrix, 0, 0, 0, cubeZ + cubeZScaleFactor);
-        Matrix.multiplyMM(modelViewMatrix, 0, mViewMatrix, 0, modelViewMatrix, 0);   
-		return modelViewMatrix;
+//		Matrix.translateM(modelViewMatrix, 0, 0, 0, cubeZ + cubeZScaleFactor);
+        Matrix.multiplyMM(resultMatrix, 0, mViewMatrix, 0, modelViewMatrix, 0);   
+		return resultMatrix;
 	}
 	
     /** Convert a 4D (x, y, z, w) vector to a 3D (x, y, z) vector.<br>

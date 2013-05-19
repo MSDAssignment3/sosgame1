@@ -56,7 +56,8 @@ public class MyGLSurfaceView extends GLSurfaceView {
         if (!animationInProgress) {
         	switch (e.getAction()) {
         	case MotionEvent.ACTION_DOWN:
-        		PointF p = mRenderer.getWorldXY(x, y);
+        		PointF p = mRenderer.getWorldXY(x, y, 
+        				mRenderer.cubeZ + mRenderer.cubeZScaleFactor);
         		Cube foo = mRenderer.getSelectedCube(p);
         		
         		if (foo != null) {
