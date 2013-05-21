@@ -39,6 +39,8 @@ public class MainActivity extends Activity implements OnClickListener,
     private MyGLSurfaceView myGLView;
     private RelativeLayout mainView;
     private View viewAdjustView = null;
+    private float xOffset;
+    private float yOffset;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -80,20 +82,32 @@ public class MainActivity extends Activity implements OnClickListener,
 		        ((SeekBar) findViewById(R.id.seekX)).setOnSeekBarChangeListener(this);
 		        ((SeekBar) findViewById(R.id.seekY)).setOnSeekBarChangeListener(this);
 		        ((SeekBar) findViewById(R.id.seekZ)).setOnSeekBarChangeListener(this);
+		        ((SeekBar) findViewById(R.id.seekPanX)).setOnSeekBarChangeListener(this);
+		        ((SeekBar) findViewById(R.id.seekPanY)).setOnSeekBarChangeListener(this);
 		        if (myGLView != null) {
-		        	int setting = (int) ((myGLView.mRenderer.eyeX - myGLView.mRenderer.eyeXMin)
-		        			/ (myGLView.mRenderer.eyeXMax - myGLView.mRenderer.eyeXMin)
-		        			* 100f);
+		        	int setting;
+		        	setting = toProgress(myGLView.mRenderer.eyeX, 
+		        			myGLView.mRenderer.eyeXMin, 
+		        			myGLView.mRenderer.eyeXMax);
 		        	((SeekBar) findViewById(R.id.seekX)).setProgress(setting);
-		        	setting = (int) ((myGLView.mRenderer.eyeY - myGLView.mRenderer.eyeYMin) 
-		        			/ (myGLView.mRenderer.eyeYMax - myGLView.mRenderer.eyeYMin)
-		        			* 100f);
+		        	setting = toProgress(myGLView.mRenderer.eyeY, 
+		        			myGLView.mRenderer.eyeYMin, 
+		        			myGLView.mRenderer.eyeYMax);
 		        	((SeekBar) findViewById(R.id.seekY)).setProgress(setting);
-		        	setting = (int) ((myGLView.mRenderer.eyeZ  - myGLView.mRenderer.eyeZMin)
-		        			/ (myGLView.mRenderer.eyeZMax - myGLView.mRenderer.eyeZMin)
-		        			* 100);
+		        	setting = toProgress(myGLView.mRenderer.eyeZ, 
+		        			myGLView.mRenderer.eyeZMin, 
+		        			myGLView.mRenderer.eyeZMax);
 		        	((SeekBar) findViewById(R.id.seekZ)).setProgress(setting);
-//					Log.v("eyeY init", ""+myGLView.mRenderer.eyeY);
+		        	setting = toProgress(myGLView.mRenderer.lookX, 
+		        			myGLView.mRenderer.eyeXMin, 
+		        			myGLView.mRenderer.eyeXMax);
+		        	((SeekBar) findViewById(R.id.seekPanX)).setProgress(setting);
+		        	setting = toProgress(myGLView.mRenderer.lookY, 
+		        			myGLView.mRenderer.eyeYMin, 
+		        			myGLView.mRenderer.eyeYMax);
+		        	((SeekBar) findViewById(R.id.seekPanY)).setProgress(setting);
+		        	xOffset = myGLView.mRenderer.eyeX - myGLView.mRenderer.lookX;
+		        	yOffset = myGLView.mRenderer.eyeY - myGLView.mRenderer.lookY;
 		        }
 			}
 			break;
@@ -105,30 +119,57 @@ public class MainActivity extends Activity implements OnClickListener,
 		}
 	}
 
+	private int toProgress(float value, float min, float max) {
+		return (int) ((value - min) / (max - min) * 100f);
+	}
+	
+	private float fromProgress(int progress, float min, float max) {
+		return min + progress / 100f * (max - min);
+	}
+	
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
 		// Convert progress value to view parameters
+		int setting;
 		switch (seekBar.getId()) {
 		case R.id.seekX:
-			myGLView.mRenderer.eyeX = myGLView.mRenderer.eyeXMin + progress / 100f 
-				* (myGLView.mRenderer.eyeXMax - myGLView.mRenderer.eyeXMin);
-			myGLView.mRenderer.calculateViewMatrix();
+			myGLView.mRenderer.eyeX = fromProgress(progress, 
+					myGLView.mRenderer.eyeXMin, myGLView.mRenderer.eyeXMax);
+        	xOffset = myGLView.mRenderer.eyeX - myGLView.mRenderer.lookX;
 			Log.v("eyeX", ""+myGLView.mRenderer.eyeX);
 			break;
 		case R.id.seekY:
-			myGLView.mRenderer.eyeY = myGLView.mRenderer.eyeYMin + progress / 100f 
-				* (myGLView.mRenderer.eyeYMax - myGLView.mRenderer.eyeYMin);
-			myGLView.mRenderer.calculateViewMatrix();
+			myGLView.mRenderer.eyeY = fromProgress(progress, 
+					myGLView.mRenderer.eyeYMin, myGLView.mRenderer.eyeYMax);
+			yOffset = myGLView.mRenderer.eyeY - myGLView.mRenderer.lookY;
 			Log.v("eyeY", ""+myGLView.mRenderer.eyeY);
 			break;
 		case R.id.seekZ:
-			myGLView.mRenderer.eyeZ = myGLView.mRenderer.eyeZMin + progress / 100f 
-				* (myGLView.mRenderer.eyeZMax - myGLView.mRenderer.eyeZMin);
-			myGLView.mRenderer.calculateViewMatrix();
+			myGLView.mRenderer.eyeZ = fromProgress(progress, 
+					myGLView.mRenderer.eyeZMin, myGLView.mRenderer.eyeZMax);
 			Log.v("eyeZ", ""+myGLView.mRenderer.eyeZ);
 			break;
+		case R.id.seekPanX:
+			myGLView.mRenderer.lookX = fromProgress(progress, 
+					myGLView.mRenderer.eyeXMin, myGLView.mRenderer.eyeXMax);
+			myGLView.mRenderer.eyeX = myGLView.mRenderer.lookX + xOffset;
+        	setting = toProgress(myGLView.mRenderer.eyeX, 
+        			myGLView.mRenderer.eyeXMin, 
+        			myGLView.mRenderer.eyeXMax);
+        	((SeekBar) findViewById(R.id.seekX)).setProgress(setting);
+			Log.v("lookX", ""+myGLView.mRenderer.lookX);
+			Log.v("eyeX", ""+myGLView.mRenderer.eyeX);
+			Log.v("xOffset", ""+xOffset);
+			break;
+		case R.id.seekPanY:
+			myGLView.mRenderer.lookY = fromProgress(progress, 
+					myGLView.mRenderer.eyeYMin, myGLView.mRenderer.eyeYMax);
+			myGLView.mRenderer.eyeY = myGLView.mRenderer.lookY + yOffset;
+			Log.v("lookY", ""+myGLView.mRenderer.lookY);
+			break;
 		}
+		myGLView.mRenderer.calculateViewMatrix();
 		myGLView.requestRender();
 	}
 

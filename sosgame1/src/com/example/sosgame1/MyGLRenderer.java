@@ -154,14 +154,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	/** Eye/camera z coordinate used in view matrix. */
 	public float eyeZ = 7.0f;
 	
-	/** Min and max values. */
-	public float eyeXMin = -5;
-	public float eyeXMax = 5;
-	public float eyeYMin = -5;
-	public float eyeYMax = 5;
-	public float eyeZMin = 0;
-	public float eyeZMax = 20;
-	
 	/** Eye/camera x look coordinate used in view matrix. */
 	public float lookX = 0.0f;
 	
@@ -180,6 +172,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	/** Eye/camera z up coordinate used in view matrix. */
 	public float upZ = 0.0f;
 
+	/** Min and max values. */
+	// TODO: How to adjust these for different board sizes
+	public float eyeXMin = -5;
+	public float eyeXMax = 5;
+	public float eyeYMin = -5;
+	public float eyeYMax = 5;
+	public float eyeZMin = 0;
+	public float eyeZMax = 20;
+	
 	/** This is used to set the cube z coordinate and also for the 
 	 * ModelView calculation for touch to world coordinate calculations.*/
 	public final float cubeZ = -2f;
@@ -873,6 +874,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         return result;
     }
     
+    /** Takes a PointF holding world x, y coordinates and searches for a cube
+     * which covers those coordinates.
+     * @param p The coordinates in the world space.
+     * @return A Cube object.
+     */
     public Cube getSelectedCube(PointF p) {
     	float dx = cubeXScaleFactor;
     	float dy = cubeYScaleFactor;
@@ -885,26 +891,4 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		return null;
     }
     
-	/**
-	 * Draws a point representing the position of the light.
-	 */
-	private void drawLight()
-	{
-		final int pointMVPMatrixHandle = GLES20.glGetUniformLocation(mPointProgramHandle, "u_MVPMatrix");
-        final int pointPositionHandle = GLES20.glGetAttribLocation(mPointProgramHandle, "a_Position");
-        
-		// Pass in the position.
-		GLES20.glVertexAttrib3f(pointPositionHandle, mLightPosInModelSpace[0], mLightPosInModelSpace[1], mLightPosInModelSpace[2]);
-
-		// Since we are not using a buffer object, disable vertex arrays for this attribute.
-        GLES20.glDisableVertexAttribArray(pointPositionHandle);  
-		
-		// Pass in the transformation matrix.
-		Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, mLightModelMatrix, 0);
-		Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
-		GLES20.glUniformMatrix4fv(pointMVPMatrixHandle, 1, false, mMVPMatrix, 0);
-		
-		// Draw the point.
-		GLES20.glDrawArrays(GLES20.GL_POINTS, 0, 1);
-	}
 }

@@ -26,4 +26,20 @@
         android:layout_alignParentLeft="true"
         android:layout_marginBottom="30dp" />
 
+    <SeekBar
+        android:id="@+id/seekPanX"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/seekZ"
+        android:layout_marginTop="91dp" />
+
+    <SeekBar
+        android:id="@+id/seekPanY"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/seekPanX"
+        android:layout_marginTop="15dp" />
+
 </RelativeLayout>
