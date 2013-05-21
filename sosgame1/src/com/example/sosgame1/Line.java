@@ -7,20 +7,37 @@ import android.opengl.Matrix;
 
 public class Line {
 
-	private final Context activityContext;
 	private final MyGLRenderer renderer;
 	
 	public float x = 0;
 	public float y = 0;
 	public float z = 0;
-	public int topFace = 1;
+	public float startX;
+	public float startY;
+	public float endX;
+	public float endY;
+	private float scaleFactorX = 1;
+	private float scaleFactorY = 0.1f;
 	public float xRotation = 0;
 	public float yRotation = 0;
 	public float zRotation = 0;
+	public static final int COLOUR_RED = 0;
+	public static final int COLOUR_BLUE = 180;
+	
+	private float[] modelMatrix = new float[16];
 
-	public Line(Context context, MyGLRenderer renderer) {
-		activityContext = context;
+	public Line(MyGLRenderer renderer) {
 		this.renderer = renderer;
+	}
+	
+	public Line(MyGLRenderer renderer, float startX,
+			float startY, float endX, float endY, int colour) {
+		this.renderer = renderer;
+		this.startX = startX;
+		this.startY = startY;
+		this.endX = endX;
+		this.endY = endY;
+		this.xRotation = colour;
 	}
 	
 	// TODO: Constructor taking start and end points or centre and length?
@@ -45,8 +62,39 @@ public class Line {
 	/**
 	 * Draws a cube.
 	 */			
-	public void draw(float[] ModelMatrix)
+	public void draw(float[] modelMatrix)
 	{		
+		// Compute the rotation and scale factors
+		if (startX == endX) {
+			// Vertical line
+			zRotation = 90;
+			scaleFactorX = 1;
+			x = startX;
+			y = startY + (endY - startY) / 2;
+		} else if (startY == endY) {
+			// Horizontal line
+			zRotation = 0;
+			scaleFactorX = 1;
+			x = startX + (endX - startX) / 2;
+			y = startY;
+		} else {
+			// Diagonal line
+			if (endY > startY) {
+				zRotation = 45;
+			} else {
+				zRotation = -45;
+			}
+			scaleFactorX = 1.414f;
+			x = startX + (endX - startX) / 2;
+			y = startY + (endY - startY) / 2;
+		}
+		Matrix.setIdentityM(modelMatrix, 0);
+		Matrix.translateM(modelMatrix, 0, x, y, z);
+		Matrix.rotateM(modelMatrix, 0, xRotation, 1.0f, 0.0f, 0.0f);
+		Matrix.rotateM(modelMatrix, 0, zRotation, 0.0f, 0.0f, 1.0f);
+		Matrix.scaleM(modelMatrix, 0, scaleFactorX, scaleFactorY, 0.10f);
+		
+		
 		// Pass in the position information
 		renderer.mCubePositions.position(0);		
         GLES20.glVertexAttribPointer(renderer.mPositionHandle, renderer.mPositionDataSize, GLES20.GL_FLOAT, false,
@@ -77,7 +125,7 @@ public class Line {
         
 		// This multiplies the view matrix by the model matrix, and stores the result in the MVP matrix
         // (which currently contains model * view).
-        Matrix.multiplyMM(renderer.mMVPMatrix, 0, renderer.mViewMatrix, 0, ModelMatrix, 0);   
+        Matrix.multiplyMM(renderer.mMVPMatrix, 0, renderer.mViewMatrix, 0, modelMatrix, 0);   
         
         // Pass in the modelview matrix.
         GLES20.glUniformMatrix4fv(renderer.mMVMatrixHandle, 1, false, renderer.mMVPMatrix, 0);                

@@ -139,20 +139,51 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	/** Viewport height. */
 	private int height;
 	
-	/** Near clipping plane used in frustum/projection matrix. Declared here
-	 * so we can use it in gluunproject calculations.*/
+	/** Near clipping plane used in frustum/projection matrix. */
 	private final float near = 1;
 	
-	/** Far clipping plane used in frustum/projection matrix. Declared here
-	 * so we can use it in gluunproject calculations.*/
+	/** Far clipping plane used in frustum/projection matrix. */
 	private final float far = 25;
 	
+	/** Eye/camera x coordinate used in view matrix. */
+	public float eyeX = 0.0f;
+	
+	/** Eye/camera y coordinate used in view matrix. */
+	public float eyeY = -1.0f;
+	
+	/** Eye/camera z coordinate used in view matrix. */
+	public float eyeZ = -7.0f;
+	
+	/** Eye/camera x look coordinate used in view matrix. */
+	public float lookX = 0.0f;
+	
+	/** Eye/camera y look coordinate used in view matrix. */
+	public float lookY = 0.0f;
+
+	/** Eye/camera z look coordinate used in view matrix. */
+	public float lookZ = -5.0f;
+
+	/** Eye/camera x up coordinate used in view matrix. */
+	public float upX = 0.0f;
+	
+	/** Eye/camera y up coordinate used in view matrix. */
+	public float upY = 1.0f;
+
+	/** Eye/camera z up coordinate used in view matrix. */
+	public float upZ = -5.0f;
+
 	/** This is used to set the cube z coordinate and also for the 
 	 * ModelView calculation for touch to world coordinate calculations.*/
-	public final float cubeZ = -5;
+	public final float cubeZ = -2f;
+	
+	/** Scales the cube x dimensions. */
+	public final float cubeXScaleFactor = 0.45f;
+	
+	/** Scales the cube y dimensions. */
+	public final float cubeYScaleFactor = 0.45f;
 	
 	/** Scales the cube z dimensions. */
-	public final float cubeZScaleFactor = 0.25f;
+	public final float cubeZScaleFactor = 0.125f;
 	
 	/**
 	 * Initialize the model data.
@@ -297,52 +328,52 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		final float[] lineColorData =
 		{				
 				// Front face (red)
-				1.0f, 0.0f, 0.0f, 1.0f,				
-				1.0f, 0.0f, 0.0f, 1.0f,
-				1.0f, 0.0f, 0.0f, 1.0f,
-				1.0f, 0.0f, 0.0f, 1.0f,				
-				1.0f, 0.0f, 0.0f, 1.0f,
-				1.0f, 0.0f, 0.0f, 1.0f,
+				1.0f, 0.0f, 0.0f, 0.9f,				
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,				
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,
 				
 				// Right face (green)
-				0.0f, 1.0f, 0.0f, 1.0f,				
-				0.0f, 1.0f, 0.0f, 1.0f,
-				0.0f, 1.0f, 0.0f, 1.0f,
-				0.0f, 1.0f, 0.0f, 1.0f,				
-				0.0f, 1.0f, 0.0f, 1.0f,
-				0.0f, 1.0f, 0.0f, 1.0f,
+				0.0f, 1.0f, 0.0f, 0.9f,				
+				0.0f, 1.0f, 0.0f, 0.9f,
+				0.0f, 1.0f, 0.0f, 0.9f,
+				0.0f, 1.0f, 0.0f, 0.9f,				
+				0.0f, 1.0f, 0.0f, 0.9f,
+				0.0f, 1.0f, 0.0f, 0.9f,
 				
 				// Back face (blue)
-				0.0f, 0.0f, 1.0f, 1.0f,				
-				0.0f, 0.0f, 1.0f, 1.0f,
-				0.0f, 0.0f, 1.0f, 1.0f,
-				0.0f, 0.0f, 1.0f, 1.0f,				
-				0.0f, 0.0f, 1.0f, 1.0f,
-				0.0f, 0.0f, 1.0f, 1.0f,
+				0.0f, 0.0f, 1.0f, 0.9f,				
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,				
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,
 				
 				// Left face (yellow)
-				1.0f, 1.0f, 0.0f, 1.0f,				
-				1.0f, 1.0f, 0.0f, 1.0f,
-				1.0f, 1.0f, 0.0f, 1.0f,
-				1.0f, 1.0f, 0.0f, 1.0f,				
-				1.0f, 1.0f, 0.0f, 1.0f,
-				1.0f, 1.0f, 0.0f, 1.0f,
+				1.0f, 1.0f, 0.0f, 0.9f,				
+				1.0f, 1.0f, 0.0f, 0.9f,
+				1.0f, 1.0f, 0.0f, 0.9f,
+				1.0f, 1.0f, 0.0f, 0.9f,				
+				1.0f, 1.0f, 0.0f, 0.9f,
+				1.0f, 1.0f, 0.0f, 0.9f,
 				
 				// Top face (cyan)
-				0.0f, 1.0f, 1.0f, 1.0f,				
-				0.0f, 1.0f, 1.0f, 1.0f,
-				0.0f, 1.0f, 1.0f, 1.0f,
-				0.0f, 1.0f, 1.0f, 1.0f,				
-				0.0f, 1.0f, 1.0f, 1.0f,
-				0.0f, 1.0f, 1.0f, 1.0f,
+				0.0f, 1.0f, 1.0f, 0.9f,				
+				0.0f, 1.0f, 1.0f, 0.9f,
+				0.0f, 1.0f, 1.0f, 0.9f,
+				0.0f, 1.0f, 1.0f, 0.9f,				
+				0.0f, 1.0f, 1.0f, 0.9f,
+				0.0f, 1.0f, 1.0f, 0.9f,
 				
 				// Bottom face (magenta)
-				1.0f, 0.0f, 1.0f, 1.0f,				
-				1.0f, 0.0f, 1.0f, 1.0f,
-				1.0f, 0.0f, 1.0f, 1.0f,
-				1.0f, 0.0f, 1.0f, 1.0f,				
-				1.0f, 0.0f, 1.0f, 1.0f,
-				1.0f, 0.0f, 1.0f, 1.0f
+				1.0f, 0.0f, 1.0f, 0.9f,				
+				1.0f, 0.0f, 1.0f, 0.9f,
+				1.0f, 0.0f, 1.0f, 0.9f,
+				1.0f, 0.0f, 1.0f, 0.9f,				
+				1.0f, 0.0f, 1.0f, 0.9f,
+				1.0f, 0.0f, 1.0f, 0.9f
 		};
 		
 		// X, Y, Z
@@ -514,8 +545,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		mCubeTextureCoordinates.put(cubeTextureCoordinateData).position(0);
 		
 		// Make some cubes
-        for (float x = -8; x < 9; x += 2) {
-        	for (float y = -8; y < 9; y += 2) {
+        for (float x = -4; x < 5; x++) {
+        	for (float y = -4; y < 5; y++) {
         		cubes.add(new Cube(mActivityContext, this, x, y));
         	}
         }
@@ -529,6 +560,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	protected String getShader(int resId)
 	{
 		return RawResourceReader.readTextFileFromRawResource(mActivityContext, resId);
+	}
+	
+	public void calculateViewMatrix() {
+		Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ);		
 	}
 	
 	@Override
@@ -548,12 +583,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		// GLES20.glEnable(GLES20.GL_TEXTURE_2D);
 			
 		// Position the eye in front of the origin.
-		final float eyeX = 0.0f;
-		final float eyeY = -4.0f;
+		eyeX = 0.0f;
+		eyeY = -1.0f;
 		// TODO: eyeZ cannot be a final if we change it for different grid sizes
 		// TODO: Code to change eyeZ when grid size changes
-//		final float eyeZ = 6.0f; // For 5x5
-		final float eyeZ = 14.0f; // 14 seems ok for 9x9
+//		final float eyeZ = 4.0f; // For 5x5
+		eyeZ = 7.0f; // For 9x9
 
 		// We are looking toward the distance
 		final float lookX = 0.0f;
@@ -688,23 +723,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     		Matrix.translateM(mModelMatrix, 0, cube.x, cube.y, cubeZ + cube.z);
     		Matrix.rotateM(mModelMatrix, 0, cube.yRotation, 0.0f, 1.0f, 0.0f);
     		Matrix.rotateM(mModelMatrix, 0, cube.zRotation, 0.0f, 0.0f, 1.0f);
-    		Matrix.scaleM(mModelMatrix, 0, 0.9f, 0.9f, cubeZScaleFactor);
+    		Matrix.scaleM(mModelMatrix, 0, cubeXScaleFactor, cubeYScaleFactor,
+    				cubeZScaleFactor);
     		cube.draw(mModelMatrix);
         }
         
-        // Draw another cube without texture
-        Line aCube = new Line(mActivityContext, this);
-        aCube.x = -2;
-        aCube.y = -2;
-        aCube.z = -4.8f;
-        aCube.xRotation = 45;
-        aCube.yRotation = 45;
-        aCube.zRotation = 0;
-		Matrix.setIdentityM(mModelMatrix, 0);
-		Matrix.translateM(mModelMatrix, 0, aCube.x, aCube.y, aCube.z);
-		Matrix.rotateM(mModelMatrix, 0, aCube.zRotation, 0.0f, 0.0f, 1.0f);
-		Matrix.scaleM(mModelMatrix, 0, 3.0f, 0.20f, 0.10f);
-//		Matrix.rotateM(mModelMatrix, 0, aCube.yRotation, 0.0f, 1.0f, 0.0f);
         // Change the shader program
         GLES20.glUseProgram(noTexProgramHandle);
         // Enable alpha blending
@@ -722,22 +745,27 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         mColorHandle = GLES20.glGetAttribLocation(noTexProgramHandle, "a_Color");
         mNormalHandle = GLES20.glGetAttribLocation(noTexProgramHandle, "a_Normal"); 
 
-        aCube.draw(mModelMatrix);
-        
-        Line aLine = new Line(mActivityContext, this);
-        aLine.x = 2;
-        aLine.y = 2;
-        aLine.z = -4.8f;
-        aLine.xRotation = 180;
-        aLine.yRotation = 45;
-        aLine.zRotation = 90;
-		Matrix.setIdentityM(mModelMatrix, 0);
-		Matrix.translateM(mModelMatrix, 0, aLine.x, aLine.y, aLine.z);
-		Matrix.rotateM(mModelMatrix, 0, aLine.xRotation, 1.0f, 0.0f, 0.0f);
-//		Matrix.translateM(mModelMatrix, 0, 0, 0, aLine.z);
-		Matrix.rotateM(mModelMatrix, 0, aLine.zRotation, 0.0f, 0.0f, 1.0f);
-		Matrix.scaleM(mModelMatrix, 0, 3.0f, 0.20f, 0.10f);
-        aLine.draw(mModelMatrix);
+        for (float x = 1; x < 3; x++) {
+        	Line line;
+        	line = new Line(this, x, x, x + 2, x, Line.COLOUR_RED);
+        	line.z = cubeZ + 0.2f;
+        	line.draw(mModelMatrix);
+        	line = new Line(this, x, x, x, x + 2, Line.COLOUR_BLUE);
+        	line.z = cubeZ + 0.2f;
+        	line.draw(mModelMatrix);
+        	line = new Line(this, x, x, x + 2, x + 2, Line.COLOUR_RED);
+        	line.z = cubeZ + 0.2f;
+        	line.draw(mModelMatrix);
+        	line = new Line(this, -x, -x, -x - 2, -x - 2, Line.COLOUR_BLUE);
+        	line.z = cubeZ + 0.2f;
+        	line.draw(mModelMatrix);
+        	line = new Line(this, x, x, x + 2, x - 2, Line.COLOUR_RED);
+        	line.z = cubeZ + 0.2f;
+        	line.draw(mModelMatrix);
+        	line = new Line(this, x, x, x - 2, x + 2, Line.COLOUR_BLUE);
+        	line.z = cubeZ + 0.2f;
+        	line.draw(mModelMatrix);
+        }
         
 		GLES20.glDisable(GLES20.GL_BLEND);
         
@@ -818,7 +846,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		float[] modelViewMatrix = new float[16];
 		float[] resultMatrix = new float[16];
 		Matrix.setIdentityM(modelViewMatrix, 0);
-		// TODO: Words about why we an identity matrix for the modelViewMatrix
+		// TODO: Words about why we use an identity matrix for the modelViewMatrix
 		// This sets the depth to the face of the cubes
 //		Matrix.translateM(modelViewMatrix, 0, 0, 0, cubeZ + cubeZScaleFactor);
         Matrix.multiplyMM(resultMatrix, 0, mViewMatrix, 0, modelViewMatrix, 0);   
@@ -839,9 +867,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     }
     
     public Cube getSelectedCube(PointF p) {
+    	float dx = cubeXScaleFactor;
+    	float dy = cubeYScaleFactor;
 		for (Cube cube: cubes) {
-			if (p.x >= cube.x - 1 && p.x <= cube.x + 1
-					&& p.y >= cube.y - 1 && p.y <= cube.y + 1) {
+			if (p.x >= cube.x - dx && p.x <= cube.x + dx
+					&& p.y >= cube.y - dy && p.y <= cube.y + dy) {
 				return cube;
 			}
 		}

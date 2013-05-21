@@ -12,15 +12,23 @@ import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.view.View;
 
-public class MyGLSurfaceView extends GLSurfaceView {
+public class MyGLSurfaceView extends GLSurfaceView 
+	implements SeekBar.OnSeekBarChangeListener, 
+	android.view.View.OnClickListener {
 
 //	private final MyGLRenderer mRenderer;
 	// Can't set a final variable outside of the constructor (I think) 
-	private MyGLRenderer mRenderer;
+	public MyGLRenderer mRenderer;
 	private ObjectAnimator anim;
 	private boolean animationInProgress = false;
+//	private RelativeLayout mainView;
+	private View slider = null;
 
     public MyGLSurfaceView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -114,5 +122,26 @@ public class MyGLSurfaceView extends GLSurfaceView {
         mPreviousY = y;
         return true;
     }
+
+	@Override
+	public void onProgressChanged(SeekBar seekBar, int progress,
+			boolean fromUser) {
+	}
+
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onClick(View v) {
+	}
     
 }
