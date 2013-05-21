@@ -152,7 +152,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	public float eyeY = -1.0f;
 	
 	/** Eye/camera z coordinate used in view matrix. */
-	public float eyeZ = -7.0f;
+	public float eyeZ = 7.0f;
+	
+	/** Min and max values. */
+	public float eyeXMin = -5;
+	public float eyeXMax = 5;
+	public float eyeYMin = -5;
+	public float eyeYMax = 5;
+	public float eyeZMin = 0;
+	public float eyeZMax = 20;
 	
 	/** Eye/camera x look coordinate used in view matrix. */
 	public float lookX = 0.0f;
@@ -170,7 +178,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	public float upY = 1.0f;
 
 	/** Eye/camera z up coordinate used in view matrix. */
-	public float upZ = -5.0f;
+	public float upZ = 0.0f;
 
 	/** This is used to set the cube z coordinate and also for the 
 	 * ModelView calculation for touch to world coordinate calculations.*/
@@ -585,20 +593,19 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		// Position the eye in front of the origin.
 		eyeX = 0.0f;
 		eyeY = -1.0f;
-		// TODO: eyeZ cannot be a final if we change it for different grid sizes
 		// TODO: Code to change eyeZ when grid size changes
 //		final float eyeZ = 4.0f; // For 5x5
 		eyeZ = 7.0f; // For 9x9
 
 		// We are looking toward the distance
-		final float lookX = 0.0f;
-		final float lookY = 0.0f;
-		final float lookZ = -5.0f;
+		lookX = 0.0f;
+		lookY = 0.0f;
+		lookZ = -5.0f;
 
 		// Set our up vector. This is where our head would be pointing were we holding the camera.
-		final float upX = 0.0f;
-		final float upY = 1.0f;
-		final float upZ = 0.0f;
+		upX = 0.0f;
+		upY = 1.0f;
+		upZ = 0.0f;
 
 		// Set the view matrix. This matrix can be said to represent the camera position.
 		// NOTE: In OpenGL 1, a ModelView matrix is used, which is a combination of a model and

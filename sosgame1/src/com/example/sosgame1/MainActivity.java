@@ -36,21 +36,21 @@ import android.widget.TextView;
 public class MainActivity extends Activity implements OnClickListener,
 	SeekBar.OnSeekBarChangeListener{
 
-    private MyGLSurfaceView mGLView;
+    private MyGLSurfaceView myGLView;
     private RelativeLayout mainView;
-    private View slider = null;
+    private View viewAdjustView = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         // Create a GLSurfaceView instance and set it
         // as the ContentView for this Activity
-//        mGLView = new MyGLSurfaceView(this);
+//        myGLView = new MyGLSurfaceView(this);
 //        RelativeLayout rl = new RelativeLayout(this);
 //        Button btn = new Button(this);
 //        TextView txt = new TextView(this);
 //        txt.setText("foo");
-//        rl.addView(mGLView);
+//        rl.addView(myGLView);
 //        rl.addView(btn);
 //        rl.addView(txt);
 //        setContentView(rl);
@@ -59,7 +59,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		mainView = (RelativeLayout) findViewById(R.id.rlMain);
 		((Button) findViewById(R.id.btnView)).setOnClickListener(this);
 		((Button) findViewById(R.id.button2)).setOnClickListener(this);
-		mGLView = (MyGLSurfaceView) findViewById(R.id.myGLSurfaceView1);
+		myGLView = (MyGLSurfaceView) findViewById(R.id.myGLSurfaceView1);
 	}
 
 	@Override
@@ -71,28 +71,35 @@ public class MainActivity extends Activity implements OnClickListener,
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.btnView:
 			LayoutInflater inflater = getLayoutInflater();
-			slider = inflater.inflate(R.layout.view_adjust, null);
-			if (slider != null) {
-				mainView.addView(slider);
+			viewAdjustView = inflater.inflate(R.layout.view_adjust, null);
+			if (viewAdjustView != null) {
+				mainView.addView(viewAdjustView);
 		        ((SeekBar) findViewById(R.id.seekX)).setOnSeekBarChangeListener(this);
 		        ((SeekBar) findViewById(R.id.seekY)).setOnSeekBarChangeListener(this);
 		        ((SeekBar) findViewById(R.id.seekZ)).setOnSeekBarChangeListener(this);
-		        if (mGLView != null) {
-		        	((SeekBar) findViewById(R.id.seekX))
-		        		.setProgress((int) (mGLView.mRenderer.eyeX * 10 + 50));
-		        	((SeekBar) findViewById(R.id.seekY))
-		        		.setProgress((int) (mGLView.mRenderer.eyeY * 10 + 50));
-					Log.v("eyeY init", ""+mGLView.mRenderer.eyeY);
+		        if (myGLView != null) {
+		        	int setting = (int) ((myGLView.mRenderer.eyeX - myGLView.mRenderer.eyeXMin)
+		        			/ (myGLView.mRenderer.eyeXMax - myGLView.mRenderer.eyeXMin)
+		        			* 100f);
+		        	((SeekBar) findViewById(R.id.seekX)).setProgress(setting);
+		        	setting = (int) ((myGLView.mRenderer.eyeY - myGLView.mRenderer.eyeYMin) 
+		        			/ (myGLView.mRenderer.eyeYMax - myGLView.mRenderer.eyeYMin)
+		        			* 100f);
+		        	((SeekBar) findViewById(R.id.seekY)).setProgress(setting);
+		        	setting = (int) ((myGLView.mRenderer.eyeZ  - myGLView.mRenderer.eyeZMin)
+		        			/ (myGLView.mRenderer.eyeZMax - myGLView.mRenderer.eyeZMin)
+		        			* 100);
+		        	((SeekBar) findViewById(R.id.seekZ)).setProgress(setting);
+//					Log.v("eyeY init", ""+myGLView.mRenderer.eyeY);
 		        }
 			}
 			break;
 		case R.id.button2:
-			if (slider != null) {
-				mainView.removeView(slider);
+			if (viewAdjustView != null) {
+				mainView.removeView(viewAdjustView);
 			}
 			break;
 		}
@@ -104,17 +111,25 @@ public class MainActivity extends Activity implements OnClickListener,
 		// Convert progress value to view parameters
 		switch (seekBar.getId()) {
 		case R.id.seekX:
-			mGLView.mRenderer.eyeX = (progress - 50) / 10f;
-			mGLView.mRenderer.calculateViewMatrix();
-			Log.v("eyeX", ""+mGLView.mRenderer.eyeX);
+			myGLView.mRenderer.eyeX = myGLView.mRenderer.eyeXMin + progress / 100f 
+				* (myGLView.mRenderer.eyeXMax - myGLView.mRenderer.eyeXMin);
+			myGLView.mRenderer.calculateViewMatrix();
+			Log.v("eyeX", ""+myGLView.mRenderer.eyeX);
 			break;
 		case R.id.seekY:
-			mGLView.mRenderer.eyeY = (progress - 50) / 10f;
-			mGLView.mRenderer.calculateViewMatrix();
-			Log.v("eyeY", ""+mGLView.mRenderer.eyeY);
+			myGLView.mRenderer.eyeY = myGLView.mRenderer.eyeYMin + progress / 100f 
+				* (myGLView.mRenderer.eyeYMax - myGLView.mRenderer.eyeYMin);
+			myGLView.mRenderer.calculateViewMatrix();
+			Log.v("eyeY", ""+myGLView.mRenderer.eyeY);
+			break;
+		case R.id.seekZ:
+			myGLView.mRenderer.eyeZ = myGLView.mRenderer.eyeZMin + progress / 100f 
+				* (myGLView.mRenderer.eyeZMax - myGLView.mRenderer.eyeZMin);
+			myGLView.mRenderer.calculateViewMatrix();
+			Log.v("eyeZ", ""+myGLView.mRenderer.eyeZ);
 			break;
 		}
-		mGLView.requestRender();
+		myGLView.requestRender();
 	}
 
 	@Override
