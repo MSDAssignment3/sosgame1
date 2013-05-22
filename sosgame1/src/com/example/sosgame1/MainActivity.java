@@ -19,14 +19,18 @@
 package com.example.sosgame1;
 
 import com.example.sosgame1.MyGLSurfaceView;
+
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -34,13 +38,20 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements OnClickListener,
-	SeekBar.OnSeekBarChangeListener{
+	SeekBar.OnSeekBarChangeListener {//, OnTouchListener {
 
     private MyGLSurfaceView myGLView;
     private RelativeLayout mainView;
     private View viewAdjustView = null;
     private float xOffset;
     private float yOffset;
+    private boolean isPanningX = false;
+    private boolean isPanningY = false;
+//    /** Handles pinch gestures for zooming. */
+//	private ScaleGestureDetector scaleDetector;
+//	private float scaleFactor;
+//	private float minScale;
+//	private float maxScale;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +73,8 @@ public class MainActivity extends Activity implements OnClickListener,
 		((Button) findViewById(R.id.btnView)).setOnClickListener(this);
 		((Button) findViewById(R.id.button2)).setOnClickListener(this);
 		myGLView = (MyGLSurfaceView) findViewById(R.id.myGLSurfaceView1);
+		
+//        scaleDetector = new ScaleGestureDetector(this, new ScaleListener());
 	}
 
 	@Override
@@ -134,16 +147,20 @@ public class MainActivity extends Activity implements OnClickListener,
 		int setting;
 		switch (seekBar.getId()) {
 		case R.id.seekX:
-			myGLView.mRenderer.eyeX = fromProgress(progress, 
-					myGLView.mRenderer.eyeXMin, myGLView.mRenderer.eyeXMax);
-        	xOffset = myGLView.mRenderer.eyeX - myGLView.mRenderer.lookX;
-			Log.v("eyeX", ""+myGLView.mRenderer.eyeX);
+			if (!isPanningX) {
+				myGLView.mRenderer.eyeX = fromProgress(progress, 
+						myGLView.mRenderer.eyeXMin, myGLView.mRenderer.eyeXMax);
+				xOffset = myGLView.mRenderer.eyeX - myGLView.mRenderer.lookX;
+				Log.v("eyeX", ""+myGLView.mRenderer.eyeX);
+			}
 			break;
 		case R.id.seekY:
-			myGLView.mRenderer.eyeY = fromProgress(progress, 
-					myGLView.mRenderer.eyeYMin, myGLView.mRenderer.eyeYMax);
-			yOffset = myGLView.mRenderer.eyeY - myGLView.mRenderer.lookY;
-			Log.v("eyeY", ""+myGLView.mRenderer.eyeY);
+			if (!isPanningY) {
+				myGLView.mRenderer.eyeY = fromProgress(progress, 
+						myGLView.mRenderer.eyeYMin, myGLView.mRenderer.eyeYMax);
+				yOffset = myGLView.mRenderer.eyeY - myGLView.mRenderer.lookY;
+				Log.v("eyeY", ""+myGLView.mRenderer.eyeY);
+			}
 			break;
 		case R.id.seekZ:
 			myGLView.mRenderer.eyeZ = fromProgress(progress, 
@@ -151,6 +168,7 @@ public class MainActivity extends Activity implements OnClickListener,
 			Log.v("eyeZ", ""+myGLView.mRenderer.eyeZ);
 			break;
 		case R.id.seekPanX:
+			isPanningX = true;
 			myGLView.mRenderer.lookX = fromProgress(progress, 
 					myGLView.mRenderer.eyeXMin, myGLView.mRenderer.eyeXMax);
 			myGLView.mRenderer.eyeX = myGLView.mRenderer.lookX + xOffset;
@@ -159,14 +177,19 @@ public class MainActivity extends Activity implements OnClickListener,
         			myGLView.mRenderer.eyeXMax);
         	((SeekBar) findViewById(R.id.seekX)).setProgress(setting);
 			Log.v("lookX", ""+myGLView.mRenderer.lookX);
-			Log.v("eyeX", ""+myGLView.mRenderer.eyeX);
-			Log.v("xOffset", ""+xOffset);
+			isPanningX = false;
 			break;
 		case R.id.seekPanY:
+			isPanningY = true;
 			myGLView.mRenderer.lookY = fromProgress(progress, 
 					myGLView.mRenderer.eyeYMin, myGLView.mRenderer.eyeYMax);
 			myGLView.mRenderer.eyeY = myGLView.mRenderer.lookY + yOffset;
+        	setting = toProgress(myGLView.mRenderer.eyeY, 
+        			myGLView.mRenderer.eyeYMin, 
+        			myGLView.mRenderer.eyeYMax);
+        	((SeekBar) findViewById(R.id.seekY)).setProgress(setting);
 			Log.v("lookY", ""+myGLView.mRenderer.lookY);
+			isPanningY = false;
 			break;
 		}
 		myGLView.mRenderer.calculateViewMatrix();
@@ -185,4 +208,26 @@ public class MainActivity extends Activity implements OnClickListener,
 		
 	}
 
+//	@Override
+//	public boolean onTouch(View v, MotionEvent event) {
+//		scaleDetector.onTouchEvent(event);
+//		return true;
+//	}
+//
+//	// Based on:
+//	// http://android-developers.blogspot.co.nz/2010/06/making-sense-of-multitouch.html
+//	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+//		@Override
+//		public boolean onScale(ScaleGestureDetector detector) {
+//	        scaleFactor *= detector.getScaleFactor();
+//	        Log.v("scaleFactor", ""+scaleFactor);
+//	        // Limit the scale factor so that both width and height fit within
+//	        // the minScale and maxScale values (if not scaled up)
+//	        float tempScale = Math.max(scaleFactor, myGLView.mRenderer.eyeZMin);
+////	        tempScale = Math.min(tempScale, myGLView.mRenderer.eyeZMax);
+//	        scaleFactor = Math.min(tempScale, myGLView.mRenderer.eyeZMax);
+//	        return true;
+//	    }
+//	}
+//
 }

@@ -63,7 +63,7 @@ public class Cube {
 	/**
 	 * Draws a cube.
 	 */			
-	public void draw(float[] ModelMatrix)
+	public void draw(float[] ModelMatrix, int textureOffset)
 	{		
 		// Pass in the position information
 		renderer.mCubePositions.position(0);		
@@ -87,7 +87,7 @@ public class Cube {
         GLES20.glEnableVertexAttribArray(renderer.mNormalHandle);
         
         // Pass in the texture coordinate information
-        renderer.mCubeTextureCoordinates.position(0);
+        renderer.mCubeTextureCoordinates.position(textureOffset);
         GLES20.glVertexAttribPointer(renderer.mTextureCoordinateHandle, renderer.mTextureCoordinateDataSize, GLES20.GL_FLOAT, false, 
         		0, renderer.mCubeTextureCoordinates);
         

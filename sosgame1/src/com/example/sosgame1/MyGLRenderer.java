@@ -69,6 +69,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	/** Stores cube texture coordinates. */
 	public final FloatBuffer mCubeTextureCoordinates;
 	
+//	/** Stores cell texture coordinates. */
+//	public final FloatBuffer cellTextureCoordinates;
+	
 	/** This will be used to pass in the transformation matrix. */
 	public int mMVPMatrixHandle;
 	
@@ -127,11 +130,17 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	/** This is a handle to another program without texture. */
 	public int noTexProgramHandle;
 	
-	/** This is a handle to our texture data. */
-	public int mTextureDataHandle;
+	/** This is a handle to the cube texture data. */
+	public int cubeTextureDataHandle;
+	
+	/** This is a handle to the cell texture data. */
+	public int cellTextureDataHandle;
 	
 	/** Stores the cube objects. */
 	public ArrayList<Cube> cubes = new ArrayList<Cube>();
+	
+	/** Stores the board cell objects. */
+	public ArrayList<Cell> cells = new ArrayList<Cell>();
 	
 	/** Viewport width. */
 	private int width;
@@ -178,8 +187,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	public float eyeXMax = 5;
 	public float eyeYMin = -5;
 	public float eyeYMax = 5;
-	public float eyeZMin = 0;
-	public float eyeZMax = 20;
+	public float eyeZMin = 1;
+	public float eyeZMax = 21;
 	
 	/** This is used to set the cube z coordinate and also for the 
 	 * ModelView calculation for touch to world coordinate calculations.*/
@@ -193,6 +202,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	
 	/** Scales the cube z dimensions. */
 	public final float cubeZScaleFactor = 0.125f;
+	
+	private int offset1;
 	
 	/**
 	 * Initialize the model data.
@@ -444,7 +455,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		// Texture coordinate data.
 		// Because images have a Y axis pointing downward (values increase as you move down the image) while
 		// OpenGL has a Y axis pointing upward, we adjust for that here by flipping the Y axis.
-		// What's more is that the texture coordinates are the same for every face.
 		final float[] cubeTextureCoordinateData =
 		{												
 				// Front face
@@ -454,12 +464,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 //				0.0f, 1.0f,
 //				1.0f, 1.0f,
 //				1.0f, 0.0f,				
-				0.0f, 40 / 256f, 				
-				0.0f, 180 / 256f,
-				0.5f, 40 / 256f,
-				0.0f, 180 / 256f,
-				0.5f, 180 / 256f,
-				0.5f, 40 / 256f,	
+				0.0f, 40 / 512f, 				
+				0.0f, 180 / 512f,
+				0.25f, 40 / 512f,
+				0.0f, 180 / 512f,
+				0.25f, 180 / 512f,
+				0.25f, 40 / 512f,	
 				
 				// Right face 
 //				0.0f, 0.0f, 				
@@ -482,12 +492,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 //				0.0f, 1.0f,
 //				1.0f, 1.0f,
 //				1.0f, 0.0f,	
-				0.5f, 40 / 256f,
-				0.5f, 180 / 256f,
-				1.0f, 40 / 256f,
-				0.5f, 180 / 256f,
-				1.0f, 180 / 256f,
-				1.0f, 40 / 256f,	
+				0.25f, 40 / 512f,
+				0.25f, 180 / 512f,
+				0.5f, 40 / 512f,
+				0.25f, 180 / 512f,
+				0.5f, 180 / 512f,
+				0.5f, 40 / 512f,	
 				
 				// Left face 
 //				0.0f, 0.0f, 				
@@ -529,7 +539,58 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 				0.0f, 0.0f,
 				0.0f, 0.0f,
 				0.0f, 0.0f,
-				0.0f, 0.0f
+				0.0f, 0.0f,
+//		};
+//		
+//		final float[] cellTextureCoordinateData =
+//		{												
+				// Front face
+				0.5f, 0.5f, 				
+				0.5f, 1.0f,
+				1.0f, 0.5f,
+				0.5f, 1.0f,
+				1.0f, 1.0f,
+				1.0f, 0.5f,				
+				
+				// Right face 
+				0.5f, 0.5f, 				
+				0.5f, 1.0f,
+				1.0f, 0.5f,
+				0.5f, 1.0f,
+				1.0f, 1.0f,
+				1.0f, 0.5f,	
+				
+				// Back face 
+				0.5f, 0.5f, 				
+				0.5f, 1.0f,
+				1.0f, 0.5f,
+				0.5f, 1.0f,
+				1.0f, 1.0f,
+				1.0f, 0.5f,	
+				
+				// Left face 
+				0.5f, 0.5f, 				
+				0.5f, 1.0f,
+				1.0f, 0.5f,
+				0.5f, 1.0f,
+				1.0f, 1.0f,
+				1.0f, 0.5f,	
+				
+				// Top face 
+				0.5f, 0.5f, 				
+				0.5f, 1.0f,
+				1.0f, 0.5f,
+				0.5f, 1.0f,
+				1.0f, 1.0f,
+				1.0f, 0.5f,	
+				
+				// Bottom face 
+				0.5f, 0.5f, 				
+				0.5f, 1.0f,
+				1.0f, 0.5f,
+				0.5f, 1.0f,
+				1.0f, 1.0f,
+				1.0f, 0.5f
 		};
 		
 		// Initialize the buffers.
@@ -552,6 +613,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		mCubeTextureCoordinates = ByteBuffer.allocateDirect(cubeTextureCoordinateData.length * mBytesPerFloat)
 		.order(ByteOrder.nativeOrder()).asFloatBuffer();
 		mCubeTextureCoordinates.put(cubeTextureCoordinateData).position(0);
+		offset1 = cubeTextureCoordinateData.length * mBytesPerFloat / 2;
+		
+//		cellTextureCoordinates = ByteBuffer.allocateDirect(cellTextureCoordinateData.length * mBytesPerFloat)
+//		.order(ByteOrder.nativeOrder()).asFloatBuffer();
+//		cellTextureCoordinates.put(cellTextureCoordinateData).position(0);
 		
 		// Make some cubes
         for (float x = -4; x < 5; x++) {
@@ -560,6 +626,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         	}
         }
 		
+        // Make some cells
+        for (float x = -5; x < 6; x++) {
+        	for (float y = -5; y < 6; y++) {
+        		cells.add(new Cell(mActivityContext, this, x, y));
+        	}
+        }
+        
 	}
 	
 	/** Gets shader code from a text file.
@@ -644,9 +717,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         		new String[] {"a_Position"}); 
         
         // Load the texture
-//        mTextureDataHandle = TextureHelper.loadTexture(mActivityContext, R.drawable.bumpy_bricks_public_domain);
-        mTextureDataHandle = TextureHelper.loadTexture(mActivityContext,
-        		R.drawable.texture2);
+        cubeTextureDataHandle = TextureHelper.loadTexture(mActivityContext,
+        		R.drawable.textures);
+        cellTextureDataHandle = TextureHelper.loadTexture(mActivityContext,
+        		R.drawable.board1);
 	}	
 		
 	@Override
@@ -711,7 +785,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         
         // Bind the texture to this unit.
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, cubeTextureDataHandle);
         
         // Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
         GLES20.glUniform1i(mTextureUniformHandle, 0);        
@@ -725,7 +799,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         Matrix.multiplyMV(mLightPosInWorldSpace, 0, mLightModelMatrix, 0, mLightPosInModelSpace, 0);
         Matrix.multiplyMV(mLightPosInEyeSpace, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);                        
         
-        // Draw some cubes.
+        // Draw the cubes.
         for (Cube cube: cubes) {
     		Matrix.setIdentityM(mModelMatrix, 0);
     		Matrix.translateM(mModelMatrix, 0, cube.x, cube.y, cubeZ + cube.z);
@@ -733,7 +807,17 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     		Matrix.rotateM(mModelMatrix, 0, cube.zRotation, 0.0f, 0.0f, 1.0f);
     		Matrix.scaleM(mModelMatrix, 0, cubeXScaleFactor, cubeYScaleFactor,
     				cubeZScaleFactor);
-    		cube.draw(mModelMatrix);
+    		cube.draw(mModelMatrix, 0);
+        }
+        
+        // Draw the cells.
+        for (Cell cell: cells) {
+    		Matrix.setIdentityM(mModelMatrix, 0);
+    		Matrix.translateM(mModelMatrix, 0, cell.x, cell.y, cubeZ - 0.25f);
+    		Matrix.rotateM(mModelMatrix, 0, cell.yRotation, 0.0f, 1.0f, 0.0f);
+    		Matrix.rotateM(mModelMatrix, 0, cell.zRotation, 0.0f, 0.0f, 1.0f);
+    		Matrix.scaleM(mModelMatrix, 0, 0.5f, 0.5f, 0.125f);
+    		cell.draw(mModelMatrix, 2 * 6 * 6);
         }
         
         // Change the shader program

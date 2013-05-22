@@ -14,17 +14,24 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
+import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.view.View;
+import android.view.View.*;
 
-public class MyGLSurfaceView extends GLSurfaceView {
+public class MyGLSurfaceView extends GLSurfaceView implements OnTouchListener {
 
 //	private final MyGLRenderer mRenderer;
 	// Can't set a final variable outside of the constructor (I think) 
 	public MyGLRenderer mRenderer;
 	private ObjectAnimator anim;
 	private boolean animationInProgress = false;
+    /** Handles pinch gestures for zooming. */
+	private ScaleGestureDetector scaleDetector;
+	private float scaleFactor;
+	private float minScale;
+	private float maxScale;
 
     public MyGLSurfaceView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -46,18 +53,38 @@ public class MyGLSurfaceView extends GLSurfaceView {
 
         // Render the view only when there is a change in the drawing data
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+		
+        setOnTouchListener(this);
+        scaleDetector = new ScaleGestureDetector(context, new ScaleListener());
+        scaleFactor = mRenderer.eyeZ;
     }
     
     private final float TOUCH_SCALE_FACTOR = 180.0f / 320;
     private float mPreviousX;
     private float mPreviousY;
 
+	// Based on:
+	// http://android-developers.blogspot.co.nz/2010/06/making-sense-of-multitouch.html
+	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+		@Override
+		public boolean onScale(ScaleGestureDetector detector) {
+	        scaleFactor /= detector.getScaleFactor();
+	        float tempScale = Math.max(scaleFactor, mRenderer.eyeZMin);
+	        scaleFactor = Math.min(tempScale, mRenderer.eyeZMax);
+	        mRenderer.eyeZ = scaleFactor;
+	        Log.v("eyeZ", ""+mRenderer.eyeZ);
+			mRenderer.calculateViewMatrix();
+	        return true;
+	    }
+	}
+
     @Override
-    public boolean onTouchEvent(MotionEvent e) {
+    public boolean onTouch(View v, MotionEvent e) {
+    	scaleDetector.onTouchEvent(e);
         float x = e.getX();
         float y = e.getY();
         
-        if (!animationInProgress) {
+        if (!animationInProgress && !scaleDetector.isInProgress()) {
         	switch (e.getAction()) {
         	case MotionEvent.ACTION_DOWN:
         		PointF p = mRenderer.getWorldXY(x, y, 
@@ -94,21 +121,22 @@ public class MyGLSurfaceView extends GLSurfaceView {
         		}
         		break;
         	case MotionEvent.ACTION_MOVE:
-        		
-        		float dx = x - mPreviousX;
-        		float dy = y - mPreviousY;
+        		if (!scaleDetector.isInProgress()) {
+        			float dx = x - mPreviousX;
+        			float dy = y - mPreviousY;
 
-        		// reverse direction of rotation above the mid-line
-        		if (y > getHeight() / 2) {
-        			dx = dx * -1 ;
+        			// reverse direction of rotation above the mid-line
+        			if (y > getHeight() / 2) {
+        				dx = dx * -1 ;
+        			}
+
+        			// reverse direction of rotation to left of the mid-line
+        			if (x < getWidth() / 2) {
+        				dy = dy * -1 ;
+        			}
+
+        			// mRenderer.mAngle += (dx + dy) * TOUCH_SCALE_FACTOR;  // = 180.0f / 320
         		}
-
-        		// reverse direction of rotation to left of the mid-line
-        		if (x < getWidth() / 2) {
-        			dy = dy * -1 ;
-        		}
-
-        		//                mRenderer.mAngle += (dx + dy) * TOUCH_SCALE_FACTOR;  // = 180.0f / 320
         		break;
         	}
         	requestRender();
@@ -116,7 +144,14 @@ public class MyGLSurfaceView extends GLSurfaceView {
 
         mPreviousX = x;
         mPreviousY = y;
+        requestRender();
         return true;
     }
+    
+//	@Override
+//	public boolean onTouch(View v, MotionEvent event) {
+//		// TODO Auto-generated method stub
+//		return false;
+//	}
 
 }
