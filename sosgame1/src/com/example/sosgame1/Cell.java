@@ -4,13 +4,13 @@ import android.content.Context;
 
 public class Cell extends Cube {
 
-	public Cell(Context context, MyGLRenderer renderer, float x, float y) {
-		super(context, renderer, x, y);
+	public Cell(MyGLRenderer renderer, float x, float y) {
+		super(renderer, x, y);
 		// TODO Auto-generated constructor stub
 	}
 
-	public Cell(Context context, MyGLRenderer renderer) {
-		super(context, renderer);
+	public Cell(MyGLRenderer renderer) {
+		super(renderer);
 		// TODO Auto-generated constructor stub
 	}
 

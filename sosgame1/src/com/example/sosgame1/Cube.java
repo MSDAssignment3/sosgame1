@@ -1,30 +1,24 @@
 // TODO: Credit http://www.learnopengles.com/ License? Apache
 package com.example.sosgame1;
 
-import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
 public class Cube {
 
-	private final Context activityContext;
-	private final MyGLRenderer renderer;
-	
-	public float x = 0;
-	public float y = 0;
-	public float z = 0;
-	public int topFace = 1;
-	public float xRotation = 0;
-	public float yRotation = 0;
-	public float zRotation = 0;
+	protected MyGLRenderer renderer;
+	protected float x = 0;
+	protected float y = 0;
+	protected float z = 0;
+	protected float xRotation = 0;
+	protected float yRotation = 0;
+	protected float zRotation = 0;
 
-	public Cube(Context context, MyGLRenderer renderer) {
-		activityContext = context;
+	protected Cube(MyGLRenderer renderer) {
 		this.renderer = renderer;
 	}
 	
-	public Cube(Context context, MyGLRenderer renderer, float x, float y) {
-		activityContext = context;
+	protected Cube(MyGLRenderer renderer, float x, float y) {
 		this.renderer = renderer;
 		this.x = x;
 		this.y = y;
@@ -35,35 +29,39 @@ public class Cube {
 	/** Setter required for object animation of this property.
 	 * @param angle Angle of rotation about Y axis.
 	 */
-	public void setYRotation(float angle) {
+	protected void setYRotation(float angle) {
 		yRotation = angle;
 	}
 	
 	/** Setter required for object animation of this property.
 	 * @param angle Angle of rotation about X axis.
 	 */
-	public void setXRotation(float angle) {
+	protected void setXRotation(float angle) {
 		xRotation = angle;
 	}
 
 	/** Setter required for object animation of this property.
 	 * @param angle Angle of rotation about Z axis.
 	 */
-	public void setZRotation(float angle) {
+	protected void setZRotation(float angle) {
 		zRotation = angle;
 	}
 
 	/** Setter required for object animation of this property.
 	 * @param z Z coordinate.
 	 */
-	public void setZ(float z) {
+	protected void setZ(float z) {
 		this.z = z;
 	}
 
-	/**
-	 * Draws a cube.
-	 */			
-	public void draw(float[] ModelMatrix, int textureOffset)
+	/** Draws a cube. Code (with textureOffset modification) from:<br>
+	 * http://www.learnopengles.com/android-lesson-two-ambient-and-diffuse-lighting/
+	 * @param ModelMatrix The model matrix which specifies translation, 
+	 * rotation and scale.
+	 * @param textureOffset Offset into texture coordinate buffer specifying 
+	 * texture to be painted on the cube faces.
+	 */
+	protected void draw(float[] ModelMatrix, int textureOffset)
 	{		
 		// Pass in the position information
 		renderer.mCubePositions.position(0);		

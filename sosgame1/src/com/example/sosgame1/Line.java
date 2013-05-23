@@ -1,38 +1,29 @@
 // TODO: Credit http://www.learnopengles.com/ License? Apache
 package com.example.sosgame1;
 
-import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
-public class Line {
+public class Line extends Cube {
 
-	private final MyGLRenderer renderer;
-	
-	public float x = 0;
-	public float y = 0;
-	public float z = 0;
 	public float startX;
 	public float startY;
 	public float endX;
 	public float endY;
 	private float scaleFactorX = 1;
 	private float scaleFactorY = 0.1f;
-	public float xRotation = 0;
-	public float yRotation = 0;
-	public float zRotation = 0;
 	public static final int COLOUR_RED = 0;
 	public static final int COLOUR_BLUE = 180;
 	
 	private float[] modelMatrix = new float[16];
 
 	public Line(MyGLRenderer renderer) {
-		this.renderer = renderer;
+		super(renderer);
 	}
 	
 	public Line(MyGLRenderer renderer, float startX,
 			float startY, float endX, float endY, int colour) {
-		this.renderer = renderer;
+		super(renderer);
 		this.startX = startX;
 		this.startY = startY;
 		this.endX = endX;
@@ -43,26 +34,8 @@ public class Line {
 	// TODO: Constructor taking start and end points or centre and length?
 	// TODO: Constructor as above plus front face?
 	
-	public void setYRotation(float angle) {
-		yRotation = angle;
-	}
-	
-	public void setXRotation(float angle) {
-		xRotation = angle;
-	}
-
-	public void setZRotation(float angle) {
-		zRotation = angle;
-	}
-
-	public void setZ(float z) {
-		this.z = z;
-	}
-
-	/**
-	 * Draws a cube.
-	 */			
-	public void draw(float[] modelMatrix)
+	/** Draws a line. */			
+	public void draw()
 	{		
 		// Compute the rotation and scale factors
 		if (startX == endX) {
@@ -93,7 +66,6 @@ public class Line {
 		Matrix.rotateM(modelMatrix, 0, xRotation, 1.0f, 0.0f, 0.0f);
 		Matrix.rotateM(modelMatrix, 0, zRotation, 0.0f, 0.0f, 1.0f);
 		Matrix.scaleM(modelMatrix, 0, scaleFactorX, scaleFactorY, 0.10f);
-		
 		
 		// Pass in the position information
 		renderer.mCubePositions.position(0);		
