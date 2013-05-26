@@ -1,0 +1,50 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <SeekBar
+        android:id="@+id/seekY"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/seekX"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/seek_bg_fill" />
+
+    <SeekBar
+        android:id="@+id/seekPanY"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/seekPanX"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/seek_bg_fill" />
+
+    <SeekBar
+        android:id="@+id/seekZ"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/seekY"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/seek_bg_fill" />
+
+    <SeekBar
+        android:id="@+id/seekX"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="34dp"
+        android:background="@drawable/seek_bg_fill" />
+
+    <SeekBar
+        android:id="@+id/seekPanX"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/seekZ"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/seek_bg_fill" />
+
+</RelativeLayout>

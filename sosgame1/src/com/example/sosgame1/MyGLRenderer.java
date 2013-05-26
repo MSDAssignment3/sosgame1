@@ -1,4 +1,5 @@
 // TODO: Credit http://www.learnopengles.com/ License? Apache
+// TODO: Credit http://www.learnopengles.com/ License? Apache
 package com.example.sosgame1;
 
 
@@ -69,6 +70,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	/** Stores cube texture coordinates. */
 	public final FloatBuffer mCubeTextureCoordinates;
 	
+//	/** Stores cell texture coordinates. */
+//	public final FloatBuffer cellTextureCoordinates;
+	
 	/** This will be used to pass in the transformation matrix. */
 	public int mMVPMatrixHandle;
 	
@@ -127,32 +131,82 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	/** This is a handle to another program without texture. */
 	public int noTexProgramHandle;
 	
-	/** This is a handle to our texture data. */
-	public int mTextureDataHandle;
+	/** This is a handle to the cube texture data. */
+	public int cubeTextureDataHandle;
 	
-	/** Stores the cube objects. */
-	public ArrayList<Cube> cubes = new ArrayList<Cube>();
+	/** This is a handle to the cell texture data. */
+	public int cellTextureDataHandle;
+	
+	/** Stores the tile objects. */
+	public ArrayList<Tile> tiles = new ArrayList<Tile>();
+	
+	/** Stores the board cell objects. */
+	public ArrayList<Cell> cells = new ArrayList<Cell>();
 	
 	/** Viewport width. */
-	private int width;
+	public int width;
 	
 	/** Viewport height. */
-	private int height;
+	public int height;
 	
-	/** Near clipping plane used in frustum/projection matrix. Declared here
-	 * so we can use it in gluunproject calculations.*/
+	/** Near clipping plane used in frustum/projection matrix. */
 	private final float near = 1;
 	
-	/** Far clipping plane used in frustum/projection matrix. Declared here
-	 * so we can use it in gluunproject calculations.*/
+	/** Far clipping plane used in frustum/projection matrix. */
 	private final float far = 25;
+	
+	/** Eye/camera x coordinate used in view matrix. */
+	public float eyeX = 0.0f;
+	
+	/** Eye/camera y coordinate used in view matrix. */
+	public float eyeY = -1.0f;
+	
+	/** Eye/camera z coordinate used in view matrix. */
+	public float eyeZ = 7.0f;
+	
+	/** Eye/camera x look coordinate used in view matrix. */
+	public float lookX = 0.0f;
+	
+	/** Eye/camera y look coordinate used in view matrix. */
+	public float lookY = 0.0f;
+
+	/** Eye/camera z look coordinate used in view matrix. */
+	public float lookZ = -5.0f;
+
+	/** Eye/camera x up coordinate used in view matrix. */
+	public float upX = 0.0f;
+	
+	/** Eye/camera y up coordinate used in view matrix. */
+	public float upY = 1.0f;
+
+	/** Eye/camera z up coordinate used in view matrix. */
+	public float upZ = 0.0f;
+
+	/** Min and max values. */
+	// TODO: How to adjust these for different board sizes
+	public float eyeXMin = -5;
+	public float eyeXMax = 5;
+	public float eyeYMin = -5;
+	public float eyeYMax = 5;
+	public float eyeZMin = 1; // This should not be zero
+	public float eyeZMax = 21;
+	
+	// TODO: Are near and far values ok regarding depth buffer accuracy?
 	
 	/** This is used to set the cube z coordinate and also for the 
 	 * ModelView calculation for touch to world coordinate calculations.*/
-	public final float cubeZ = -5;
+	public final float cubeZ = -2f;
+	
+	/** Scales the cube x dimensions. */
+	public final float cubeXScaleFactor = 0.45f;
+	
+	/** Scales the cube y dimensions. */
+	public final float cubeYScaleFactor = 0.45f;
 	
 	/** Scales the cube z dimensions. */
-	public final float cubeZScaleFactor = 0.25f;
+	public final float cubeZScaleFactor = 0.125f;
+	
+	private int offset1;
 	
 	/**
 	 * Initialize the model data.
@@ -297,52 +351,52 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		final float[] lineColorData =
 		{				
 				// Front face (red)
-				1.0f, 0.0f, 0.0f, 1.0f,				
-				1.0f, 0.0f, 0.0f, 1.0f,
-				1.0f, 0.0f, 0.0f, 1.0f,
-				1.0f, 0.0f, 0.0f, 1.0f,				
-				1.0f, 0.0f, 0.0f, 1.0f,
-				1.0f, 0.0f, 0.0f, 1.0f,
+				1.0f, 0.0f, 0.0f, 0.9f,				
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,				
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,
 				
 				// Right face (green)
-				0.0f, 1.0f, 0.0f, 1.0f,				
-				0.0f, 1.0f, 0.0f, 1.0f,
-				0.0f, 1.0f, 0.0f, 1.0f,
-				0.0f, 1.0f, 0.0f, 1.0f,				
-				0.0f, 1.0f, 0.0f, 1.0f,
-				0.0f, 1.0f, 0.0f, 1.0f,
+				0.0f, 1.0f, 0.0f, 0.9f,				
+				0.0f, 1.0f, 0.0f, 0.9f,
+				0.0f, 1.0f, 0.0f, 0.9f,
+				0.0f, 1.0f, 0.0f, 0.9f,				
+				0.0f, 1.0f, 0.0f, 0.9f,
+				0.0f, 1.0f, 0.0f, 0.9f,
 				
 				// Back face (blue)
-				0.0f, 0.0f, 1.0f, 1.0f,				
-				0.0f, 0.0f, 1.0f, 1.0f,
-				0.0f, 0.0f, 1.0f, 1.0f,
-				0.0f, 0.0f, 1.0f, 1.0f,				
-				0.0f, 0.0f, 1.0f, 1.0f,
-				0.0f, 0.0f, 1.0f, 1.0f,
+				0.0f, 0.0f, 1.0f, 0.9f,				
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,				
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,
 				
 				// Left face (yellow)
-				1.0f, 1.0f, 0.0f, 1.0f,				
-				1.0f, 1.0f, 0.0f, 1.0f,
-				1.0f, 1.0f, 0.0f, 1.0f,
-				1.0f, 1.0f, 0.0f, 1.0f,				
-				1.0f, 1.0f, 0.0f, 1.0f,
-				1.0f, 1.0f, 0.0f, 1.0f,
+				1.0f, 1.0f, 0.0f, 0.9f,				
+				1.0f, 1.0f, 0.0f, 0.9f,
+				1.0f, 1.0f, 0.0f, 0.9f,
+				1.0f, 1.0f, 0.0f, 0.9f,				
+				1.0f, 1.0f, 0.0f, 0.9f,
+				1.0f, 1.0f, 0.0f, 0.9f,
 				
 				// Top face (cyan)
-				0.0f, 1.0f, 1.0f, 1.0f,				
-				0.0f, 1.0f, 1.0f, 1.0f,
-				0.0f, 1.0f, 1.0f, 1.0f,
-				0.0f, 1.0f, 1.0f, 1.0f,				
-				0.0f, 1.0f, 1.0f, 1.0f,
-				0.0f, 1.0f, 1.0f, 1.0f,
+				0.0f, 1.0f, 1.0f, 0.9f,				
+				0.0f, 1.0f, 1.0f, 0.9f,
+				0.0f, 1.0f, 1.0f, 0.9f,
+				0.0f, 1.0f, 1.0f, 0.9f,				
+				0.0f, 1.0f, 1.0f, 0.9f,
+				0.0f, 1.0f, 1.0f, 0.9f,
 				
 				// Bottom face (magenta)
-				1.0f, 0.0f, 1.0f, 1.0f,				
-				1.0f, 0.0f, 1.0f, 1.0f,
-				1.0f, 0.0f, 1.0f, 1.0f,
-				1.0f, 0.0f, 1.0f, 1.0f,				
-				1.0f, 0.0f, 1.0f, 1.0f,
-				1.0f, 0.0f, 1.0f, 1.0f
+				1.0f, 0.0f, 1.0f, 0.9f,				
+				1.0f, 0.0f, 1.0f, 0.9f,
+				1.0f, 0.0f, 1.0f, 0.9f,
+				1.0f, 0.0f, 1.0f, 0.9f,				
+				1.0f, 0.0f, 1.0f, 0.9f,
+				1.0f, 0.0f, 1.0f, 0.9f
 		};
 		
 		// X, Y, Z
@@ -404,30 +458,19 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		// Texture coordinate data.
 		// Because images have a Y axis pointing downward (values increase as you move down the image) while
 		// OpenGL has a Y axis pointing upward, we adjust for that here by flipping the Y axis.
-		// What's more is that the texture coordinates are the same for every face.
 		final float[] cubeTextureCoordinateData =
-		{												
+		{
+				// Textures for blue tiles
+				
 				// Front face
-//				0.0f, 0.0f, 				
-//				0.0f, 1.0f,
-//				1.0f, 0.0f,
-//				0.0f, 1.0f,
-//				1.0f, 1.0f,
-//				1.0f, 0.0f,				
-				0.0f, 40 / 256f, 				
-				0.0f, 180 / 256f,
-				0.5f, 40 / 256f,
-				0.0f, 180 / 256f,
-				0.5f, 180 / 256f,
-				0.5f, 40 / 256f,	
+				0.0f, 0.0f, 				
+				0.0f, 0.25f,
+				0.25f, 0.0f,
+				0.0f, 0.25f,
+				0.25f, 0.25f,
+				0.25f, 0.0f,	
 				
 				// Right face 
-//				0.0f, 0.0f, 				
-//				0.0f, 1.0f,
-//				1.0f, 0.0f,
-//				0.0f, 1.0f,
-//				1.0f, 1.0f,
-//				1.0f, 0.0f,	
 				0.71f, 0.71f, 				
 				0.71f, 1.0f,
 				1.0f, 0.71f,
@@ -436,26 +479,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 				1.0f, 0.71f,	
 				
 				// Back face 
-//				0.0f, 0.0f, 				
-//				0.0f, 1.0f,
-//				1.0f, 0.0f,
-//				0.0f, 1.0f,
-//				1.0f, 1.0f,
-//				1.0f, 0.0f,	
-				0.5f, 40 / 256f,
-				0.5f, 180 / 256f,
-				1.0f, 40 / 256f,
-				0.5f, 180 / 256f,
-				1.0f, 180 / 256f,
-				1.0f, 40 / 256f,	
+				0.25f, 0.0f,
+				0.25f, 0.25f,
+				0.5f, 0.0f,
+				0.25f, 0.25f,
+				0.5f, 0.25f,
+				0.5f, 0.0f,	
 				
 				// Left face 
-//				0.0f, 0.0f, 				
-//				0.0f, 1.0f,
-//				1.0f, 0.0f,
-//				0.0f, 1.0f,
-//				1.0f, 1.0f,
-//				1.0f, 0.0f,	
 				0.0f, 0.0f, 				
 				0.0f, 0.0f,
 				0.0f, 0.0f,
@@ -464,12 +495,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 				0.0f, 0.0f,
 				
 				// Top face 
-//				0.0f, 0.0f, 				
-//				0.0f, 1.0f,
-//				1.0f, 0.0f,
-//				0.0f, 1.0f,
-//				1.0f, 1.0f,
-//				1.0f, 0.0f,	
 				0.0f, 0.0f, 				
 				0.0f, 0.0f,
 				0.0f, 0.0f,
@@ -478,18 +503,112 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 				0.0f, 0.0f,
 				
 				// Bottom face 
-//				0.0f, 0.0f, 				
-//				0.0f, 1.0f,
-//				1.0f, 0.0f,
-//				0.0f, 1.0f,
-//				1.0f, 1.0f,
-//				1.0f, 0.0f
 				0.0f, 0.0f, 				
 				0.0f, 0.0f,
 				0.0f, 0.0f,
 				0.0f, 0.0f,
 				0.0f, 0.0f,
-				0.0f, 0.0f
+				0.0f, 0.0f,
+
+				// Textures for red tiles
+				
+				// Front face
+				0.0f, 0.25f, 				
+				0.0f, 0.5f,
+				0.25f, 0.25f,
+				0.0f, 0.5f,
+				0.25f, 0.5f,
+				0.25f, 0.25f,	
+				
+				// Right face 
+				0.71f, 0.71f, 				
+				0.71f, 1.0f,
+				1.0f, 0.71f,
+				0.71f, 1.0f,
+				1.0f, 1.0f,
+				1.0f, 0.71f,	
+				
+				// Back face 
+				0.25f, 0.25f,
+				0.25f, 0.50f,
+				0.50f, 0.25f,
+				0.25f, 0.50f,
+				0.50f, 0.50f,
+				0.50f, 0.25f,	
+				
+				// Left face 
+				0.0f, 0.0f, 				
+				0.0f, 0.0f,
+				0.0f, 0.0f,
+				0.0f, 0.0f,
+				0.0f, 0.0f,
+				0.0f, 0.0f,
+				
+				// Top face 
+				0.0f, 0.0f, 				
+				0.0f, 0.0f,
+				0.0f, 0.0f,
+				0.0f, 0.0f,
+				0.0f, 0.0f,
+				0.0f, 0.0f,
+				
+				// Bottom face 
+				0.0f, 0.0f, 				
+				0.0f, 0.0f,
+				0.0f, 0.0f,
+				0.0f, 0.0f,
+				0.0f, 0.0f,
+				0.0f, 0.0f,
+
+				// Textures for board cells
+				
+				// Front face
+				0.5f, 0.5f, 				
+				0.5f, 1.0f,
+				1.0f, 0.5f,
+				0.5f, 1.0f,
+				1.0f, 1.0f,
+				1.0f, 0.5f,				
+				
+				// Right face 
+				0.5f, 0.5f, 				
+				0.5f, 1.0f,
+				1.0f, 0.5f,
+				0.5f, 1.0f,
+				1.0f, 1.0f,
+				1.0f, 0.5f,	
+				
+				// Back face 
+				0.5f, 0.5f, 				
+				0.5f, 1.0f,
+				1.0f, 0.5f,
+				0.5f, 1.0f,
+				1.0f, 1.0f,
+				1.0f, 0.5f,	
+				
+				// Left face 
+				0.5f, 0.5f, 				
+				0.5f, 1.0f,
+				1.0f, 0.5f,
+				0.5f, 1.0f,
+				1.0f, 1.0f,
+				1.0f, 0.5f,	
+				
+				// Top face 
+				0.5f, 0.5f, 				
+				0.5f, 1.0f,
+				1.0f, 0.5f,
+				0.5f, 1.0f,
+				1.0f, 1.0f,
+				1.0f, 0.5f,	
+				
+				// Bottom face 
+				0.5f, 0.5f, 				
+				0.5f, 1.0f,
+				1.0f, 0.5f,
+				0.5f, 1.0f,
+				1.0f, 1.0f,
+				1.0f, 0.5f
 		};
 		
 		// Initialize the buffers.
@@ -512,14 +631,29 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		mCubeTextureCoordinates = ByteBuffer.allocateDirect(cubeTextureCoordinateData.length * mBytesPerFloat)
 		.order(ByteOrder.nativeOrder()).asFloatBuffer();
 		mCubeTextureCoordinates.put(cubeTextureCoordinateData).position(0);
+		offset1 = cubeTextureCoordinateData.length * mBytesPerFloat / 2;
 		
-		// Make some cubes
-        for (float x = -8; x < 9; x += 2) {
-        	for (float y = -8; y < 9; y += 2) {
-        		cubes.add(new Cube(mActivityContext, this, x, y));
+//		cellTextureCoordinates = ByteBuffer.allocateDirect(cellTextureCoordinateData.length * mBytesPerFloat)
+//		.order(ByteOrder.nativeOrder()).asFloatBuffer();
+//		cellTextureCoordinates.put(cellTextureCoordinateData).position(0);
+		
+		// Make some tiles
+        for (float x = -4; x < 5; x++) {
+        	for (float y = -4; y < 5; y++) {
+        		tiles.add(new Tile(this, x, y));
+        		if (y == 1) {
+        			tiles.get(tiles.size() - 1).setLetter('O');
+        		}
         	}
         }
 		
+        // Make some cells
+        for (float x = -5; x < 6; x++) {
+        	for (float y = -5; y < 6; y++) {
+        		cells.add(new Cell(this, x, y));
+        	}
+        }
+        
 	}
 	
 	/** Gets shader code from a text file.
@@ -529,6 +663,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	protected String getShader(int resId)
 	{
 		return RawResourceReader.readTextFileFromRawResource(mActivityContext, resId);
+	}
+	
+	/** Calculate the view matrix. Called when the user adjusts zoom, pan, etc. 
+	 */
+	public void calculateViewMatrix() {
+		Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, 
+				lookX, lookY, lookZ, upX, upY, upZ);		
 	}
 	
 	@Override
@@ -548,22 +689,21 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		// GLES20.glEnable(GLES20.GL_TEXTURE_2D);
 			
 		// Position the eye in front of the origin.
-		final float eyeX = 0.0f;
-		final float eyeY = -4.0f;
-		// TODO: eyeZ cannot be a final if we change it for different grid sizes
+		eyeX = 0.0f;
+		eyeY = -1.0f;
 		// TODO: Code to change eyeZ when grid size changes
-//		final float eyeZ = 6.0f; // For 5x5
-		final float eyeZ = 14.0f; // 14 seems ok for 9x9
+//		final float eyeZ = 4.0f; // For 5x5
+		eyeZ = 7.0f; // For 9x9
 
 		// We are looking toward the distance
-		final float lookX = 0.0f;
-		final float lookY = 0.0f;
-		final float lookZ = -5.0f;
+		lookX = 0.0f;
+		lookY = 0.0f;
+		lookZ = -5.0f;
 
 		// Set our up vector. This is where our head would be pointing were we holding the camera.
-		final float upX = 0.0f;
-		final float upY = 1.0f;
-		final float upZ = 0.0f;
+		upX = 0.0f;
+		upY = 1.0f;
+		upZ = 0.0f;
 
 		// Set the view matrix. This matrix can be said to represent the camera position.
 		// NOTE: In OpenGL 1, a ModelView matrix is used, which is a combination of a model and
@@ -601,9 +741,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         		new String[] {"a_Position"}); 
         
         // Load the texture
-//        mTextureDataHandle = TextureHelper.loadTexture(mActivityContext, R.drawable.bumpy_bricks_public_domain);
-        mTextureDataHandle = TextureHelper.loadTexture(mActivityContext,
-        		R.drawable.texture2);
+        cubeTextureDataHandle = TextureHelper.loadTexture(mActivityContext,
+        		R.drawable.textures3);
+        cellTextureDataHandle = TextureHelper.loadTexture(mActivityContext,
+        		R.drawable.board1);
 	}	
 		
 	@Override
@@ -634,8 +775,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 			bottom = -1.0f * scaleFactor * 1 / ratio;
 			top = 1.0f * scaleFactor * 1 / ratio;
 		}
-//		final float near = 1.0f;
-//		final float far = 10.0f;
 		
 		Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
 	}	
@@ -643,14 +782,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	@Override
 	public void onDrawFrame(GL10 glUnused) 
 	{
+		// Clear the screen and the depth buffer
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);			        
                 
-        // Do a complete rotation every 10 seconds.
-        long time = SystemClock.uptimeMillis() % 10000L;        
-        float angleInDegrees = (360.0f / 10000.0f) * ((int) time);                
-        
-        
-        
         // Set our per-vertex lighting program.
         GLES20.glUseProgram(mProgramHandle);
         
@@ -668,7 +802,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         
         // Bind the texture to this unit.
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, cubeTextureDataHandle);
         
         // Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
         GLES20.glUniform1i(mTextureUniformHandle, 0);        
@@ -682,29 +816,27 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         Matrix.multiplyMV(mLightPosInWorldSpace, 0, mLightModelMatrix, 0, mLightPosInModelSpace, 0);
         Matrix.multiplyMV(mLightPosInEyeSpace, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);                        
         
-        // Draw some cubes.
-        for (Cube cube: cubes) {
+        // Draw the tiles.
+        for (Tile tile: tiles) {
     		Matrix.setIdentityM(mModelMatrix, 0);
-    		Matrix.translateM(mModelMatrix, 0, cube.x, cube.y, cubeZ + cube.z);
-    		Matrix.rotateM(mModelMatrix, 0, cube.yRotation, 0.0f, 1.0f, 0.0f);
-    		Matrix.rotateM(mModelMatrix, 0, cube.zRotation, 0.0f, 0.0f, 1.0f);
-    		Matrix.scaleM(mModelMatrix, 0, 0.9f, 0.9f, cubeZScaleFactor);
-    		cube.draw(mModelMatrix);
+    		Matrix.translateM(mModelMatrix, 0, tile.x, tile.y, cubeZ + tile.z);
+    		Matrix.rotateM(mModelMatrix, 0, tile.rotationY, 0.0f, 1.0f, 0.0f);
+    		Matrix.rotateM(mModelMatrix, 0, tile.rotationZ, 0.0f, 0.0f, 1.0f);
+    		Matrix.scaleM(mModelMatrix, 0, cubeXScaleFactor, cubeYScaleFactor,
+    				cubeZScaleFactor);
+    		tile.draw(mModelMatrix, 0);
         }
         
-        // Draw another cube without texture
-        Line aCube = new Line(mActivityContext, this);
-        aCube.x = -2;
-        aCube.y = -2;
-        aCube.z = -4.8f;
-        aCube.xRotation = 45;
-        aCube.yRotation = 45;
-        aCube.zRotation = 0;
-		Matrix.setIdentityM(mModelMatrix, 0);
-		Matrix.translateM(mModelMatrix, 0, aCube.x, aCube.y, aCube.z);
-		Matrix.rotateM(mModelMatrix, 0, aCube.zRotation, 0.0f, 0.0f, 1.0f);
-		Matrix.scaleM(mModelMatrix, 0, 3.0f, 0.20f, 0.10f);
-//		Matrix.rotateM(mModelMatrix, 0, aCube.yRotation, 0.0f, 1.0f, 0.0f);
+        // Draw the cells.
+        for (Cell cell: cells) {
+    		Matrix.setIdentityM(mModelMatrix, 0);
+    		Matrix.translateM(mModelMatrix, 0, cell.x, cell.y, cubeZ - 0.25f);
+    		Matrix.rotateM(mModelMatrix, 0, cell.rotationY, 0.0f, 1.0f, 0.0f);
+    		Matrix.rotateM(mModelMatrix, 0, cell.rotationZ, 0.0f, 0.0f, 1.0f);
+    		Matrix.scaleM(mModelMatrix, 0, 0.5f, 0.5f, 0.125f);
+    		cell.draw(mModelMatrix, 4 * 6 * 6);
+        }
+        
         // Change the shader program
         GLES20.glUseProgram(noTexProgramHandle);
         // Enable alpha blending
@@ -713,7 +845,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 //        GLES20.glBlendFunc(GLES20.GL_DST_ALPHA, GLES20.GL_ZERO);
 
-        // Set program handles for cube drawing.
+        // Reset the shader program handles for line drawing.
         mMVPMatrixHandle = GLES20.glGetUniformLocation(noTexProgramHandle, "u_MVPMatrix");
         mMVMatrixHandle = GLES20.glGetUniformLocation(noTexProgramHandle, "u_MVMatrix"); 
         mLightPosHandle = GLES20.glGetUniformLocation(noTexProgramHandle, "u_LightPos");
@@ -722,30 +854,30 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         mColorHandle = GLES20.glGetAttribLocation(noTexProgramHandle, "a_Color");
         mNormalHandle = GLES20.glGetAttribLocation(noTexProgramHandle, "a_Normal"); 
 
-        aCube.draw(mModelMatrix);
-        
-        Line aLine = new Line(mActivityContext, this);
-        aLine.x = 2;
-        aLine.y = 2;
-        aLine.z = -4.8f;
-        aLine.xRotation = 180;
-        aLine.yRotation = 45;
-        aLine.zRotation = 90;
-		Matrix.setIdentityM(mModelMatrix, 0);
-		Matrix.translateM(mModelMatrix, 0, aLine.x, aLine.y, aLine.z);
-		Matrix.rotateM(mModelMatrix, 0, aLine.xRotation, 1.0f, 0.0f, 0.0f);
-//		Matrix.translateM(mModelMatrix, 0, 0, 0, aLine.z);
-		Matrix.rotateM(mModelMatrix, 0, aLine.zRotation, 0.0f, 0.0f, 1.0f);
-		Matrix.scaleM(mModelMatrix, 0, 3.0f, 0.20f, 0.10f);
-        aLine.draw(mModelMatrix);
+        // Draw the lines
+        for (float x = 1; x < 3; x++) {
+        	Line line;
+        	line = new Line(this, x, x, x + 2, x, Line.COLOUR_RED);
+        	line.z = cubeZ + 0.2f;
+        	line.draw();
+        	line = new Line(this, x, x, x, x + 2, Line.COLOUR_BLUE);
+        	line.z = cubeZ + 0.2f;
+        	line.draw();
+        	line = new Line(this, x, x, x + 2, x + 2, Line.COLOUR_RED);
+        	line.z = cubeZ + 0.2f;
+        	line.draw();
+        	line = new Line(this, -x, -x, -x - 2, -x - 2, Line.COLOUR_BLUE);
+        	line.z = cubeZ + 0.2f;
+        	line.draw();
+        	line = new Line(this, x, x, x + 2, x - 2, Line.COLOUR_RED);
+        	line.z = cubeZ + 0.2f;
+        	line.draw();
+        	line = new Line(this, x, x, x - 2, x + 2, Line.COLOUR_BLUE);
+        	line.z = cubeZ + 0.2f;
+        	line.draw();
+        }
         
 		GLES20.glDisable(GLES20.GL_BLEND);
-        
-//        Log.v("draw", "drew a frame");
-        
-        // Draw a point to indicate the light.
-//        GLES20.glUseProgram(mPointProgramHandle);        
-//        drawLight();
 	}				
 	
 	/** Calculate world coordinates from touch coordinates. gluUnProject code 
@@ -760,18 +892,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		float[] nearPos = new float[4];
 		float[] farPos = new float[4];
 		float[] modelViewMatrix = new float[16];
-		float[] projectionMatrix = new float[16];
 		modelViewMatrix = getModelViewMatrix();
-		projectionMatrix = mProjectionMatrix;
-		int[] viewPortMatrix = new int[]{0, 0, width, 
-				height};
+		int[] viewPortMatrix = new int[]{0, 0, width, height};
 		boolean unprojNear = (GLU.gluUnProject(x, height - y, 0, 
-				modelViewMatrix, 0,
-				projectionMatrix, 0, 
+				modelViewMatrix, 0, mProjectionMatrix, 0, 
 				viewPortMatrix, 0, nearPos, 0) == GLES20.GL_TRUE);
 		boolean unprojFar = (GLU.gluUnProject(x, height - y, 1, 
-				modelViewMatrix, 0,
-				projectionMatrix, 0, 
+				modelViewMatrix, 0, mProjectionMatrix, 0, 
 				viewPortMatrix, 0, farPos, 0) == GLES20.GL_TRUE);
 		float unprojectedX = 0;
 		float unprojectedY = 0;
@@ -815,13 +942,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	 * @return The model matrix multiplied by the view matrix.
 	 */
 	private float[] getModelViewMatrix() {
-		float[] modelViewMatrix = new float[16];
+		float[] modelMatrix = new float[16];
 		float[] resultMatrix = new float[16];
-		Matrix.setIdentityM(modelViewMatrix, 0);
-		// TODO: Words about why we an identity matrix for the modelViewMatrix
-		// This sets the depth to the face of the cubes
-//		Matrix.translateM(modelViewMatrix, 0, 0, 0, cubeZ + cubeZScaleFactor);
-        Matrix.multiplyMM(resultMatrix, 0, mViewMatrix, 0, modelViewMatrix, 0);   
+		// We don't really need the modelViewMatrix unless the world space,
+		// not just objects within that space, has been transformed.
+		Matrix.setIdentityM(modelMatrix, 0);
+        Matrix.multiplyMM(resultMatrix, 0, mViewMatrix, 0, modelMatrix, 0);   
 		return resultMatrix;
 	}
 	
@@ -838,36 +964,22 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         return result;
     }
     
-    public Cube getSelectedCube(PointF p) {
-		for (Cube cube: cubes) {
-			if (p.x >= cube.x - 1 && p.x <= cube.x + 1
-					&& p.y >= cube.y - 1 && p.y <= cube.y + 1) {
-				return cube;
+    /** Takes a PointF holding world x, y coordinates and searches for a cube
+     * which covers those coordinates.
+     * @param p The coordinates in the world space.
+     * @return A Tile object.
+     */
+    public Tile getSelectedTile(PointF p) {
+    	// TODO change this so it works for selecting board cells
+    	float dx = cubeXScaleFactor;
+    	float dy = cubeYScaleFactor;
+		for (Tile tile: tiles) {
+			if (p.x >= tile.x - dx && p.x <= tile.x + dx
+					&& p.y >= tile.y - dy && p.y <= tile.y + dy) {
+				return tile;
 			}
 		}
 		return null;
     }
     
-	/**
-	 * Draws a point representing the position of the light.
-	 */
-	private void drawLight()
-	{
-		final int pointMVPMatrixHandle = GLES20.glGetUniformLocation(mPointProgramHandle, "u_MVPMatrix");
-        final int pointPositionHandle = GLES20.glGetAttribLocation(mPointProgramHandle, "a_Position");
-        
-		// Pass in the position.
-		GLES20.glVertexAttrib3f(pointPositionHandle, mLightPosInModelSpace[0], mLightPosInModelSpace[1], mLightPosInModelSpace[2]);
-
-		// Since we are not using a buffer object, disable vertex arrays for this attribute.
-        GLES20.glDisableVertexAttribArray(pointPositionHandle);  
-		
-		// Pass in the transformation matrix.
-		Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, mLightModelMatrix, 0);
-		Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
-		GLES20.glUniformMatrix4fv(pointMVPMatrixHandle, 1, false, mMVPMatrix, 0);
-		
-		// Draw the point.
-		GLES20.glDrawArrays(GLES20.GL_POINTS, 0, 1);
-	}
 }
