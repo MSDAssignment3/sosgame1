@@ -19,6 +19,7 @@
 package com.example.sosgame1;
 
 import com.example.sosgame1.MyGLSurfaceView;
+import com.example.sosgame1.controller.LogicControl;
 
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -47,34 +48,21 @@ public class MainActivity extends Activity implements OnClickListener,
     private float yOffset;
     private boolean isPanningX = false;
     private boolean isPanningY = false;
-//    /** Handles pinch gestures for zooming. */
-//	private ScaleGestureDetector scaleDetector;
-//	private float scaleFactor;
-//	private float minScale;
-//	private float maxScale;
+    private LogicControl controller = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        // Create a GLSurfaceView instance and set it
-        // as the ContentView for this Activity
-//        myGLView = new MyGLSurfaceView(this);
-//        RelativeLayout rl = new RelativeLayout(this);
-//        Button btn = new Button(this);
-//        TextView txt = new TextView(this);
-//        txt.setText("foo");
-//        rl.addView(myGLView);
-//        rl.addView(btn);
-//        rl.addView(txt);
-//        setContentView(rl);
+		// Create an instance of the logic controller
+		controller = new LogicControl();
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_main);
 		mainView = (RelativeLayout) findViewById(R.id.rlMain);
 		((Button) findViewById(R.id.btnView)).setOnClickListener(this);
 		((Button) findViewById(R.id.button2)).setOnClickListener(this);
 		myGLView = (MyGLSurfaceView) findViewById(R.id.myGLSurfaceView1);
-		
-//        scaleDetector = new ScaleGestureDetector(this, new ScaleListener());
+		// Pass controller instance to the GLSurfaceView
+		myGLView.setController(controller);
 	}
 
 	@Override

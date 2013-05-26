@@ -1,6 +1,8 @@
 package com.example.sosgame1;
 
 
+import com.example.sosgame1.controller.LogicControl;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -44,6 +46,8 @@ public class MyGLSurfaceView extends GLSurfaceView
 	private GestureDetector gestureDetector;
 	private float minScale;
 	private float maxScale;
+	
+    private LogicControl controller = null;
 
     public MyGLSurfaceView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -77,6 +81,10 @@ public class MyGLSurfaceView extends GLSurfaceView
         gestureDetector = new GestureDetector(context, gestureListener);
     }
     
+    public void setController(LogicControl controller) {
+    	this.controller = controller;
+    }
+    
     private final float TOUCH_SCALE_FACTOR = 180.0f / 320;
     private float mPreviousX;
     private float mPreviousY;
@@ -94,6 +102,12 @@ public class MyGLSurfaceView extends GLSurfaceView
 				float distanceX, float distanceY) {
 			doPan(e1, e2, distanceX, distanceY);
 			return super.onScroll(e1, e2, distanceX, distanceY);
+		}
+
+		@Override
+		public void onLongPress(MotionEvent e) {
+			doSingleTap(e);
+			super.onLongPress(e);
 		}
     	
     }
@@ -127,7 +141,14 @@ public class MyGLSurfaceView extends GLSurfaceView
         	Tile foo = mRenderer.getSelectedTile(p);
 
         	if (foo != null) {
-        		animationInProgress = true;
+            	
+            	// Test calling Ar's method
+            	if (Math.abs(foo.x) < 3 && Math.abs(foo.y) < 3) {
+            		controller.getAndCheck((int) foo.y + 2, (int) foo.x + 2, 
+            				"" + foo.letter);
+            	}
+
+            	animationInProgress = true;
         		// Start continuous screen updates for duration of animation
         		setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         		AnimatorSet animSet = new AnimatorSet();

@@ -2,7 +2,7 @@ package com.example.sosgame1;
 
 public class Tile extends Cube {
 
-    private char letter; //either "S" or "O"
+    public char letter = 'S'; //either "S" or "O"
     private Player player;
     
 	public Tile(MyGLRenderer renderer, float x, float y) {
