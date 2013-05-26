@@ -6,7 +6,7 @@ public class Board {
 	
 	public Board(MyGLRenderer renderer) {
 		this.renderer = renderer;
-		// foo
+		// foobar just testing
 	}
 	
 }
