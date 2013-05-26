@@ -672,7 +672,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 				lookX, lookY, lookZ, upX, upY, upZ);		
 	}
 	
-	@Override
 	public void onSurfaceCreated(GL10 glUnused, EGLConfig config) 
 	{
 		// Set the background clear color to black.
@@ -747,7 +746,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         		R.drawable.board1);
 	}	
 		
-	@Override
 	public void onSurfaceChanged(GL10 glUnused, int width, int height) 
 	{
 		// Set the OpenGL viewport to the same size as the surface.
@@ -779,7 +777,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
 	}	
 
-	@Override
 	public void onDrawFrame(GL10 glUnused) 
 	{
 		// Clear the screen and the depth buffer

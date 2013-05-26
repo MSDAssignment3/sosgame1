@@ -174,7 +174,6 @@ public class MyGLSurfaceView extends GLSurfaceView
 		requestRender();
 	}
 	
-    @Override
     public boolean onTouch(View v, MotionEvent e) {
     	// Call the scale gesture detector to handle pinch zooming
     	scaleDetector.onTouchEvent(e);

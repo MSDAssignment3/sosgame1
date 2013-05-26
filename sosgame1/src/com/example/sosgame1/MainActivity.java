@@ -84,7 +84,6 @@ public class MainActivity extends Activity implements OnClickListener,
 		return true;
 	}
 
-	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btnView:
@@ -140,7 +139,6 @@ public class MainActivity extends Activity implements OnClickListener,
 		return min + progress / 100f * (max - min);
 	}
 	
-	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
 		// Convert progress value to view parameters
@@ -196,13 +194,11 @@ public class MainActivity extends Activity implements OnClickListener,
 		myGLView.requestRender();
 	}
 
-	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
 		// TODO Auto-generated method stub
 		
