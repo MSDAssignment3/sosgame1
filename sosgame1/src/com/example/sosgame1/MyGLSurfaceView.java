@@ -79,6 +79,8 @@ public class MyGLSurfaceView extends GLSurfaceView
         // Set up a gesture listener and detector to handle other gestures
         gestureListener = new GestureListener();
         gestureDetector = new GestureDetector(context, gestureListener);
+        
+        mRenderer.setBoard(new Board(mRenderer, 9, 9));
     }
     
     public void setController(LogicControl controller) {

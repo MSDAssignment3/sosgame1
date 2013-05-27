@@ -208,6 +208,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	
 	private int offset1;
 	
+	private Board board = null;
+	
 	/**
 	 * Initialize the model data.
 	 */
@@ -647,13 +649,21 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         	}
         }
 		
-        // Make some cells
-        for (float x = -5; x < 6; x++) {
-        	for (float y = -5; y < 6; y++) {
-        		cells.add(new Cell(this, x, y));
-        	}
+//        // Make some cells
+//        for (float x = -5; x < 6; x++) {
+//        	for (float y = -5; y < 6; y++) {
+//        		cells.add(new Cell(this, x, y));
+//        	}
+//        }
+
+        for (Cell cell: board.cells) {
+        	cells.add(cell);
         }
         
+	}
+	
+	public void setBoard(Board board) {
+		this.board = board;
 	}
 	
 	/** Gets shader code from a text file.
