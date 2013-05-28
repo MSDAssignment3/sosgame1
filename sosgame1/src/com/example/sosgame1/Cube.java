@@ -13,13 +13,20 @@ public class Cube {
 	protected float rotationX = 0;
 	protected float rotationY = 0;
 	protected float rotationZ = 0;
+	protected int textureOffset;
 
 	protected Cube(MyGLRenderer renderer) {
 		this.renderer = renderer;
 	}
 	
-	protected Cube(MyGLRenderer renderer, float x, float y) {
+	protected Cube(MyGLRenderer renderer, int textureOffset) {
 		this.renderer = renderer;
+		this.textureOffset = textureOffset;
+	}
+	
+	protected Cube(MyGLRenderer renderer, int textureOffset, float x, float y) {
+		this.renderer = renderer;
+		this.textureOffset = textureOffset;
 		this.x = x;
 		this.y = y;
 	}
@@ -61,7 +68,7 @@ public class Cube {
 	 * @param textureOffset Offset into texture coordinate buffer specifying 
 	 * texture to be painted on the cube faces.
 	 */
-	protected void draw(float[] ModelMatrix, int textureOffset)
+	protected void draw(float[] ModelMatrix)
 	{		
 		// Pass in the position information
 		renderer.mCubePositions.position(0);		

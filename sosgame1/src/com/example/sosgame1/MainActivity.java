@@ -20,26 +20,20 @@ package com.example.sosgame1;
 
 import com.example.sosgame1.MyGLSurfaceView;
 import com.example.sosgame1.controller.LogicControl;
-
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
 public class MainActivity extends Activity implements OnClickListener,
-	SeekBar.OnSeekBarChangeListener {//, OnTouchListener {
+	SeekBar.OnSeekBarChangeListener {
 
     private MyGLSurfaceView myGLView;
     private RelativeLayout mainView;
@@ -192,26 +186,4 @@ public class MainActivity extends Activity implements OnClickListener,
 		
 	}
 
-//	@Override
-//	public boolean onTouch(View v, MotionEvent event) {
-//		scaleDetector.onTouchEvent(event);
-//		return true;
-//	}
-//
-//	// Based on:
-//	// http://android-developers.blogspot.co.nz/2010/06/making-sense-of-multitouch.html
-//	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-//		@Override
-//		public boolean onScale(ScaleGestureDetector detector) {
-//	        scaleFactor *= detector.getScaleFactor();
-//	        Log.v("scaleFactor", ""+scaleFactor);
-//	        // Limit the scale factor so that both width and height fit within
-//	        // the minScale and maxScale values (if not scaled up)
-//	        float tempScale = Math.max(scaleFactor, myGLView.mRenderer.eyeZMin);
-////	        tempScale = Math.min(tempScale, myGLView.mRenderer.eyeZMax);
-//	        scaleFactor = Math.min(tempScale, myGLView.mRenderer.eyeZMax);
-//	        return true;
-//	    }
-//	}
-//
 }

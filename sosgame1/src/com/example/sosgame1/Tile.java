@@ -5,14 +5,23 @@ public class Tile extends Cube {
     public char letter = 'S'; //either "S" or "O"
     private Player player;
     
-	public Tile(MyGLRenderer renderer, float x, float y) {
-		super(renderer, x, y);
+    public static final int COLOUR_RED = MyGLRenderer.textureOffsetTileRed;
+    public static final int COLOUR_BLUE = MyGLRenderer.textureOffsetTileBlue;
+    
+	public Tile(MyGLRenderer renderer, int colour, float x, float y) {
+		super(renderer, colour, x, y);
 		// TODO Auto-generated constructor stub
 	}
 
-	public Tile(MyGLRenderer renderer) {
-		super(renderer);
+	public Tile(MyGLRenderer renderer, int colour) {
+		super(renderer, colour);
 		// TODO Auto-generated constructor stub
+	}
+
+	public Tile(MyGLRenderer renderer, int colour, float x, float y,
+			char letter) {
+		super(renderer, colour, x, y);
+		setLetter(letter);
 	}
 
 	public char getLetter() {

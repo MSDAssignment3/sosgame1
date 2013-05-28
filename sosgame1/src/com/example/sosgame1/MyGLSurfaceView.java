@@ -2,29 +2,21 @@ package com.example.sosgame1;
 
 
 import com.example.sosgame1.controller.LogicControl;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.gesture.GestureOverlayView;
-import android.gesture.GestureOverlayView.OnGestureListener;
+import android.graphics.Point;
 import android.graphics.PointF;
-import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.opengl.GLU;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
-import android.view.ScaleGestureDetector.SimpleOnScaleGestureListener;
 import android.view.View;
-import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.view.View.*;
 
 public class MyGLSurfaceView extends GLSurfaceView 
@@ -80,7 +72,17 @@ public class MyGLSurfaceView extends GLSurfaceView
         gestureListener = new GestureListener();
         gestureDetector = new GestureDetector(context, gestureListener);
         
-        mRenderer.setBoard(new Board(mRenderer, 9, 9));
+        // Create the board
+        mRenderer.setBoard(new Board(mRenderer, 5, 5));
+        
+        // Add some tiles
+        for (int column = 1; column < 4; column++) {
+        	for (int row = 0; row < 5; row++) {
+        		mRenderer.board.addTile(row, column, Tile.COLOUR_BLUE, 'S');
+        	}
+        }
+
+        
     }
     
     public void setController(LogicControl controller) {
@@ -106,12 +108,6 @@ public class MyGLSurfaceView extends GLSurfaceView
 			return super.onScroll(e1, e2, distanceX, distanceY);
 		}
 
-		@Override
-		public void onLongPress(MotionEvent e) {
-			doSingleTap(e);
-			super.onLongPress(e);
-		}
-    	
     }
     
 	/** Handle pinch zoom. Based on:<br>
@@ -139,15 +135,16 @@ public class MyGLSurfaceView extends GLSurfaceView
         
         if (!animationInProgress && !scaleDetector.isInProgress()) {
         	PointF p = mRenderer.getWorldXY(x, y, 
-        			mRenderer.cubeZ + mRenderer.cubeZScaleFactor);
+        			mRenderer.tileZ + mRenderer.tileZScaleFactor);
         	Tile foo = mRenderer.getSelectedTile(p);
 
         	if (foo != null) {
             	
             	// Test calling Ar's method
             	if (Math.abs(foo.x) < 3 && Math.abs(foo.y) < 3) {
-            		controller.getAndCheck((int) foo.y + 2, (int) foo.x + 2, 
-            				"" + foo.letter);
+            		Point pt = new Point((int) foo.x, (int) foo.y);
+            		pt = mRenderer.board.worldToBoardXY(pt);
+            		controller.getAndCheck(pt.y, pt.x, "" + foo.letter);
             	}
 
             	animationInProgress = true;

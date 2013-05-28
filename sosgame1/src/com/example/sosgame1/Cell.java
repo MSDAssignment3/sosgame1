@@ -4,14 +4,15 @@ import android.content.Context;
 
 public class Cell extends Cube {
 
-	public Cell(MyGLRenderer renderer, float x, float y) {
-		super(renderer, x, y);
+	public Cell(MyGLRenderer renderer, int textureOffset, float x, float y) {
+		super(renderer, textureOffset, x, y);
 		// TODO Auto-generated constructor stub
 	}
 
-	public Cell(MyGLRenderer renderer) {
-		super(renderer);
+	public Cell(MyGLRenderer renderer, int textureOffset) {
+		super(renderer, textureOffset);
 		// TODO Auto-generated constructor stub
 	}
+
 
 }

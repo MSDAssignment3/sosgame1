@@ -193,22 +193,24 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	
 	// TODO: Are near and far values ok regarding depth buffer accuracy?
 	
-	/** This is used to set the cube z coordinate and also for the 
+	/** This is used to set the tile z coordinate and also for the 
 	 * ModelView calculation for touch to world coordinate calculations.*/
-	public final float cubeZ = -2f;
+	public final float tileZ = -2f;
 	
 	/** Scales the cube x dimensions. */
-	public final float cubeXScaleFactor = 0.45f;
+	public final float tileXScaleFactor = 0.45f;
 	
 	/** Scales the cube y dimensions. */
-	public final float cubeYScaleFactor = 0.45f;
+	public final float tileYScaleFactor = 0.45f;
 	
 	/** Scales the cube z dimensions. */
-	public final float cubeZScaleFactor = 0.125f;
+	public final float tileZScaleFactor = 0.125f;
 	
-	private int offset1;
+	public static final int textureOffsetTileBlue = 0;
+	public static final int textureOffsetTileRed = 2 * 6 * 6;
+	public static final int textureOffsetCell = 4 * 6 * 6;
 	
-	private Board board = null;
+	public Board board = null;
 	
 	/**
 	 * Initialize the model data.
@@ -633,16 +635,17 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		mCubeTextureCoordinates = ByteBuffer.allocateDirect(cubeTextureCoordinateData.length * mBytesPerFloat)
 		.order(ByteOrder.nativeOrder()).asFloatBuffer();
 		mCubeTextureCoordinates.put(cubeTextureCoordinateData).position(0);
-		offset1 = cubeTextureCoordinateData.length * mBytesPerFloat / 2;
 		
 //		cellTextureCoordinates = ByteBuffer.allocateDirect(cellTextureCoordinateData.length * mBytesPerFloat)
 //		.order(ByteOrder.nativeOrder()).asFloatBuffer();
 //		cellTextureCoordinates.put(cellTextureCoordinateData).position(0);
 		
+		RenderingData.initData();
+		
 		// Make some tiles
         for (float x = -4; x < 5; x++) {
         	for (float y = -4; y < 5; y++) {
-        		tiles.add(new Tile(this, x, y));
+        		tiles.add(new Tile(this, textureOffsetTileBlue, x, y));
         		if (y == 1) {
         			tiles.get(tiles.size() - 1).setLetter('O');
         		}
@@ -656,9 +659,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 //        	}
 //        }
 
-        for (Cell cell: board.cells) {
-        	cells.add(cell);
-        }
+//        for (Cell cell: board.cells) {
+//        	cells.add(cell);
+//        }
         
 	}
 	
@@ -816,7 +819,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         
         // Calculate position of the light. Rotate and then push into the distance.
         Matrix.setIdentityM(mLightModelMatrix, 0);
-        Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, cubeZ);      
+        Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, tileZ);      
 //        Matrix.rotateM(mLightModelMatrix, 0, angleInDegrees, 0.0f, 1.0f, 0.0f);
         Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
                
@@ -824,24 +827,28 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         Matrix.multiplyMV(mLightPosInEyeSpace, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);                        
         
         // Draw the tiles.
-        for (Tile tile: tiles) {
-    		Matrix.setIdentityM(mModelMatrix, 0);
-    		Matrix.translateM(mModelMatrix, 0, tile.x, tile.y, cubeZ + tile.z);
-    		Matrix.rotateM(mModelMatrix, 0, tile.rotationY, 0.0f, 1.0f, 0.0f);
-    		Matrix.rotateM(mModelMatrix, 0, tile.rotationZ, 0.0f, 0.0f, 1.0f);
-    		Matrix.scaleM(mModelMatrix, 0, cubeXScaleFactor, cubeYScaleFactor,
-    				cubeZScaleFactor);
-    		tile.draw(mModelMatrix, 0);
+        if (board != null) {
+        	for (Tile tile: board.tiles) {
+        		Matrix.setIdentityM(mModelMatrix, 0);
+        		Matrix.translateM(mModelMatrix, 0, tile.x, tile.y, tileZ + tile.z);
+        		Matrix.rotateM(mModelMatrix, 0, tile.rotationY, 0.0f, 1.0f, 0.0f);
+        		Matrix.rotateM(mModelMatrix, 0, tile.rotationZ, 0.0f, 0.0f, 1.0f);
+        		Matrix.scaleM(mModelMatrix, 0, tileXScaleFactor, tileYScaleFactor,
+        				tileZScaleFactor);
+        		tile.draw(mModelMatrix);
+        	}
         }
         
         // Draw the cells.
-        for (Cell cell: cells) {
-    		Matrix.setIdentityM(mModelMatrix, 0);
-    		Matrix.translateM(mModelMatrix, 0, cell.x, cell.y, cubeZ - 0.25f);
-    		Matrix.rotateM(mModelMatrix, 0, cell.rotationY, 0.0f, 1.0f, 0.0f);
-    		Matrix.rotateM(mModelMatrix, 0, cell.rotationZ, 0.0f, 0.0f, 1.0f);
-    		Matrix.scaleM(mModelMatrix, 0, 0.5f, 0.5f, 0.125f);
-    		cell.draw(mModelMatrix, 4 * 6 * 6);
+        if (board != null) {
+        	for (Cell cell: board.cells) {
+        		Matrix.setIdentityM(mModelMatrix, 0);
+        		Matrix.translateM(mModelMatrix, 0, cell.x, cell.y, tileZ - 0.25f);
+        		Matrix.rotateM(mModelMatrix, 0, cell.rotationY, 0.0f, 1.0f, 0.0f);
+        		Matrix.rotateM(mModelMatrix, 0, cell.rotationZ, 0.0f, 0.0f, 1.0f);
+        		Matrix.scaleM(mModelMatrix, 0, 0.5f, 0.5f, 0.125f);
+        		cell.draw(mModelMatrix);
+        	}
         }
         
         // Change the shader program
@@ -865,22 +872,22 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         for (float x = 1; x < 3; x++) {
         	Line line;
         	line = new Line(this, x, x, x + 2, x, Line.COLOUR_RED);
-        	line.z = cubeZ + 0.2f;
+        	line.z = tileZ + 0.2f;
         	line.draw();
         	line = new Line(this, x, x, x, x + 2, Line.COLOUR_BLUE);
-        	line.z = cubeZ + 0.2f;
+        	line.z = tileZ + 0.2f;
         	line.draw();
         	line = new Line(this, x, x, x + 2, x + 2, Line.COLOUR_RED);
-        	line.z = cubeZ + 0.2f;
+        	line.z = tileZ + 0.2f;
         	line.draw();
         	line = new Line(this, -x, -x, -x - 2, -x - 2, Line.COLOUR_BLUE);
-        	line.z = cubeZ + 0.2f;
+        	line.z = tileZ + 0.2f;
         	line.draw();
         	line = new Line(this, x, x, x + 2, x - 2, Line.COLOUR_RED);
-        	line.z = cubeZ + 0.2f;
+        	line.z = tileZ + 0.2f;
         	line.draw();
         	line = new Line(this, x, x, x - 2, x + 2, Line.COLOUR_BLUE);
-        	line.z = cubeZ + 0.2f;
+        	line.z = tileZ + 0.2f;
         	line.draw();
         }
         
@@ -978,9 +985,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
      */
     public Tile getSelectedTile(PointF p) {
     	// TODO change this so it works for selecting board cells
-    	float dx = cubeXScaleFactor;
-    	float dy = cubeYScaleFactor;
-		for (Tile tile: tiles) {
+    	float dx = tileXScaleFactor;
+    	float dy = tileYScaleFactor;
+		for (Tile tile: board.tiles) {
 			if (p.x >= tile.x - dx && p.x <= tile.x + dx
 					&& p.y >= tile.y - dy && p.y <= tile.y + dy) {
 				return tile;

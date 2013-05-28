@@ -12,6 +12,9 @@ public class LogicControl {
 	private String two;
 	private String three;
 	
+	private int totalCorrect = 0;
+	private int width = 5;
+	
 	//total will be 
 	private String input [][] = new String[5][5];
 	
@@ -78,7 +81,30 @@ public class LogicControl {
 	public void getAndCheck(int indexRow,int indexColumn,String inputValue)
 	{
 		 input[indexRow][indexColumn] =inputValue;
-		 check();
+//		 check();
+		 check2();
+	}
+	
+	private void check2() {
+		String answer = "";
+		
+		for (int i = 0; i < 1; i++) {	// Row index
+			for (int j = 0; j < width - 2; j++) {	// Column index
+				answer = "";
+				for (int k = 0; k < 3; k++) {	// Get 3 cells
+					if (input[i][j + k] != null) {
+						answer += input[i][j + k];	
+					}
+				}
+				System.out.println(answer);
+				if (answer.equalsIgnoreCase("SOS")) {
+					totalCorrect++;
+					System.out.println("Total correct "+totalCorrect);
+				} else {
+					System.out.println("No line starting at column " + j);
+				}
+			}
+		}
 	}
 	
 	public void check()
