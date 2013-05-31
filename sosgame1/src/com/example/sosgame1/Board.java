@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.util.Log;
 
 public class Board {
 
@@ -46,7 +47,34 @@ public class Board {
 		PointF p = boardToWorldXY(new Point(column, row));
 		tiles.add(new Tile(renderer, colour, p.x, p.y, letter));
 	}
+	
+	public Tile getTile(int row, int column) {
+		// Convert the board coordinates to world coordinates
+		PointF p = boardToWorldXY(new Point(column, row));
+		// TODO: Maybe use Collections to search
+		for (Tile tile: tiles) {
+			if (tile.x == p.x && tile.y == p.y) {
+				return tile;
+			}
+		}
+		return null;
+	}
 
+	public void addLine(Point start, Point end, int colour) {
+		PointF p1 = boardToWorldXY(new Point(start.x, start.y));
+		PointF p2 = boardToWorldXY(new Point(end.x, end.y));
+		Log.v("start", ""+start);
+		Log.v("p1", ""+p1);
+		Log.v("end", ""+end);
+		Log.v("p2", ""+p2);
+		lines.add(new Line(renderer, p1.x, p1.y, p2.x, p2.y, colour));
+	}
+	
+	public void addLine(int row1, int column1, int row2, int column2,
+			int colour) {
+		addLine(new Point(column1, row1), new Point(column2, row2), colour);
+	}
+	
 	public Point worldToBoardXY(Point p) {
 		return new Point(p.x + centreX, centreY - p.y);
 	}

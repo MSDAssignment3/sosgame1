@@ -73,15 +73,30 @@ public class MyGLSurfaceView extends GLSurfaceView
         gestureDetector = new GestureDetector(context, gestureListener);
         
         // Create the board
-        mRenderer.setBoard(new Board(mRenderer, 5, 5));
+        mRenderer.setBoard(new Board(mRenderer, 7, 7));
         
         // Add some tiles
-        for (int column = 1; column < 4; column++) {
-        	for (int row = 0; row < 5; row++) {
-        		mRenderer.board.addTile(row, column, Tile.COLOUR_BLUE, 'S');
-        	}
-        }
+//        for (int column = 1; column < 4; column++) {
+//        	for (int row = 0; row < 5; row++) {
+//        		mRenderer.board.addTile(row, column, Tile.COLOUR_BLUE, 'S');
+//        	}
+//        }
 
+        // For screenshot
+        mRenderer.board.addTile(2, 2, Tile.COLOUR_BLUE, 'S');
+        mRenderer.board.addTile(3, 3, Tile.COLOUR_RED, 'O');
+        mRenderer.board.addTile(4, 4, Tile.COLOUR_BLUE, 'S');
+        mRenderer.board.addLine(new Point(4,4), new Point(2,2), Line.COLOUR_RED);
+        mRenderer.board.addTile(2, 0, Tile.COLOUR_BLUE, 'S');
+        mRenderer.board.addTile(2, 1, Tile.COLOUR_RED, 'O');
+        mRenderer.board.addLine(new Point(0,2), new Point(2,2), Line.COLOUR_BLUE);
+        mRenderer.board.addTile(3, 1, Tile.COLOUR_BLUE, 'S');
+        mRenderer.board.addTile(0, 5, Tile.COLOUR_RED, 'O');
+        mRenderer.board.addTile(1, 1, Tile.COLOUR_BLUE, 'S');
+        mRenderer.board.addLine(new Point(1,1), new Point(1,3), Line.COLOUR_RED);
+        mRenderer.board.addTile(3, 5, Tile.COLOUR_RED, 'O');
+        mRenderer.board.addTile(2, 6, Tile.COLOUR_BLUE, 'S');
+        mRenderer.board.addLine(4, 4, 2, 6, Line.COLOUR_BLUE);
         
     }
     

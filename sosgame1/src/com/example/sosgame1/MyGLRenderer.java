@@ -197,14 +197,27 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	 * ModelView calculation for touch to world coordinate calculations.*/
 	public final float tileZ = -2f;
 	
-	/** Scales the cube x dimensions. */
+	/** Scales the tile x dimensions. */
 	public final float tileXScaleFactor = 0.45f;
 	
-	/** Scales the cube y dimensions. */
+	/** Scales the tile y dimensions. */
 	public final float tileYScaleFactor = 0.45f;
 	
-	/** Scales the cube z dimensions. */
+	/** Scales the tile z dimensions. */
 	public final float tileZScaleFactor = 0.125f;
+	
+	/** This is used to set the cell z coordinate and also for the 
+	 * ModelView calculation for touch to world coordinate calculations.*/
+	public final float cellZ = -2.25f;
+	
+	/** Scales the cell x dimensions. */
+	public final float cellXScaleFactor = 0.5f;
+	
+	/** Scales the cell y dimensions. */
+	public final float cellYScaleFactor = 0.5f;
+	
+	/** Scales the cell z dimensions. */
+	public final float cellZScaleFactor = 0.125f;
 	
 	public static final int textureOffsetTileBlue = 0;
 	public static final int textureOffsetTileRed = 2 * 6 * 6;
@@ -640,7 +653,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 //		.order(ByteOrder.nativeOrder()).asFloatBuffer();
 //		cellTextureCoordinates.put(cellTextureCoordinateData).position(0);
 		
-		RenderingData.initData();
+//		RenderingData.initData();
 		
 		// Make some tiles
         for (float x = -4; x < 5; x++) {
@@ -685,6 +698,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 				lookX, lookY, lookZ, upX, upY, upZ);		
 	}
 	
+	@Override
 	public void onSurfaceCreated(GL10 glUnused, EGLConfig config) 
 	{
 		// Set the background clear color to black.
@@ -734,14 +748,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		mProgramHandle = ShaderHelper.createAndLinkProgram(vertexShaderHandle, fragmentShaderHandle, 
 				new String[] {"a_Position",  "a_Color", "a_Normal", "a_TexCoordinate"});								                                							       
         
-        // Define a simple shader program for our point.
-        final String pointVertexShader = getShader(R.raw.point_vertex_shader);        	       
-        final String pointFragmentShader = getShader(R.raw.point_fragment_shader);
-        
-        final int pointVertexShaderHandle = ShaderHelper.compileShader(GLES20.GL_VERTEX_SHADER, pointVertexShader);
-        final int pointFragmentShaderHandle = ShaderHelper.compileShader(GLES20.GL_FRAGMENT_SHADER, pointFragmentShader);
-        mPointProgramHandle = ShaderHelper.createAndLinkProgram(pointVertexShaderHandle, pointFragmentShaderHandle, 
-        		new String[] {"a_Position"}); 
+		// TODO: Delete point stuff.
+		// Define a simple shader program for our point.
+//        final String pointVertexShader = getShader(R.raw.point_vertex_shader);        	       
+//        final String pointFragmentShader = getShader(R.raw.point_fragment_shader);
+//        
+//        final int pointVertexShaderHandle = ShaderHelper.compileShader(GLES20.GL_VERTEX_SHADER, pointVertexShader);
+//        final int pointFragmentShaderHandle = ShaderHelper.compileShader(GLES20.GL_FRAGMENT_SHADER, pointFragmentShader);
+//        mPointProgramHandle = ShaderHelper.createAndLinkProgram(pointVertexShaderHandle, pointFragmentShaderHandle, 
+//        		new String[] {"a_Position"}); 
         
         // Define a shader program without texture.
         final String noTexVertexShader = getShader(R.raw.per_pixel_vertex_shader_no_tex);        	       
@@ -755,10 +770,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         // Load the texture
         cubeTextureDataHandle = TextureHelper.loadTexture(mActivityContext,
         		R.drawable.textures3);
-        cellTextureDataHandle = TextureHelper.loadTexture(mActivityContext,
-        		R.drawable.board1);
+//        cellTextureDataHandle = TextureHelper.loadTexture(mActivityContext,
+//        		R.drawable.board1);
 	}	
-		
+	
+	@Override
 	public void onSurfaceChanged(GL10 glUnused, int width, int height) 
 	{
 		// Set the OpenGL viewport to the same size as the surface.
@@ -790,11 +806,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
 	}	
 
+	@Override
 	public void onDrawFrame(GL10 glUnused) 
 	{
+		// Background colour
+		GLES20.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+		
 		// Clear the screen and the depth buffer
-		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);			        
-                
+		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+		
         // Set our per-vertex lighting program.
         GLES20.glUseProgram(mProgramHandle);
         
@@ -826,8 +846,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         Matrix.multiplyMV(mLightPosInWorldSpace, 0, mLightModelMatrix, 0, mLightPosInModelSpace, 0);
         Matrix.multiplyMV(mLightPosInEyeSpace, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);                        
         
-        // Draw the tiles.
         if (board != null) {
+        	// Draw the tiles.
         	for (Tile tile: board.tiles) {
         		Matrix.setIdentityM(mModelMatrix, 0);
         		Matrix.translateM(mModelMatrix, 0, tile.x, tile.y, tileZ + tile.z);
@@ -837,16 +857,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         				tileZScaleFactor);
         		tile.draw(mModelMatrix);
         	}
-        }
         
         // Draw the cells.
-        if (board != null) {
         	for (Cell cell: board.cells) {
         		Matrix.setIdentityM(mModelMatrix, 0);
-        		Matrix.translateM(mModelMatrix, 0, cell.x, cell.y, tileZ - 0.25f);
+        		Matrix.translateM(mModelMatrix, 0, cell.x, cell.y, cellZ);
         		Matrix.rotateM(mModelMatrix, 0, cell.rotationY, 0.0f, 1.0f, 0.0f);
         		Matrix.rotateM(mModelMatrix, 0, cell.rotationZ, 0.0f, 0.0f, 1.0f);
-        		Matrix.scaleM(mModelMatrix, 0, 0.5f, 0.5f, 0.125f);
+        		Matrix.scaleM(mModelMatrix, 0, cellXScaleFactor, cellYScaleFactor,
+        				cellZScaleFactor);
         		cell.draw(mModelMatrix);
         	}
         }
@@ -869,27 +888,33 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         mNormalHandle = GLES20.glGetAttribLocation(noTexProgramHandle, "a_Normal"); 
 
         // Draw the lines
-        for (float x = 1; x < 3; x++) {
-        	Line line;
-        	line = new Line(this, x, x, x + 2, x, Line.COLOUR_RED);
-        	line.z = tileZ + 0.2f;
-        	line.draw();
-        	line = new Line(this, x, x, x, x + 2, Line.COLOUR_BLUE);
-        	line.z = tileZ + 0.2f;
-        	line.draw();
-        	line = new Line(this, x, x, x + 2, x + 2, Line.COLOUR_RED);
-        	line.z = tileZ + 0.2f;
-        	line.draw();
-        	line = new Line(this, -x, -x, -x - 2, -x - 2, Line.COLOUR_BLUE);
-        	line.z = tileZ + 0.2f;
-        	line.draw();
-        	line = new Line(this, x, x, x + 2, x - 2, Line.COLOUR_RED);
-        	line.z = tileZ + 0.2f;
-        	line.draw();
-        	line = new Line(this, x, x, x - 2, x + 2, Line.COLOUR_BLUE);
-        	line.z = tileZ + 0.2f;
-        	line.draw();
+        if (board != null) {
+        	for (Line line: board.lines) {
+        		line.draw();
+        	}
         }
+        
+//        for (float x = 1; x < 3; x++) {
+//        	Line line;
+//        	line = new Line(this, x, x, x + 2, x, Line.COLOUR_RED);
+//        	line.z = tileZ + 0.2f;
+//        	line.draw();
+//        	line = new Line(this, x, x, x, x + 2, Line.COLOUR_BLUE);
+//        	line.z = tileZ + 0.2f;
+//        	line.draw();
+//        	line = new Line(this, x, x, x + 2, x + 2, Line.COLOUR_RED);
+//        	line.z = tileZ + 0.2f;
+//        	line.draw();
+//        	line = new Line(this, -x, -x, -x - 2, -x - 2, Line.COLOUR_BLUE);
+//        	line.z = tileZ + 0.2f;
+//        	line.draw();
+//        	line = new Line(this, x, x, x + 2, x - 2, Line.COLOUR_RED);
+//        	line.z = tileZ + 0.2f;
+//        	line.draw();
+//        	line = new Line(this, x, x, x - 2, x + 2, Line.COLOUR_BLUE);
+//        	line.z = tileZ + 0.2f;
+//        	line.draw();
+//        }
         
 		GLES20.glDisable(GLES20.GL_BLEND);
 	}				
@@ -978,7 +1003,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         return result;
     }
     
-    /** Takes a PointF holding world x, y coordinates and searches for a cube
+    /** Takes a PointF holding world x, y coordinates and searches for a tile
      * which covers those coordinates.
      * @param p The coordinates in the world space.
      * @return A Tile object.
@@ -991,6 +1016,24 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 			if (p.x >= tile.x - dx && p.x <= tile.x + dx
 					&& p.y >= tile.y - dy && p.y <= tile.y + dy) {
 				return tile;
+			}
+		}
+		return null;
+    }
+    
+    /** Takes a PointF holding world x, y coordinates and searches for a cell
+     * which covers those coordinates.
+     * @param p The coordinates in the world space.
+     * @return A Cell object.
+     */
+    public Cell getSelectedCell(PointF p) {
+    	// TODO change this so it works for selecting board cells
+    	float dx = cellXScaleFactor;
+    	float dy = cellYScaleFactor;
+		for (Cell cell: board.cells) {
+			if (p.x >= cell.x - dx && p.x <= cell.x + dx
+					&& p.y >= cell.y - dy && p.y <= cell.y + dy) {
+				return cell;
 			}
 		}
 		return null;

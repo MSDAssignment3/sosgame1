@@ -3,6 +3,7 @@ package com.example.sosgame1;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.util.Log;
 
 public class Line extends Cube {
 
@@ -29,6 +30,7 @@ public class Line extends Cube {
 		this.endX = endX;
 		this.endY = endY;
 		this.rotationX = colour;
+		z = renderer.tileZ + 0.2f;
 	}
 	
 	// TODO: Constructor taking start and end points or centre and length?
@@ -52,7 +54,8 @@ public class Line extends Cube {
 			y = startY;
 		} else {
 			// Diagonal line
-			if (endY > startY) {
+			if (endY > startY && endX > startX
+					|| endY < startY && endX < startX) {
 				rotationZ = 45;
 			} else {
 				rotationZ = -45;
@@ -63,8 +66,8 @@ public class Line extends Cube {
 		}
 		Matrix.setIdentityM(modelMatrix, 0);
 		Matrix.translateM(modelMatrix, 0, x, y, z);
-		Matrix.rotateM(modelMatrix, 0, rotationX, 1.0f, 0.0f, 0.0f);
 		Matrix.rotateM(modelMatrix, 0, rotationZ, 0.0f, 0.0f, 1.0f);
+		Matrix.rotateM(modelMatrix, 0, rotationX, 1.0f, 0.0f, 0.0f);
 		Matrix.scaleM(modelMatrix, 0, scaleFactorX, scaleFactorY, 0.10f);
 		
 		// Pass in the position information
