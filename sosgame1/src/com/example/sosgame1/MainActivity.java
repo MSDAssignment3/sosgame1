@@ -67,9 +67,9 @@ public class MainActivity extends Activity implements OnClickListener,
 	}
 
 	public void onClick(View v) {
+		LayoutInflater inflater = getLayoutInflater();
 		switch (v.getId()) {
 		case R.id.btnView:
-			LayoutInflater inflater = getLayoutInflater();
 			viewAdjustView = inflater.inflate(R.layout.view_adjust, null);
 			if (viewAdjustView != null) {
 				mainView.addView(viewAdjustView);
@@ -106,8 +106,9 @@ public class MainActivity extends Activity implements OnClickListener,
 			}
 			break;
 		case R.id.button2:
+			viewAdjustView = inflater.inflate(R.layout.splash_page, null); /////BEA
 			if (viewAdjustView != null) {
-				mainView.removeView(viewAdjustView);
+				mainView.addView(viewAdjustView);
 			}
 			break;
 		}
