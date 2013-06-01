@@ -16,6 +16,7 @@ public class Board {
 	public ArrayList<Cell> cells = new ArrayList<Cell>();
 	public ArrayList<Tile> tiles = new ArrayList<Tile>();
 	public ArrayList<Line> lines = new ArrayList<Line>();
+	public ArrayList<Tile> tempTiles = new ArrayList<Tile>();
 	
 	public Board(MyGLRenderer renderer) {
 		this.renderer = renderer;

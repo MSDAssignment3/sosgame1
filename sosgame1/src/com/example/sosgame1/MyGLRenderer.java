@@ -137,8 +137,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	/** This is a handle to the cell texture data. */
 	public int cellTextureDataHandle;
 	
-	/** Stores the tile objects. */
-	public ArrayList<Tile> tiles = new ArrayList<Tile>();
+//	/** Stores the tile objects. */
+//	public ArrayList<Tile> tiles = new ArrayList<Tile>();
 	
 	/** Stores the board cell objects. */
 	public ArrayList<Cell> cells = new ArrayList<Cell>();
@@ -655,15 +655,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		
 //		RenderingData.initData();
 		
-		// Make some tiles
-        for (float x = -4; x < 5; x++) {
-        	for (float y = -4; y < 5; y++) {
-        		tiles.add(new Tile(this, textureOffsetTileBlue, x, y));
-        		if (y == 1) {
-        			tiles.get(tiles.size() - 1).setLetter('O');
-        		}
-        	}
-        }
+//		// Make some tiles
+//        for (float x = -4; x < 5; x++) {
+//        	for (float y = -4; y < 5; y++) {
+//        		tiles.add(new Tile(this, textureOffsetTileBlue, x, y));
+//        		if (y == 1) {
+//        			tiles.get(tiles.size() - 1).setLetter('O');
+//        		}
+//        	}
+//        }
 		
 //        // Make some cells
 //        for (float x = -5; x < 6; x++) {
@@ -858,7 +858,18 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         		tile.draw(mModelMatrix);
         	}
         
-        // Draw the cells.
+        	// Draw the temporary tiles.
+        	for (Tile tile: board.tempTiles) {
+        		Matrix.setIdentityM(mModelMatrix, 0);
+        		Matrix.translateM(mModelMatrix, 0, tile.x, tile.y, tileZ + tile.z);
+        		Matrix.rotateM(mModelMatrix, 0, tile.rotationY, 0.0f, 1.0f, 0.0f);
+        		Matrix.rotateM(mModelMatrix, 0, tile.rotationZ, 0.0f, 0.0f, 1.0f);
+        		Matrix.scaleM(mModelMatrix, 0, tileXScaleFactor, tileYScaleFactor,
+        				tileZScaleFactor);
+        		tile.draw(mModelMatrix);
+        	}
+        
+        	// Draw the cells.
         	for (Cell cell: board.cells) {
         		Matrix.setIdentityM(mModelMatrix, 0);
         		Matrix.translateM(mModelMatrix, 0, cell.x, cell.y, cellZ);
@@ -1034,6 +1045,24 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 			if (p.x >= cell.x - dx && p.x <= cell.x + dx
 					&& p.y >= cell.y - dy && p.y <= cell.y + dy) {
 				return cell;
+			}
+		}
+		return null;
+    }
+    
+    /** Takes a PointF holding world x, y coordinates and searches for a tile
+     * which covers those coordinates.
+     * @param p The coordinates in the world space.
+     * @return A Tile object.
+     */
+    public Tile getSelectedTempTile(PointF p) {
+    	// TODO change this so it works for selecting board cells
+    	float dx = tileXScaleFactor;
+    	float dy = tileYScaleFactor;
+		for (Tile tile: board.tempTiles) {
+			if (p.x >= tile.x - dx && p.x <= tile.x + dx
+					&& p.y >= tile.y - dy && p.y <= tile.y + dy) {
+				return tile;
 			}
 		}
 		return null;

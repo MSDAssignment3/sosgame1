@@ -55,6 +55,20 @@ public class Cube {
 	}
 
 	/** Setter required for object animation of this property.
+	 * @param x X coordinate.
+	 */
+	public void setX(float x) {
+		this.x = x;
+	}
+
+	/** Setter required for object animation of this property.
+	 * @param y Y coordinate.
+	 */
+	public void setY(float y) {
+		this.y = y;
+	}	
+	
+	/** Setter required for object animation of this property.
 	 * @param z Z coordinate.
 	 */
 	protected void setZ(float z) {
@@ -117,6 +131,6 @@ public class Cube {
         
         // Draw the cube.
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 36);                               
-	}	
-	
+	}
+
 }

@@ -24,6 +24,7 @@ public class MyGLSurfaceView extends GLSurfaceView
 
 	public MyGLRenderer mRenderer;
 	private ObjectAnimator anim;
+	private ObjectAnimator anim2;
 	private boolean animationInProgress = false;
     
 	/** Handles pinch gestures for zooming. */
@@ -36,10 +37,14 @@ public class MyGLSurfaceView extends GLSurfaceView
 	private SimpleOnGestureListener gestureListener;
 	
 	private GestureDetector gestureDetector;
-	private float minScale;
-	private float maxScale;
 	
     private LogicControl controller = null;
+    
+    private static final int MODE_IDLE = 0;
+    private static final int MODE_WAIT_FOR_CHOICE = 1;
+    private int mode = MODE_IDLE;
+    
+    private Cell tappedCell = null;
 
     public MyGLSurfaceView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -153,14 +158,70 @@ public class MyGLSurfaceView extends GLSurfaceView
         			mRenderer.tileZ + mRenderer.tileZScaleFactor);
         	Tile foo = mRenderer.getSelectedTile(p);
 
+        	switch (mode) {
+        	case MODE_IDLE:
+            	PointF p2 = mRenderer.getWorldXY(x, y, 
+            			mRenderer.cellZ + mRenderer.cellZScaleFactor);
+            	tappedCell = mRenderer.getSelectedCell(p2);
+        		
+            	if (tappedCell != null) {
+            		mode = MODE_WAIT_FOR_CHOICE;
+            		mRenderer.board.tempTiles.clear();
+            		Tile sTile = new Tile(mRenderer,
+            				Tile.COLOUR_BLUE, tappedCell.x - mRenderer.tileXScaleFactor,
+            				tappedCell.y, 'S');
+            		sTile.z += mRenderer.tileZScaleFactor * 2;
+            		mRenderer.board.tempTiles.add(sTile);
+            		Tile oTile = new Tile(mRenderer,
+            				Tile.COLOUR_BLUE, tappedCell.x + mRenderer.tileXScaleFactor,
+            				tappedCell.y, 'O');
+            		oTile.z += mRenderer.tileZScaleFactor * 2;
+            		mRenderer.board.tempTiles.add(oTile);
+            		requestRender();
+            	}
+        		break;
+        	case MODE_WAIT_FOR_CHOICE:
+            	PointF p3 = mRenderer.getWorldXY(x, y, 
+            			mRenderer.tileZ + mRenderer.tileZScaleFactor * 2);
+            	Tile chosenTile = mRenderer.getSelectedTempTile(p3);
+
+            	if (chosenTile != null) {
+            		mRenderer.board.tiles.add(chosenTile);
+            		mRenderer.board.tempTiles.clear();
+                	animationInProgress = true;
+            		// Start continuous screen updates for duration of animation
+            		setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+            		AnimatorSet animSet = new AnimatorSet();
+            		anim = ObjectAnimator.ofFloat(chosenTile, "z",
+            				chosenTile.z, 
+            				chosenTile.z - mRenderer.tileZScaleFactor * 2);
+            		anim.setDuration(300);
+            		anim2 = ObjectAnimator.ofFloat(chosenTile, "x",
+            				chosenTile.x, tappedCell.x);
+            		anim2.setDuration(300);
+            		anim.addListener(new AnimatorListenerAdapter() {
+            			public void onAnimationEnd(Animator animation) {
+            				// Stop continuous screen updates to save battery
+            				setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+            				animationInProgress = false;
+            			}
+            		});
+            		animSet.playTogether(anim, anim2);
+            		animSet.start();
+            	}
+            	requestRender();
+            	mode = MODE_IDLE;
+        		break;
+        	}
+        	
         	if (foo != null) {
             	
             	// Test calling Ar's method
-            	if (Math.abs(foo.x) < 3 && Math.abs(foo.y) < 3) {
-            		Point pt = new Point((int) foo.x, (int) foo.y);
-            		pt = mRenderer.board.worldToBoardXY(pt);
-            		controller.getAndCheck(pt.y, pt.x, "" + foo.letter);
-            	}
+//            	if (Math.abs(foo.x) < 3 && Math.abs(foo.y) < 3) {
+//            		Point pt = new Point((int) foo.x, (int) foo.y);
+//            		pt = mRenderer.board.worldToBoardXY(pt);
+//            		controller.getAndCheck(pt.y, pt.x, "" + foo.letter);
+//            	}
 
             	animationInProgress = true;
         		// Start continuous screen updates for duration of animation
