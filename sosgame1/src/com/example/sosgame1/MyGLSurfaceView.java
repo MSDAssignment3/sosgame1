@@ -187,7 +187,6 @@ public class MyGLSurfaceView extends GLSurfaceView
 
             	if (chosenTile != null) {
             		mRenderer.board.tiles.add(chosenTile);
-            		mRenderer.board.tempTiles.clear();
                 	animationInProgress = true;
             		// Start continuous screen updates for duration of animation
             		setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
@@ -204,11 +203,13 @@ public class MyGLSurfaceView extends GLSurfaceView
             				// Stop continuous screen updates to save battery
             				setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
             				animationInProgress = false;
+            				requestRender();
             			}
             		});
             		animSet.playTogether(anim, anim2);
             		animSet.start();
             	}
+        		mRenderer.board.tempTiles.clear();
             	requestRender();
             	mode = MODE_IDLE;
         		break;
@@ -217,11 +218,11 @@ public class MyGLSurfaceView extends GLSurfaceView
         	if (foo != null) {
             	
             	// Test calling Ar's method
-//            	if (Math.abs(foo.x) < 3 && Math.abs(foo.y) < 3) {
-//            		Point pt = new Point((int) foo.x, (int) foo.y);
-//            		pt = mRenderer.board.worldToBoardXY(pt);
-//            		controller.getAndCheck(pt.y, pt.x, "" + foo.letter);
-//            	}
+            	if (Math.abs(foo.x) < 3 && Math.abs(foo.y) < 3) {
+            		PointF pt = new PointF(foo.x, foo.y);
+            		Point pt2 = mRenderer.board.worldToBoardXY(pt);
+            		controller.getAndCheck(pt2.y, pt2.x, "" + foo.letter);
+            	}
 
             	animationInProgress = true;
         		// Start continuous screen updates for duration of animation

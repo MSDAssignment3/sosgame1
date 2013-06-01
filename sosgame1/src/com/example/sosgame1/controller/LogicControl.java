@@ -80,9 +80,11 @@ public class LogicControl {
 	
 	public void getAndCheck(int indexRow,int indexColumn,String inputValue)
 	{
-		 input[indexRow][indexColumn] =inputValue;
-//		 check();
-		 check2();
+		if (indexRow < width && indexColumn < width) {
+			input[indexRow][indexColumn] =inputValue;
+//			check();
+			check2();
+		}
 	}
 	
 	private void check2() {

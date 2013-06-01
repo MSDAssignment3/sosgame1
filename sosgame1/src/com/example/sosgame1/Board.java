@@ -1,10 +1,8 @@
 package com.example.sosgame1;
 
 import java.util.ArrayList;
-
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.util.Log;
 
 public class Board {
 
@@ -16,18 +14,31 @@ public class Board {
 	public ArrayList<Cell> cells = new ArrayList<Cell>();
 	public ArrayList<Tile> tiles = new ArrayList<Tile>();
 	public ArrayList<Line> lines = new ArrayList<Line>();
+	
+	/** Holds the tiles displayed for user selection */
 	public ArrayList<Tile> tempTiles = new ArrayList<Tile>();
 	
+	/** Simple constructor.
+	 * @param renderer Reference to the renderer.
+	 */
 	public Board(MyGLRenderer renderer) {
 		this.renderer = renderer;
-		// foobar just testing
 	}
 	
+	/** Constructor taking board dimensions.
+	 * @param renderer Reference to the renderer.
+	 * @param sizeX Board x dimension = number of columns.
+	 * @param sizeY Board y dimension = number of rows.
+	 */
 	public Board(MyGLRenderer renderer, int sizeX, int sizeY) {
 		this.renderer = renderer;
 		reset(sizeX, sizeY);
 	}
 	
+	/** Reset the board.
+	 * @param sizeX Board x dimension = number of columns.
+	 * @param sizeY Board y dimension = number of rows.
+	 */
 	public void reset(int sizeX, int sizeY) {
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
@@ -44,11 +55,22 @@ public class Board {
 		}
 	}
 
+	/** Add a tile.
+	 * @param row Row index starting from zero.
+	 * @param column Column index starting from zero
+	 * @param colour Either Tile.COLOUR_RED or Tile.COLOUR_BLUE.
+	 * @param letter Either 'S' or 'O'.
+	 */
 	public void addTile(int row, int column, int colour, char letter) {
 		PointF p = boardToWorldXY(new Point(column, row));
 		tiles.add(new Tile(renderer, colour, p.x, p.y, letter));
 	}
 	
+	/** Get a tile.
+	 * @param row Row index starting from zero.
+	 * @param column Column index starting from zero
+	 * @return A Tile object.
+	 */
 	public Tile getTile(int row, int column) {
 		// Convert the board coordinates to world coordinates
 		PointF p = boardToWorldXY(new Point(column, row));
@@ -61,25 +83,41 @@ public class Board {
 		return null;
 	}
 
+	/** Add a line.
+	 * @param start Start Point with x = column and y = row.
+	 * @param end End Point with x = column and y = row.
+	 * @param colour Either Line.COLOUR_RED or Line.COLOUR_BLUE.
+	 */
 	public void addLine(Point start, Point end, int colour) {
 		PointF p1 = boardToWorldXY(new Point(start.x, start.y));
 		PointF p2 = boardToWorldXY(new Point(end.x, end.y));
-		Log.v("start", ""+start);
-		Log.v("p1", ""+p1);
-		Log.v("end", ""+end);
-		Log.v("p2", ""+p2);
 		lines.add(new Line(renderer, p1.x, p1.y, p2.x, p2.y, colour));
 	}
 	
+	/** Add a line.
+	 * @param row1 Start row index.
+	 * @param column1 Start column index.
+	 * @param row2 End row index.
+	 * @param column2 End column index.
+	 * @param colour Either Line.COLOUR_RED or Line.COLOUR_BLUE.
+	 */
 	public void addLine(int row1, int column1, int row2, int column2,
 			int colour) {
 		addLine(new Point(column1, row1), new Point(column2, row2), colour);
 	}
 	
-	public Point worldToBoardXY(Point p) {
-		return new Point(p.x + centreX, centreY - p.y);
+	/** Convert a PointF in the 3D world space to a Point in the board array.
+	 * @param p A PointF with 3D world x, y coordinates.
+	 * @return A Point with x = column and y = row.
+	 */
+	public Point worldToBoardXY(PointF p) {
+		return new Point(Math.round(p.x) + centreX, centreY - Math.round(p.y));
 	}
 	
+	/** Convert a Point in the board array to a PointF in the 3D world space.
+	 * @param p A Point with x = column and y = row.
+	 * @return A PointF with 3D world x, y coordinates.
+	 */
 	public PointF boardToWorldXY(Point p) {
 		return new PointF(p.x - centreX, centreY - p.y);
 	}
