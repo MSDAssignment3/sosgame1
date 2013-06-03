@@ -230,8 +230,7 @@ public class MyGLSurfaceView extends GLSurfaceView
         		AnimatorSet animSet = new AnimatorSet();
         		ObjectAnimator zAnim = ObjectAnimator.ofFloat(foo, "z",
         				0, 1, 1, 0);
-        		// Slightly shorter than rotation to make sure z gets set to zero
-        		zAnim.setDuration(950);
+        		zAnim.setDuration(1000);
         		float start;
         		float end;
         		if (foo.rotationY == 0) {
@@ -249,6 +248,7 @@ public class MyGLSurfaceView extends GLSurfaceView
         				// Stop continuous screen updates to save battery
         				setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         				animationInProgress = false;
+        				requestRender();
         			}
         		});
         		animSet.playTogether(zAnim, anim);

@@ -18,10 +18,21 @@ public class Line extends Cube {
 	
 	private float[] modelMatrix = new float[16];
 
+	/** Simple line constructor.
+	 * @param renderer Reference to the renderer.
+	 */
 	public Line(MyGLRenderer renderer) {
 		super(renderer);
 	}
 	
+	/** Line constructor.
+	 * @param renderer Reference to the renderer.
+	 * @param startX Line start x coordinate.
+	 * @param startY Line start y coordinate.
+	 * @param endX Line end x coordinate.
+	 * @param endY Line end y coordinate.
+	 * @param colour Either Line.COLOUR_RED or Line.COLOUR_BLUE.
+	 */
 	public Line(MyGLRenderer renderer, float startX,
 			float startY, float endX, float endY, int colour) {
 		super(renderer);

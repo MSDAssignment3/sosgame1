@@ -881,7 +881,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         	}
         }
         
-        // Change the shader program
+        // Change the shader program to one that does not use textures
         GLES20.glUseProgram(noTexProgramHandle);
         // Enable alpha blending
         GLES20.glEnable(GLES20.GL_BLEND);
