@@ -11,12 +11,12 @@ public class Board {
 	private int sizeY = 5;
 	private int centreX = 2;
 	private int centreY = 2;
-	public ArrayList<Cell> cells = new ArrayList<Cell>();
-	public ArrayList<Tile> tiles = new ArrayList<Tile>();
+	public ArrayList<Cube> cells = new ArrayList<Cube>();
+	public ArrayList<Cube> tiles = new ArrayList<Cube>();
 	public ArrayList<Line> lines = new ArrayList<Line>();
 	
 	/** Holds the tiles displayed for user selection */
-	public ArrayList<Tile> tempTiles = new ArrayList<Tile>();
+	public ArrayList<Cube> tempTiles = new ArrayList<Cube>();
 	
 	/** Simple constructor.
 	 * @param renderer Reference to the renderer.
@@ -75,9 +75,9 @@ public class Board {
 		// Convert the board coordinates to world coordinates
 		PointF p = boardToWorldXY(new Point(column, row));
 		// TODO: Maybe use Collections to search
-		for (Tile tile: tiles) {
+		for (Cube tile: tiles) {
 			if (tile.x == p.x && tile.y == p.y) {
-				return tile;
+				return (Tile) tile;
 			}
 		}
 		return null;

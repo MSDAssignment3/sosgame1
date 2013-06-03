@@ -156,13 +156,15 @@ public class MyGLSurfaceView extends GLSurfaceView
         if (!animationInProgress && !scaleDetector.isInProgress()) {
         	PointF p = mRenderer.getWorldXY(x, y, 
         			mRenderer.tileZ + mRenderer.tileZScaleFactor);
-        	Tile foo = mRenderer.getSelectedTile(p);
+//        	Tile foo = mRenderer.getSelectedTile(p);
+        	Tile foo = (Tile) mRenderer.getSelectedCube(p, mRenderer.board.tiles);
 
         	switch (mode) {
         	case MODE_IDLE:
             	PointF p2 = mRenderer.getWorldXY(x, y, 
             			mRenderer.cellZ + mRenderer.cellZScaleFactor);
-            	tappedCell = mRenderer.getSelectedCell(p2);
+//            	tappedCell = (Cell) mRenderer.getSelectedCell(p2);
+            	tappedCell = (Cell) mRenderer.getSelectedCube(p2, mRenderer.board.cells);
         		
             	if (tappedCell != null) {
             		mode = MODE_WAIT_FOR_CHOICE;
@@ -183,7 +185,12 @@ public class MyGLSurfaceView extends GLSurfaceView
         	case MODE_WAIT_FOR_CHOICE:
             	PointF p3 = mRenderer.getWorldXY(x, y, 
             			mRenderer.tileZ + mRenderer.tileZScaleFactor * 2);
-            	Tile chosenTile = mRenderer.getSelectedTempTile(p3);
+//            	Tile chosenTile = mRenderer.getSelectedTempTile(p3);
+            	Tile chosenTile = (Tile) mRenderer.getSelectedCube(p3,
+            			mRenderer.board.tempTiles);
+//            	Tile anotherTile = mRenderer.getSelectedTempTile(p3);
+//            	Cube cube = (Cube) anotherTile;
+//            	Tile chosenTile = (Tile) cube;
 
             	if (chosenTile != null) {
             		mRenderer.board.tiles.add(chosenTile);

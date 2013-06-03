@@ -13,6 +13,9 @@ public class Cube {
 	protected float rotationX = 0;
 	protected float rotationY = 0;
 	protected float rotationZ = 0;
+	protected float scaleFactorX = 1;
+	protected float scaleFactorY = 1;
+	protected float scaleFactorZ = 1;
 	protected int textureOffset;
 
 	protected Cube(MyGLRenderer renderer) {
@@ -79,8 +82,6 @@ public class Cube {
 	 * http://www.learnopengles.com/android-lesson-two-ambient-and-diffuse-lighting/
 	 * @param ModelMatrix The model matrix which specifies translation, 
 	 * rotation and scale.
-	 * @param textureOffset Offset into texture coordinate buffer specifying 
-	 * texture to be painted on the cube faces.
 	 */
 	protected void draw(float[] ModelMatrix)
 	{		

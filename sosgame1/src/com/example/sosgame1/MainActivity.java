@@ -113,14 +113,29 @@ public class MainActivity extends Activity implements OnClickListener,
 		}
 	}
 
+	/** Scale a value to the range 0 to 100 given a min (scaled to zero) and 
+	 * a max value (scaled to 100). Used with progress bars with default 0 to
+	 * 100 range.
+	 * @param value The value to be scaled.
+	 * @param min Scale range minimum.
+	 * @param max Scale range maximum.
+	 * @return The value scaled to between zero and 100.
+	 */
 	private int toProgress(float value, float min, float max) {
 		return (int) ((value - min) / (max - min) * 100f);
 	}
 	
+	/** Scale a value between 0 and 100 to a value between min and max.
+	 * @param progress Value between 0 and 100.
+	 * @param min Scale range minimum.
+	 * @param max Scale range maximum.
+	 * @return The progress value scaled between min and max.
+	 */
 	private float fromProgress(int progress, float min, float max) {
 		return min + progress / 100f * (max - min);
 	}
 	
+	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
 		// Convert progress value to view parameters
@@ -176,11 +191,13 @@ public class MainActivity extends Activity implements OnClickListener,
 		myGLView.requestRender();
 	}
 
+	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
 		// TODO Auto-generated method stub
 		
 	}
 
+	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
 		// TODO Auto-generated method stub
 		

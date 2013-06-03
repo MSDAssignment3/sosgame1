@@ -2,22 +2,18 @@
 // TODO: Credit http://www.learnopengles.com/ License? Apache
 package com.example.sosgame1;
 
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-
 import android.content.Context;
 import android.graphics.PointF;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.opengl.Matrix;
-import android.os.SystemClock;
 import android.util.Log;
 
 /**
@@ -195,29 +191,29 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	
 	/** This is used to set the tile z coordinate and also for the 
 	 * ModelView calculation for touch to world coordinate calculations.*/
-	public final float tileZ = -2f;
+	public static final float tileZ = -2f;
 	
 	/** Scales the tile x dimensions. */
-	public final float tileXScaleFactor = 0.45f;
+	public static final float tileXScaleFactor = 0.45f;
 	
 	/** Scales the tile y dimensions. */
-	public final float tileYScaleFactor = 0.45f;
+	public static final float tileYScaleFactor = 0.45f;
 	
 	/** Scales the tile z dimensions. */
-	public final float tileZScaleFactor = 0.125f;
+	public static final float tileZScaleFactor = 0.125f;
 	
 	/** This is used to set the cell z coordinate and also for the 
 	 * ModelView calculation for touch to world coordinate calculations.*/
-	public final float cellZ = -2.25f;
+	public static final float cellZ = -2.25f;
 	
 	/** Scales the cell x dimensions. */
-	public final float cellXScaleFactor = 0.5f;
+	public static final float cellXScaleFactor = 0.5f;
 	
 	/** Scales the cell y dimensions. */
-	public final float cellYScaleFactor = 0.5f;
+	public static final float cellYScaleFactor = 0.5f;
 	
 	/** Scales the cell z dimensions. */
-	public final float cellZScaleFactor = 0.125f;
+	public static final float cellZScaleFactor = 0.125f;
 	
 	public static final int textureOffsetTileBlue = 0;
 	public static final int textureOffsetTileRed = 2 * 6 * 6;
@@ -848,7 +844,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         
         if (board != null) {
         	// Draw the tiles.
-        	for (Tile tile: board.tiles) {
+        	for (Cube tile: board.tiles) {
         		Matrix.setIdentityM(mModelMatrix, 0);
         		Matrix.translateM(mModelMatrix, 0, tile.x, tile.y, tileZ + tile.z);
         		Matrix.rotateM(mModelMatrix, 0, tile.rotationY, 0.0f, 1.0f, 0.0f);
@@ -859,7 +855,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         	}
         
         	// Draw the temporary tiles.
-        	for (Tile tile: board.tempTiles) {
+        	for (Cube tile: board.tempTiles) {
         		Matrix.setIdentityM(mModelMatrix, 0);
         		Matrix.translateM(mModelMatrix, 0, tile.x, tile.y, tileZ + tile.z);
         		Matrix.rotateM(mModelMatrix, 0, tile.rotationY, 0.0f, 1.0f, 0.0f);
@@ -870,7 +866,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         	}
         
         	// Draw the cells.
-        	for (Cell cell: board.cells) {
+        	for (Cube cell: board.cells) {
         		Matrix.setIdentityM(mModelMatrix, 0);
         		Matrix.translateM(mModelMatrix, 0, cell.x, cell.y, cellZ);
         		Matrix.rotateM(mModelMatrix, 0, cell.rotationY, 0.0f, 1.0f, 0.0f);
@@ -1014,58 +1010,89 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         return result;
     }
     
-    /** Takes a PointF holding world x, y coordinates and searches for a tile
-     * which covers those coordinates.
-     * @param p The coordinates in the world space.
-     * @return A Tile object.
-     */
-    public Tile getSelectedTile(PointF p) {
-    	// TODO change this so it works for selecting board cells
-    	float dx = tileXScaleFactor;
-    	float dy = tileYScaleFactor;
-		for (Tile tile: board.tiles) {
-			if (p.x >= tile.x - dx && p.x <= tile.x + dx
-					&& p.y >= tile.y - dy && p.y <= tile.y + dy) {
-				return tile;
+//    /** Takes a PointF holding world x, y coordinates and searches for a tile
+//     * which covers those coordinates.
+//     * @param p The coordinates in the world space.
+//     * @return A Tile object.
+//     */
+//    public Tile getSelectedTile(PointF p) {
+//    	float dx = tileXScaleFactor;
+//    	float dy = tileYScaleFactor;
+//		for (Tile tile: board.tiles) {
+////			dx = tile.scaleFactorX;
+////			dy = tile.scaleFactorY;
+//			if (p.x >= tile.x - dx && p.x <= tile.x + dx
+//					&& p.y >= tile.y - dy && p.y <= tile.y + dy) {
+//				return tile;
+//			}
+//		}
+//		return null;
+//    }
+    
+//    /** Takes a PointF holding world x, y coordinates and searches for a cell
+//     * which covers those coordinates.
+//     * @param p The coordinates in the world space.
+//     * @return A Cell object.
+//     */
+//    public Cube getSelectedCell(PointF p) {
+//    	float dx = cellXScaleFactor;
+//    	float dy = cellYScaleFactor;
+//		for (Cube cell: board.cells) {
+//			if (p.x >= cell.x - dx && p.x <= cell.x + dx
+//					&& p.y >= cell.y - dy && p.y <= cell.y + dy) {
+//				return cell;
+//			}
+//		}
+//		return null;
+//    }
+    
+    public Cube getSelectedCube(PointF p, ArrayList<Cube> cubes) {
+    	float dx;// = cellXScaleFactor;
+    	float dy;// = cellYScaleFactor;
+		for (Cube cube: cubes) {
+			dx = cube.scaleFactorX;
+			dy = cube.scaleFactorY;
+			if (p.x >= cube.x - dx && p.x <= cube.x + dx
+					&& p.y >= cube.y - dy && p.y <= cube.y + dy) {
+				return cube;
 			}
 		}
 		return null;
     }
     
-    /** Takes a PointF holding world x, y coordinates and searches for a cell
-     * which covers those coordinates.
-     * @param p The coordinates in the world space.
-     * @return A Cell object.
-     */
-    public Cell getSelectedCell(PointF p) {
-    	// TODO change this so it works for selecting board cells
-    	float dx = cellXScaleFactor;
-    	float dy = cellYScaleFactor;
-		for (Cell cell: board.cells) {
-			if (p.x >= cell.x - dx && p.x <= cell.x + dx
-					&& p.y >= cell.y - dy && p.y <= cell.y + dy) {
-				return cell;
-			}
-		}
-		return null;
-    }
+//    /** Takes a PointF holding world x, y coordinates and searches for a tile
+//     * which covers those coordinates.
+//     * @param p The coordinates in the world space.
+//     * @return A Tile object.
+//     */
+//    public Tile getSelectedTempTile(PointF p) {
+//    	float dx = tileXScaleFactor;
+//    	float dy = tileYScaleFactor;
+//		for (Tile tile: board.tempTiles) {
+//			if (p.x >= tile.x - dx && p.x <= tile.x + dx
+//					&& p.y >= tile.y - dy && p.y <= tile.y + dy) {
+//				return tile;
+//			}
+//		}
+//		return null;
+//    }
     
-    /** Takes a PointF holding world x, y coordinates and searches for a tile
-     * which covers those coordinates.
-     * @param p The coordinates in the world space.
-     * @return A Tile object.
-     */
-    public Tile getSelectedTempTile(PointF p) {
-    	// TODO change this so it works for selecting board cells
-    	float dx = tileXScaleFactor;
-    	float dy = tileYScaleFactor;
-		for (Tile tile: board.tempTiles) {
-			if (p.x >= tile.x - dx && p.x <= tile.x + dx
-					&& p.y >= tile.y - dy && p.y <= tile.y + dy) {
-				return tile;
-			}
-		}
-		return null;
-    }
+//    /** Takes a PointF holding world x, y coordinates and searches for a tile
+//     * which covers those coordinates.
+//     * @param p The coordinates in the world space.
+//     * @param tiles The collection of tiles to search.
+//     * @return A Tile object.
+//     */
+//    public Tile getSelectedTile2(PointF p, ArrayList<Tile> tiles) {
+//    	float dx = tileXScaleFactor;
+//    	float dy = tileYScaleFactor;
+//		for (Tile tile: tiles) {
+//			if (p.x >= tile.x - dx && p.x <= tile.x + dx
+//					&& p.y >= tile.y - dy && p.y <= tile.y + dy) {
+//				return tile;
+//			}
+//		}
+//		return null;
+//    }
     
 }
