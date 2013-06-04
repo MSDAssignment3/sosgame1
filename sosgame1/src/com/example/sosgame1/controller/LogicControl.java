@@ -1,4 +1,5 @@
 package com.example.sosgame1.controller;
+
 import java.io.BufferedReader;
 import java.io.Console;
 import java.io.IOException;
@@ -6,58 +7,24 @@ import java.io.InputStreamReader;
 
 //Class for game logic
 public class LogicControl {
-
 	
 	private String one;
 	private String two;
 	private String three;
-	
 	private int totalCorrect = 0;
-	private int width = 5;
-	
 	//total will be 
-	private String input [][] = new String[5][5];
-	
+	private String input [][] = new String[5][5];	
 	
 	public LogicControl()
 	{
 		
-	}
-   
-	public void sayHello()
-	{
-		System.out.println("Hello");
-	}
-	
-	public void readAndCheck()
-	{	 
-	  BufferedReader br = new BufferedReader(new InputStreamReader(System.in));	 
-	 for(int i=0;i<1;i++)
-	 {
-	  
-		 for(int j=0;j<5;j++)
-		 {
-			  try
-			  {
-			  System.out.println("Row"+(i+1)+"Column"+(j+1)+"Please enter value.");
-			  input[i][j] = br.readLine();			  
-			  }
-			  catch(IOException e)
-			  {
-				  System.out.println(e);
-			  }
-		 }
-		
-	   }
-	   
-	  check();
-	}	
+	}  
 	
 	
 	public void readCheck()
 	{	 
 	  BufferedReader br = new BufferedReader(new InputStreamReader(System.in));	 
-	for(int i=0;i<3;i++)
+	for(int i=0;i<25;i++)
 	{
 			  try
 			  {
@@ -81,107 +48,234 @@ public class LogicControl {
 	public void getAndCheck(int indexRow,int indexColumn,String inputValue)
 	{
 		 input[indexRow][indexColumn] =inputValue;
-//		 check();
-		 check2();
+		 checkHorizontally();
+		 checkVertically();
 	}
 	
-	private void check2() {
-		String answer = "";
-		
-		for (int i = 0; i < 1; i++) {	// Row index
-			for (int j = 0; j < width - 2; j++) {	// Column index
-				answer = "";
-				for (int k = 0; k < 3; k++) {	// Get 3 cells
-					if (input[i][j + k] != null) {
-						answer += input[i][j + k];	
-					}
-				}
-				System.out.println(answer);
-				if (answer.equalsIgnoreCase("SOS")) {
-					totalCorrect++;
-					System.out.println("Total correct "+totalCorrect);
-				} else {
-					System.out.println("No line starting at column " + j);
-				}
-			}
-		}
-	}
-	
-	public void check()
+	/**
+	 * For checking horizontally. 
+	 */
+	public void checkHorizontally()
 	{
-		int totalCorrect = 0;
 		int count =0;
 		String answer = "";
 		String lastAnswer = "";
 		
 		//total 25
-		for(int i=0;i<1;i++)   //checking horizontally
+		for(int i=0;i<5;i++)   //checking horizontally
 		{
 			answer = "";
-			for(int j=0;j<5;j++)  
+			//it will check 3 times for each row (for example (0,1,2),(1,2,3),(2,3,4))
+			for(int j=0;j<3;j++)  
 			{ 
-				if(input[i][j]!=null)
+				
+				switch(j)
 				{
-					answer += input[i][j].toString();	
-				}
-				count++;
-				if(count==3)  //check for every three cells
-				{
-					if(input[i][j]!=null)
+				
+				case(0):
+					for(int k=0;k<3;k++)
 					{
-						lastAnswer = input[i][j].toString();	//get it for reuse
+					if(input[i][k]!=null)
+					{
+						answer += input[i][k].toString();	
 					}
-					answer.trim();
-					System.out.println(answer);
-					if(answer.equalsIgnoreCase("SOS"))
-					{		
-						totalCorrect++;
-						System.out.println("Total correct "+totalCorrect);
-						count = 1; //reset counts	to 1					
+					count++;
+					if(count==3)  //check for every three cells
+					{					
+						answer.trim();						
+						if(answer.equalsIgnoreCase("SOS"))
+						{		
+							totalCorrect++;
+							System.out.println(answer+" Horizontally");
+							System.out.println("Total correct "+totalCorrect);											
+						}
+						else
+						{
+							//System.out.println("Incorrect0");
+						}		
+						
+						count = 0; //reset counts	to 0					
 						answer = "";
-						answer +=lastAnswer;						
 					}
-					else
+				  }
+				break;
+				
+				case(1):
+					for(int k=1;k<4;k++)
 					{
-						System.out.println("Incorrect");
+					if(input[i][k]!=null)
+					{
+						answer += input[i][k].toString();	
 					}
+					count++;
+					if(count==3)  //check for every three cells
+					{					
+						answer.trim();						
+						if(answer.equalsIgnoreCase("SOS"))
+						{		
+							totalCorrect++;
+							System.out.println(answer+" Horizontally");
+							System.out.println("Total correct "+totalCorrect);										
+						}
+						else
+						{
+							//System.out.println("Incorrect1");
+						}	
+						
+						count = 0; //reset counts	to 0					
+						answer = "";	
+					}
+				  }
+				break;
+				
+				case(2):
+					for(int k=2;k<5;k++)
+					{
+					if(input[i][k]!=null)
+					{
+						answer += input[i][k].toString();	
+					}
+					count++;
+					if(count==3)  //check for every three cells
+					{					
+						answer.trim();						
+						if(answer.equalsIgnoreCase("SOS"))
+						{		
+							totalCorrect++;
+							System.out.println(answer+" Horizontally");
+							System.out.println("Total correct "+totalCorrect);										
+						}
+						else
+						{
+							//System.out.println("Incorrect2");
+						}	
+						
+						count = 0; //reset counts	to 0					
+						answer = "";	
+					}
+				  }
+				break;
+				
 				}
+				
+										
+			}
+		}		
+		
+	}
+	
+
+	/**
+	 * For checking vertically. 
+	 */
+	public void checkVertically()
+	{		
+		int count =0;
+		String answer = "";
+		String lastAnswer = "";		
+		
+		for(int j=0;j<5;j++)   //checking vertically
+		{
+			answer = "";
+			//it will check 3 times for each column (for example (0,1,2),(1,2,3),(2,3,4))
+			for(int i=0;i<3;i++)  
+			{ 
+				
+				switch(i)
+				{
+				
+				case(0):
+					for(int k=0;k<3;k++)
+					{
+					if(input[k][j]!=null)
+					{
+						answer += input[k][j].toString();	
+					}
+					count++;
+					if(count==3)  //check for every three cells
+					{					
+						answer.trim();						
+						if(answer.equalsIgnoreCase("SOS"))
+						{		
+							totalCorrect++;
+							System.out.println(answer+" Vertically");
+							System.out.println("Total correct "+totalCorrect);											
+						}
+						else
+						{
+							//System.out.println("Incorrect0");
+						}		
+						
+						count = 0; //reset counts	to 0					
+						answer = "";
+					}
+				  }
+				break;
+				
+				case(1):
+					for(int k=1;k<4;k++)
+					{
+					if(input[k][j]!=null)
+					{
+						answer += input[k][j].toString();	
+					}
+					count++;
+					if(count==3)  //check for every three cells
+					{					
+						answer.trim();						
+						if(answer.equalsIgnoreCase("SOS"))
+						{		
+							totalCorrect++;
+							System.out.println(answer+" Vertically");
+							System.out.println("Total correct "+totalCorrect);										
+						}
+						else
+						{
+							//System.out.println("Incorrect1");
+						}	
+						
+						count = 0; //reset counts	to 0					
+						answer = "";	
+					}
+				  }
+				break;
+				
+				case(2):
+					for(int k=2;k<5;k++)
+					{
+					if(input[k][j]!=null)
+					{
+						answer += input[k][j].toString();	
+					}
+					count++;
+					if(count==3)  //check for every three cells
+					{					
+						answer.trim();						
+						if(answer.equalsIgnoreCase("SOS"))
+						{		
+							totalCorrect++;
+							System.out.println(answer+" Vertically");
+							System.out.println("Total correct "+totalCorrect);										
+						}
+						else
+						{
+							//System.out.println("Incorrect2");
+						}	
+						
+						count = 0; //reset counts	to 0					
+						answer = "";	
+					}
+				  }
+				break;
+				
+				}
+				
 										
 			}
 		}
-			
-//			//total 25
-//			for(int h=0;h<5;h++)   //checking vertically
-//			{
-//				answer = "";
-//				for(int v=0;v<5;v++)  
-//				{ 
-//					answer += input[v][h].toString();	
-//					count++;
-//					if(count==3)  //check for every three cells
-//					{
-//						lastAnswer = input[v][h].toString();	//get it for reuse
-//						answer.trim();
-//						System.out.println(answer);
-//						if(answer.equalsIgnoreCase("SOS"))
-//						{		
-//							totalCorrect++;
-//							System.out.println("Total correct "+totalCorrect);
-//							count = 1; //reset counts	to 1					
-//							answer = "";
-//							answer +=lastAnswer;						
-//						}
-//						else
-//						{
-//							System.out.println("Incorrect");
-//						}
-//					}
-//											
-//				}		
-//			
-//		}
-		
-	
-		
+				
 	}
+	
+	
 }
+
