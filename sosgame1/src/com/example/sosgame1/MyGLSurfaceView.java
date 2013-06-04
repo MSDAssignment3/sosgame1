@@ -78,7 +78,7 @@ public class MyGLSurfaceView extends GLSurfaceView
         gestureDetector = new GestureDetector(context, gestureListener);
         
         // Create the board
-        mRenderer.setBoard(new Board(mRenderer, 7, 7));
+        mRenderer.setBoard(new Board(mRenderer, 9, 9));
         
         // Add some tiles
 //        for (int column = 1; column < 4; column++) {

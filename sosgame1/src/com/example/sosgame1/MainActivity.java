@@ -20,6 +20,8 @@ package com.example.sosgame1;
 
 import com.example.sosgame1.MyGLSurfaceView;
 import com.example.sosgame1.controller.LogicControl;
+
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;
@@ -43,6 +45,7 @@ public class MainActivity extends Activity implements OnClickListener,
     private boolean isPanningX = false;
     private boolean isPanningY = false;
     private LogicControl controller = null;
+    private boolean rollCredits = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +57,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		mainView = (RelativeLayout) findViewById(R.id.rlMain);
 		((Button) findViewById(R.id.btnView)).setOnClickListener(this);
 		((Button) findViewById(R.id.button2)).setOnClickListener(this);
+		((Button) findViewById(R.id.btnCredits)).setOnClickListener(this);
 		myGLView = (MyGLSurfaceView) findViewById(R.id.myGLSurfaceView1);
 		// Pass controller instance to the GLSurfaceView
 		myGLView.setController(controller);
@@ -110,9 +114,60 @@ public class MainActivity extends Activity implements OnClickListener,
 				mainView.removeView(viewAdjustView);
 			}
 			break;
+		case R.id.btnCredits:
+			rollCredits = !rollCredits;
+			if (rollCredits) {
+				createCredits();
+				myGLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+			} else {
+				deleteCredits();
+				myGLView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+				myGLView.requestRender();
+			}
+			break;
 		}
 	}
 
+	private void createCredits() {
+        // Credits
+        Cube cube;
+        float size = 0.75f;
+        float posX = 1.5f;
+        float posY = -1f;
+        cube = new Cube(myGLView.mRenderer, MyGLRenderer.textureOffsetCredits, -posX, posY);
+        cube.z = 0f;
+        cube.scaleFactorX = size;
+        cube.scaleFactorY = size;
+        cube.scaleFactorZ = size / 4;
+        cube.rotationY = 0;
+        myGLView.mRenderer.board.creditsCubes.add(cube);
+        cube = new Cube(myGLView.mRenderer, MyGLRenderer.textureOffsetCredits, posX, posY);
+        cube.z = 0f;
+        cube.scaleFactorX = size;
+        cube.scaleFactorY = size;
+        cube.scaleFactorZ = size / 4;
+        cube.rotationY = 180;
+        myGLView.mRenderer.board.creditsCubes.add(cube);
+        cube = new Cube(myGLView.mRenderer, MyGLRenderer.textureOffsetCredits, 0, posY);
+        cube.z = -posX;
+        cube.scaleFactorX = size;
+        cube.scaleFactorY = size;
+        cube.scaleFactorZ = size / 4;
+        cube.rotationY = 90;
+        myGLView.mRenderer.board.creditsCubes.add(cube);
+        cube = new Cube(myGLView.mRenderer, MyGLRenderer.textureOffsetCredits, 0, posY);
+        cube.z = posX;
+        cube.scaleFactorX = size;
+        cube.scaleFactorY = size;
+        cube.scaleFactorZ = size / 4;
+        cube.rotationY = 270;
+        myGLView.mRenderer.board.creditsCubes.add(cube);        
+	}
+	
+	private void deleteCredits() {
+		myGLView.mRenderer.board.creditsCubes.clear();
+	}
+	
 	/** Scale a value to the range 0 to 100 given a min (scaled to zero) and 
 	 * a max value (scaled to 100). Used with progress bars with default 0 to
 	 * 100 range.

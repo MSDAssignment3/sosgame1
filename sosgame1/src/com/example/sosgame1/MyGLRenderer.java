@@ -14,6 +14,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.opengl.Matrix;
+import android.os.SystemClock;
 import android.util.Log;
 
 /**
@@ -158,7 +159,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	public float eyeY = -1.0f;
 	
 	/** Eye/camera z coordinate used in view matrix. */
-	public float eyeZ = 7.0f;
+//	public float eyeZ = 2.0f;	// 2.0 shows whole board for 5x5
+//	public float eyeZ = 3.5f;	// 3.5 shows whole board for 7x7
+	public float eyeZ = 5.5f;	// 2.0 shows whole board for 9x9
 	
 	/** Eye/camera x look coordinate used in view matrix. */
 	public float lookX = 0.0f;
@@ -191,7 +194,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	
 	/** This is used to set the tile z coordinate and also for the 
 	 * ModelView calculation for touch to world coordinate calculations.*/
-	public static final float tileZ = -2f;
+	public static final float tileZ = -3f;
 	
 	/** Scales the tile x dimensions. */
 	public static final float tileXScaleFactor = 0.45f;
@@ -204,7 +207,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	
 	/** This is used to set the cell z coordinate and also for the 
 	 * ModelView calculation for touch to world coordinate calculations.*/
-	public static final float cellZ = -2.25f;
+	public static final float cellZ = tileZ - 2 * tileZScaleFactor;
 	
 	/** Scales the cell x dimensions. */
 	public static final float cellXScaleFactor = 0.5f;
@@ -218,6 +221,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	public static final int textureOffsetTileBlue = 0;
 	public static final int textureOffsetTileRed = 2 * 6 * 6;
 	public static final int textureOffsetCell = 4 * 6 * 6;
+	public static final int textureOffsetCredits = 6 * 6 * 6;
 	
 	public Board board = null;
 	
@@ -621,6 +625,56 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 				1.0f, 0.5f,
 				0.5f, 1.0f,
 				1.0f, 1.0f,
+				1.0f, 0.5f,
+
+				// Textures for credits cubes
+				
+				// Front face
+				0.5f, 0.0f,
+				0.5f, 0.5f,
+				1.0f, 0.0f,
+				0.5f, 0.5f,
+				1.0f, 0.5f,
+				1.0f, 0.0f,				
+				
+				// Right face 
+				0.5f, 0.5f, 				
+				0.5f, 1.0f,
+				1.0f, 0.5f,
+				0.5f, 1.0f,
+				1.0f, 1.0f,
+				1.0f, 0.5f,	
+				
+				// Back face 
+				0.0f, 0.5f, 				
+				0.0f, 1.0f,
+				0.5f, 0.5f,
+				0.0f, 1.0f,
+				0.5f, 1.0f,
+				0.5f, 0.5f,	
+				
+				// Left face 
+				0.5f, 0.5f, 				
+				0.5f, 1.0f,
+				1.0f, 0.5f,
+				0.5f, 1.0f,
+				1.0f, 1.0f,
+				1.0f, 0.5f,	
+				
+				// Top face 
+				0.5f, 0.5f, 				
+				0.5f, 1.0f,
+				1.0f, 0.5f,
+				0.5f, 1.0f,
+				1.0f, 1.0f,
+				1.0f, 0.5f,	
+				
+				// Bottom face 
+				0.5f, 0.5f, 				
+				0.5f, 1.0f,
+				1.0f, 0.5f,
+				0.5f, 1.0f,
+				1.0f, 1.0f,
 				1.0f, 0.5f
 		};
 		
@@ -711,21 +765,21 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		// GLES20.glEnable(GLES20.GL_TEXTURE_2D);
 			
 		// Position the eye in front of the origin.
-		eyeX = 0.0f;
-		eyeY = -1.0f;
+//		eyeX = 0.0f;
+//		eyeY = -1.0f;
 		// TODO: Code to change eyeZ when grid size changes
 //		final float eyeZ = 4.0f; // For 5x5
-		eyeZ = 7.0f; // For 9x9
+//		eyeZ = 3.5f; // For 9x9
 
 		// We are looking toward the distance
-		lookX = 0.0f;
-		lookY = 0.0f;
-		lookZ = -5.0f;
+//		lookX = 0.0f;
+//		lookY = 0.0f;
+//		lookZ = -5.0f;
 
 		// Set our up vector. This is where our head would be pointing were we holding the camera.
-		upX = 0.0f;
-		upY = 1.0f;
-		upZ = 0.0f;
+//		upX = 0.0f;
+//		upY = 1.0f;
+//		upZ = 0.0f;
 
 		// Set the view matrix. This matrix can be said to represent the camera position.
 		// NOTE: In OpenGL 1, a ModelView matrix is used, which is a combination of a model and
@@ -765,7 +819,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         
         // Load the texture
         cubeTextureDataHandle = TextureHelper.loadTexture(mActivityContext,
-        		R.drawable.textures3);
+        		R.drawable.atlas1);
 //        cellTextureDataHandle = TextureHelper.loadTexture(mActivityContext,
 //        		R.drawable.board1);
 	}	
@@ -875,6 +929,24 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         				cellZScaleFactor);
         		cell.draw(mModelMatrix);
         	}
+        	
+        	// Draw credits cubes
+        	long period = 10000L;
+            long time = SystemClock.elapsedRealtime() % period;
+            float angle = (360f / period) * ((int) time);
+        	for (Cube credit: board.creditsCubes) {
+        		Matrix.setIdentityM(mModelMatrix, 0);
+        		Matrix.translateM(mModelMatrix, 0, 0, 0, -1);
+        		Matrix.rotateM(mModelMatrix, 0, angle, 0.0f, 1.0f, 0.0f);
+        		Matrix.translateM(mModelMatrix, 0, credit.x, credit.y, credit.z);
+        		Matrix.rotateM(mModelMatrix, 0, -angle, 0.0f, 1.0f, 0.0f);
+//        		Matrix.rotateM(mModelMatrix, 0, credit.rotationY, 0.0f, 1.0f, 0.0f);
+        		Matrix.rotateM(mModelMatrix, 0, credit.rotationZ, 0.0f, 0.0f, 1.0f);
+        		Matrix.scaleM(mModelMatrix, 0, credit.scaleFactorX,
+        				credit.scaleFactorY, credit.scaleFactorZ);
+        		Matrix.rotateM(mModelMatrix, 0, credit.rotationY, 0.0f, 1.0f, 0.0f);
+        		credit.draw(mModelMatrix);
+        	}
         }
         
         // Change the shader program to one that does not use textures
@@ -896,7 +968,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 
         // Draw the lines
         if (board != null) {
-        	for (Line line: board.lines) {
+        	for (Cube line: board.lines) {
         		line.draw();
         	}
         }

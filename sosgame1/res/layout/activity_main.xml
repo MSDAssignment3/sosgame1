@@ -28,4 +28,14 @@
         android:layout_alignParentTop="true"
         android:text="View" />
 
+    <Button
+        android:id="@+id/btnCredits"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="14dp"
+        android:layout_toRightOf="@+id/button2"
+        android:text="Credits" />
+
 </RelativeLayout>

@@ -13,10 +13,13 @@ public class Board {
 	private int centreY = 2;
 	public ArrayList<Cube> cells = new ArrayList<Cube>();
 	public ArrayList<Cube> tiles = new ArrayList<Cube>();
-	public ArrayList<Line> lines = new ArrayList<Line>();
+	public ArrayList<Cube> lines = new ArrayList<Cube>();
 	
-	/** Holds the tiles displayed for user selection */
+	/** Holds the tiles displayed for user selection. */
 	public ArrayList<Cube> tempTiles = new ArrayList<Cube>();
+	
+	/** Holds the cubes displayed during credits animation. */
+	public ArrayList<Cube> creditsCubes = new ArrayList<Cube>();
 	
 	/** Simple constructor.
 	 * @param renderer Reference to the renderer.

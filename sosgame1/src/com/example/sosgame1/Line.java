@@ -3,7 +3,6 @@ package com.example.sosgame1;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.util.Log;
 
 public class Line extends Cube {
 
@@ -41,7 +40,7 @@ public class Line extends Cube {
 		this.endX = endX;
 		this.endY = endY;
 		this.rotationX = colour;
-		z = renderer.tileZ + 0.2f;
+		z = MyGLRenderer.tileZ + 2 * scaleFactorY;
 	}
 	
 	// TODO: Constructor taking start and end points or centre and length?

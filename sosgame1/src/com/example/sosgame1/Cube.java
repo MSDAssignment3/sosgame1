@@ -27,6 +27,12 @@ public class Cube {
 		this.textureOffset = textureOffset;
 	}
 	
+	/** Constructor....
+	 * @param renderer
+	 * @param textureOffset
+	 * @param x
+	 * @param y
+	 */
 	protected Cube(MyGLRenderer renderer, int textureOffset, float x, float y) {
 		this.renderer = renderer;
 		this.textureOffset = textureOffset;
@@ -134,4 +140,9 @@ public class Cube {
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 36);                               
 	}
 
+	/** Overload used by Line subclass. */
+	protected void draw() {
+		// Implemented in Line class.
+	}
+	
 }
