@@ -934,9 +934,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         	long period = 10000L;
             long time = SystemClock.elapsedRealtime() % period;
             float angle = (360f / period) * ((int) time);
+            float dz = (float) Math.sin(((float)Math.PI * 4 / period) * ((int) time));
         	for (Cube credit: board.creditsCubes) {
         		Matrix.setIdentityM(mModelMatrix, 0);
-        		Matrix.translateM(mModelMatrix, 0, 0, 0, -1);
+        		Matrix.translateM(mModelMatrix, 0, 0, dz, dz);
         		Matrix.rotateM(mModelMatrix, 0, angle, 0.0f, 1.0f, 0.0f);
         		Matrix.translateM(mModelMatrix, 0, credit.x, credit.y, credit.z);
         		Matrix.rotateM(mModelMatrix, 0, -angle, 0.0f, 1.0f, 0.0f);

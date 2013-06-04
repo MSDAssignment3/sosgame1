@@ -148,19 +148,19 @@ public class MainActivity extends Activity implements OnClickListener,
         cube.scaleFactorZ = size / 4;
         cube.rotationY = 180;
         myGLView.mRenderer.board.creditsCubes.add(cube);
-        cube = new Cube(myGLView.mRenderer, MyGLRenderer.textureOffsetCredits, 0, posY);
+        cube = new Cube(myGLView.mRenderer, MyGLRenderer.textureOffsetTileBlue, 0, posY);
         cube.z = -posX;
         cube.scaleFactorX = size;
         cube.scaleFactorY = size;
         cube.scaleFactorZ = size / 4;
-        cube.rotationY = 90;
+        cube.rotationY = 0;
         myGLView.mRenderer.board.creditsCubes.add(cube);
-        cube = new Cube(myGLView.mRenderer, MyGLRenderer.textureOffsetCredits, 0, posY);
+        cube = new Cube(myGLView.mRenderer, MyGLRenderer.textureOffsetTileRed, 0, posY);
         cube.z = posX;
         cube.scaleFactorX = size;
         cube.scaleFactorY = size;
         cube.scaleFactorZ = size / 4;
-        cube.rotationY = 270;
+        cube.rotationY = 180;
         myGLView.mRenderer.board.creditsCubes.add(cube);        
 	}
 	
