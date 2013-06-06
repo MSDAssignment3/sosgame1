@@ -137,8 +137,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 //	/** Stores the tile objects. */
 //	public ArrayList<Tile> tiles = new ArrayList<Tile>();
 	
-	/** Stores the board cell objects. */
-	public ArrayList<Cell> cells = new ArrayList<Cell>();
+//	/** Stores the board cell objects. */
+//	public ArrayList<Cell> cells = new ArrayList<Cell>();
 	
 	/** Viewport width. */
 	public int width;

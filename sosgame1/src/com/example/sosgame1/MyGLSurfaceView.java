@@ -156,34 +156,34 @@ public class MyGLSurfaceView extends GLSurfaceView
         
         if (!animationInProgress && !scaleDetector.isInProgress()) {
         	PointF p = mRenderer.getWorldXY(x, y, 
-        			mRenderer.tileZ + mRenderer.tileScaleFactorZ);
+        			MyGLRenderer.tileZ + MyGLRenderer.tileScaleFactorZ);
         	Tile foo = (Tile) mRenderer.getSelectedCube(p, mRenderer.board.tiles);
 
         	switch (mode) {
         	case MODE_IDLE:
             	PointF p2 = mRenderer.getWorldXY(x, y, 
-            			mRenderer.cellZ + mRenderer.cellScaleFactorZ);
+            			MyGLRenderer.cellZ + MyGLRenderer.cellScaleFactorZ);
             	tappedCell = (Cell) mRenderer.getSelectedCube(p2, mRenderer.board.cells);
         		
             	if (tappedCell != null) {
             		mode = MODE_WAIT_FOR_CHOICE;
             		mRenderer.board.tempTiles.clear();
             		Tile sTile = new Tile(mRenderer,
-            				Tile.COLOUR_BLUE, tappedCell.x - mRenderer.tileScaleFactorX,
+            				Tile.COLOUR_BLUE, tappedCell.x - MyGLRenderer.tileScaleFactorX,
             				tappedCell.y, 'S');
-            		sTile.z += mRenderer.tileScaleFactorZ * 2;
+            		sTile.z += MyGLRenderer.tileScaleFactorZ * 2;
             		mRenderer.board.tempTiles.add(sTile);
             		Tile oTile = new Tile(mRenderer,
-            				Tile.COLOUR_BLUE, tappedCell.x + mRenderer.tileScaleFactorX,
+            				Tile.COLOUR_BLUE, tappedCell.x + MyGLRenderer.tileScaleFactorX,
             				tappedCell.y, 'O');
-            		oTile.z += mRenderer.tileScaleFactorZ * 2;
+            		oTile.z += MyGLRenderer.tileScaleFactorZ * 2;
             		mRenderer.board.tempTiles.add(oTile);
             		requestRender();
             	}
         		break;
         	case MODE_WAIT_FOR_CHOICE:
             	PointF p3 = mRenderer.getWorldXY(x, y, 
-            			mRenderer.tileZ + mRenderer.tileScaleFactorZ * 2);
+            			MyGLRenderer.tileZ + MyGLRenderer.tileScaleFactorZ * 2);
             	Tile chosenTile = (Tile) mRenderer.getSelectedCube(p3,
             			mRenderer.board.tempTiles);
 
@@ -195,7 +195,7 @@ public class MyGLSurfaceView extends GLSurfaceView
             		AnimatorSet animSet = new AnimatorSet();
             		anim = ObjectAnimator.ofFloat(chosenTile, "z",
             				chosenTile.z, 
-            				chosenTile.z - mRenderer.tileScaleFactorZ * 2);
+            				chosenTile.z - MyGLRenderer.tileScaleFactorZ * 2);
             		anim.setDuration(300);
             		anim2 = ObjectAnimator.ofFloat(chosenTile, "x",
             				chosenTile.x, tappedCell.x);
