@@ -210,6 +210,14 @@ public class MyGLSurfaceView extends GLSurfaceView
             		});
             		animSet.playTogether(anim, anim2);
             		animSet.start();
+
+            		// Test calling Ar's method
+//                	if (Math.abs(chosenTile.x) < 3 && Math.abs(chosenTile.y) < 3) {
+                		PointF pt = new PointF(chosenTile.x, chosenTile.y);
+                		Point pt2 = mRenderer.board.worldToBoardXY(pt);
+                		controller.getAndCheck(pt2.y, pt2.x, "" + chosenTile.letter);
+//                	}
+
             	}
         		mRenderer.board.tempTiles.clear();
             	requestRender();
@@ -219,13 +227,6 @@ public class MyGLSurfaceView extends GLSurfaceView
         	
         	if (foo != null) {
             	
-            	// Test calling Ar's method
-            	if (Math.abs(foo.x) < 3 && Math.abs(foo.y) < 3) {
-            		PointF pt = new PointF(foo.x, foo.y);
-            		Point pt2 = mRenderer.board.worldToBoardXY(pt);
-            		controller.getAndCheck(pt2.y, pt2.x, "" + foo.letter);
-            	}
-
             	animationInProgress = true;
         		// Start continuous screen updates for duration of animation
         		setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);

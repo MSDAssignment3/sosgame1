@@ -51,7 +51,6 @@ public class MainActivity extends Activity implements OnClickListener,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// Create an instance of the logic controller
-		controller = new LogicControl();
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_main);
 		mainView = (RelativeLayout) findViewById(R.id.rlMain);
@@ -60,6 +59,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		((Button) findViewById(R.id.btnCredits)).setOnClickListener(this);
 		myGLView = (MyGLSurfaceView) findViewById(R.id.myGLSurfaceView1);
 		// Pass controller instance to the GLSurfaceView
+		controller = new LogicControl(myGLView.mRenderer.board);
 		myGLView.setController(controller);
 	}
 
