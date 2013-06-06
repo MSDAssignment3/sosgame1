@@ -7,8 +7,8 @@ import android.graphics.PointF;
 public class Board {
 
 	private MyGLRenderer renderer = null;
-	private int sizeX = 5;
-	private int sizeY = 5;
+	public int sizeX = 5;
+	public int sizeY = 5;
 	private int centreX = 2;
 	private int centreY = 2;
 	public ArrayList<Cube> cells = new ArrayList<Cube>();

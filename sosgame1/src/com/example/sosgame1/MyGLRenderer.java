@@ -58,8 +58,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	/** Stores cube vertex colours. */
 	public final FloatBuffer mCubeColors;
 	
-	/** Stores line vertex colours. */
-	public final FloatBuffer lineColors;
+//	/** Stores line vertex colours. */
+//	public final FloatBuffer lineColors;
 	
 	/** Stores cube vertex normals. */
 	public final FloatBuffer mCubeNormals;
@@ -159,9 +159,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	public float eyeY = -1.0f;
 	
 	/** Eye/camera z coordinate used in view matrix. */
-//	public float eyeZ = 2.0f;	// 2.0 shows whole board for 5x5
-//	public float eyeZ = 3.5f;	// 3.5 shows whole board for 7x7
-	public float eyeZ = 5.5f;	// 2.0 shows whole board for 9x9
+	public float eyeZ = 2.0f;	// 5x5
+//	public float eyeZ = 3.5f;	// 7x7
+//	public float eyeZ = 5.5f;	// 9x9
+//	public float eyeZ = 7.5f;	// 11x11
+//	public float eyeZ = 17.5f;	// 21x21
 	
 	/** Eye/camera x look coordinate used in view matrix. */
 	public float lookX = 0.0f;
@@ -197,26 +199,26 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	public static final float tileZ = -3f;
 	
 	/** Scales the tile x dimensions. */
-	public static final float tileXScaleFactor = 0.45f;
+	public static final float tileScaleFactorX = 0.45f;
 	
 	/** Scales the tile y dimensions. */
-	public static final float tileYScaleFactor = 0.45f;
+	public static final float tileScaleFactorY = 0.45f;
 	
 	/** Scales the tile z dimensions. */
-	public static final float tileZScaleFactor = 0.125f;
+	public static final float tileScaleFactorZ = 0.125f;
 	
 	/** This is used to set the cell z coordinate and also for the 
 	 * ModelView calculation for touch to world coordinate calculations.*/
-	public static final float cellZ = tileZ - 2 * tileZScaleFactor;
+	public static final float cellZ = tileZ - 2 * tileScaleFactorZ;
 	
 	/** Scales the cell x dimensions. */
-	public static final float cellXScaleFactor = 0.5f;
+	public static final float cellScaleFactorX = 0.5f;
 	
 	/** Scales the cell y dimensions. */
-	public static final float cellYScaleFactor = 0.5f;
+	public static final float cellScaleFactorY = 0.5f;
 	
 	/** Scales the cell z dimensions. */
-	public static final float cellZScaleFactor = 0.125f;
+	public static final float cellScaleFactorZ = 0.125f;
 	
 	public static final int textureOffsetTileBlue = 0;
 	public static final int textureOffsetTileRed = 2 * 6 * 6;
@@ -294,13 +296,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		// R, G, B, A
 		final float[] cubeColorData =
 		{				
-				// Front face (red)
-//				1.0f, 0.0f, 0.0f, 1.0f,				
-//				1.0f, 0.0f, 0.0f, 1.0f,
-//				1.0f, 0.0f, 0.0f, 1.0f,
-//				1.0f, 0.0f, 0.0f, 1.0f,				
-//				1.0f, 0.0f, 0.0f, 1.0f,
-//				1.0f, 0.0f, 0.0f, 1.0f,
 				// Front face (white)
 				1.0f, 1.0f, 1.0f, 1.0f,				
 				1.0f, 1.0f, 1.0f, 1.0f,
@@ -309,21 +304,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 				1.0f, 1.0f, 1.0f, 1.0f,
 				1.0f, 1.0f, 1.0f, 1.0f,
 				
-				// Right face (green)
-				0.0f, 1.0f, 0.0f, 1.0f,				
-				0.0f, 1.0f, 0.0f, 1.0f,
-				0.0f, 1.0f, 0.0f, 1.0f,
-				0.0f, 1.0f, 0.0f, 1.0f,				
-				0.0f, 1.0f, 0.0f, 1.0f,
-				0.0f, 1.0f, 0.0f, 1.0f,
+				// Right face (red)
+				1.0f, 0.0f, 0.0f, 1.0f,				
+				1.0f, 0.0f, 0.0f, 1.0f,
+				1.0f, 0.0f, 0.0f, 1.0f,
+				1.0f, 0.0f, 0.0f, 1.0f,				
+				1.0f, 0.0f, 0.0f, 1.0f,
+				1.0f, 0.0f, 0.0f, 1.0f,
 				
-				// Back face (blue)
-//				0.0f, 0.0f, 1.0f, 1.0f,				
-//				0.0f, 0.0f, 1.0f, 1.0f,
-//				0.0f, 0.0f, 1.0f, 1.0f,
-//				0.0f, 0.0f, 1.0f, 1.0f,				
-//				0.0f, 0.0f, 1.0f, 1.0f,
-//				0.0f, 0.0f, 1.0f, 1.0f,
 				// Back face (white)
 				1.0f, 1.0f, 1.0f, 1.0f,				
 				1.0f, 1.0f, 1.0f, 1.0f,
@@ -332,41 +320,32 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 				1.0f, 1.0f, 1.0f, 1.0f,
 				1.0f, 1.0f, 1.0f, 1.0f,
 				
-//				// Left face (yellow)
-//				1.0f, 1.0f, 0.0f, 1.0f,				
-//				1.0f, 1.0f, 0.0f, 1.0f,
-//				1.0f, 1.0f, 0.0f, 1.0f,
-//				1.0f, 1.0f, 0.0f, 1.0f,				
-//				1.0f, 1.0f, 0.0f, 1.0f,
-//				1.0f, 1.0f, 0.0f, 1.0f,
-				// Left face (white)
-				1.0f, 1.0f, 1.0f, 1.0f,				
-				1.0f, 1.0f, 1.0f, 1.0f,
-				1.0f, 1.0f, 1.0f, 1.0f,
-				1.0f, 1.0f, 1.0f, 1.0f,				
-				1.0f, 1.0f, 1.0f, 1.0f,
-				1.0f, 1.0f, 1.0f, 1.0f,
+				// Left face (red)
+				1.0f, 0.0f, 0.0f, 1.0f,				
+				1.0f, 0.0f, 0.0f, 1.0f,
+				1.0f, 0.0f, 0.0f, 1.0f,
+				1.0f, 0.0f, 0.0f, 1.0f,				
+				1.0f, 0.0f, 0.0f, 1.0f,
+				1.0f, 0.0f, 0.0f, 1.0f,
 				
-				// Top face (cyan)
-				0.0f, 1.0f, 1.0f, 1.0f,				
-				0.0f, 1.0f, 1.0f, 1.0f,
-				0.0f, 1.0f, 1.0f, 1.0f,
-				0.0f, 1.0f, 1.0f, 1.0f,				
-				0.0f, 1.0f, 1.0f, 1.0f,
-				0.0f, 1.0f, 1.0f, 1.0f,
+				// Top face (red)
+				1.0f, 0.0f, 0.0f, 1.0f,				
+				1.0f, 0.0f, 0.0f, 1.0f,
+				1.0f, 0.0f, 0.0f, 1.0f,
+				1.0f, 0.0f, 0.0f, 1.0f,				
+				1.0f, 0.0f, 0.0f, 1.0f,
+				1.0f, 0.0f, 0.0f, 1.0f,
 				
-				// Bottom face (magenta)
-				1.0f, 0.0f, 1.0f, 1.0f,				
-				1.0f, 0.0f, 1.0f, 1.0f,
-				1.0f, 0.0f, 1.0f, 1.0f,
-				1.0f, 0.0f, 1.0f, 1.0f,				
-				1.0f, 0.0f, 1.0f, 1.0f,
-				1.0f, 0.0f, 1.0f, 1.0f
-		};
+				// Bottom face (red)
+				1.0f, 0.0f, 0.0f, 1.0f,				
+				1.0f, 0.0f, 0.0f, 1.0f,
+				1.0f, 0.0f, 0.0f, 1.0f,
+				1.0f, 0.0f, 0.0f, 1.0f,				
+				1.0f, 0.0f, 0.0f, 1.0f,
+				1.0f, 0.0f, 0.0f, 1.0f,
 		
-		// R, G, B, A
-		final float[] lineColorData =
-		{				
+			// Red line colour data
+				
 				// Front face (red)
 				1.0f, 0.0f, 0.0f, 0.9f,				
 				1.0f, 0.0f, 0.0f, 0.9f,
@@ -375,13 +354,63 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 				1.0f, 0.0f, 0.0f, 0.9f,
 				1.0f, 0.0f, 0.0f, 0.9f,
 				
-				// Right face (green)
-				0.0f, 1.0f, 0.0f, 0.9f,				
-				0.0f, 1.0f, 0.0f, 0.9f,
-				0.0f, 1.0f, 0.0f, 0.9f,
-				0.0f, 1.0f, 0.0f, 0.9f,				
-				0.0f, 1.0f, 0.0f, 0.9f,
-				0.0f, 1.0f, 0.0f, 0.9f,
+				// Right face (red)
+				1.0f, 0.0f, 0.0f, 0.9f,				
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,				
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,
+				
+				// Back face (red)
+				1.0f, 0.0f, 0.0f, 0.9f,				
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,				
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,
+				
+				// Left face (red)
+				1.0f, 0.0f, 0.0f, 0.9f,				
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,				
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,
+				
+				// Top face (red)
+				1.0f, 0.0f, 0.0f, 0.9f,				
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,				
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,
+				
+				// Bottom face (red)
+				1.0f, 0.0f, 0.0f, 0.9f,				
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,				
+				1.0f, 0.0f, 0.0f, 0.9f,
+				1.0f, 0.0f, 0.0f, 0.9f,
+				
+			// Blue line colour data
+				
+				// Front face (blue)
+				0.0f, 0.0f, 1.0f, 0.9f,				
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,				
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,
+				
+				// Right face (blue)
+				0.0f, 0.0f, 1.0f, 0.9f,				
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,				
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,
 				
 				// Back face (blue)
 				0.0f, 0.0f, 1.0f, 0.9f,				
@@ -391,29 +420,30 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 				0.0f, 0.0f, 1.0f, 0.9f,
 				0.0f, 0.0f, 1.0f, 0.9f,
 				
-				// Left face (yellow)
-				1.0f, 1.0f, 0.0f, 0.9f,				
-				1.0f, 1.0f, 0.0f, 0.9f,
-				1.0f, 1.0f, 0.0f, 0.9f,
-				1.0f, 1.0f, 0.0f, 0.9f,				
-				1.0f, 1.0f, 0.0f, 0.9f,
-				1.0f, 1.0f, 0.0f, 0.9f,
+				// Left face (blue)
+				0.0f, 0.0f, 1.0f, 0.9f,				
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,				
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,
 				
-				// Top face (cyan)
-				0.0f, 1.0f, 1.0f, 0.9f,				
-				0.0f, 1.0f, 1.0f, 0.9f,
-				0.0f, 1.0f, 1.0f, 0.9f,
-				0.0f, 1.0f, 1.0f, 0.9f,				
-				0.0f, 1.0f, 1.0f, 0.9f,
-				0.0f, 1.0f, 1.0f, 0.9f,
+				// Top face (blue)
+				0.0f, 0.0f, 1.0f, 0.9f,				
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,				
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,
 				
-				// Bottom face (magenta)
-				1.0f, 0.0f, 1.0f, 0.9f,				
-				1.0f, 0.0f, 1.0f, 0.9f,
-				1.0f, 0.0f, 1.0f, 0.9f,
-				1.0f, 0.0f, 1.0f, 0.9f,				
-				1.0f, 0.0f, 1.0f, 0.9f,
-				1.0f, 0.0f, 1.0f, 0.9f
+				// Bottom face (blue)
+				0.0f, 0.0f, 1.0f, 0.9f,				
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,				
+				0.0f, 0.0f, 1.0f, 0.9f,
+				0.0f, 0.0f, 1.0f, 0.9f,
+
 		};
 		
 		// X, Y, Z
@@ -687,9 +717,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         .order(ByteOrder.nativeOrder()).asFloatBuffer();							
 		mCubeColors.put(cubeColorData).position(0);
 		
-		lineColors = ByteBuffer.allocateDirect(lineColorData.length * mBytesPerFloat)
-		        .order(ByteOrder.nativeOrder()).asFloatBuffer();							
-		lineColors.put(lineColorData).position(0);
+//		lineColors = ByteBuffer.allocateDirect(lineColorData.length * mBytesPerFloat)
+//		        .order(ByteOrder.nativeOrder()).asFloatBuffer();							
+//		lineColors.put(lineColorData).position(0);
 				
 		mCubeNormals = ByteBuffer.allocateDirect(cubeNormalData.length * mBytesPerFloat)
         .order(ByteOrder.nativeOrder()).asFloatBuffer();							
@@ -817,9 +847,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         noTexProgramHandle = ShaderHelper.createAndLinkProgram(noTexVertexShaderHandle, noTexFragmentShaderHandle, 
         		new String[] {"a_Position"}); 
         
-        // Load the texture
+        // Load the texture atlas
         cubeTextureDataHandle = TextureHelper.loadTexture(mActivityContext,
-        		R.drawable.atlas1);
+        		R.drawable.atlas2);
 //        cellTextureDataHandle = TextureHelper.loadTexture(mActivityContext,
 //        		R.drawable.board1);
 	}	
@@ -846,15 +876,24 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 			right = ratio * scaleFactor;
 			bottom = -1.0f * scaleFactor;
 			top = 1.0f * scaleFactor;
+//			eyeZ = (right - left) * (-tileZ) / (board.sizeX - (right - left));
+//			Log.v("board.sizeX", "" + board.sizeX);
+//			Log.v("eyeZ", "" + eyeZ);
 		} else {
-			left = -ratio * scaleFactor * 1 / ratio;
-			right = ratio * scaleFactor * 1 / ratio;
-			bottom = -1.0f * scaleFactor * 1 / ratio;
-			top = 1.0f * scaleFactor * 1 / ratio;
+			left = -1 * scaleFactor;
+			right = 1 * scaleFactor;
+			bottom = -1.0f * scaleFactor / ratio;
+			top = 1.0f * scaleFactor / ratio;
 		}
 		
 		Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
-	}	
+//		Matrix.orthoM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
+
+//        int[] maxTextureSize = new int[1];
+//        GLES20.glGetIntegerv(GLES20.GL_MAX_TEXTURE_SIZE, maxTextureSize, 0);
+//        Log.v("maxTextureSize", "" + maxTextureSize[0]);
+        
+}	
 
 	@Override
 	public void onDrawFrame(GL10 glUnused) 
@@ -903,8 +942,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         		Matrix.translateM(mModelMatrix, 0, tile.x, tile.y, tileZ + tile.z);
         		Matrix.rotateM(mModelMatrix, 0, tile.rotationY, 0.0f, 1.0f, 0.0f);
         		Matrix.rotateM(mModelMatrix, 0, tile.rotationZ, 0.0f, 0.0f, 1.0f);
-        		Matrix.scaleM(mModelMatrix, 0, tileXScaleFactor, tileYScaleFactor,
-        				tileZScaleFactor);
+        		Matrix.scaleM(mModelMatrix, 0, tileScaleFactorX, tileScaleFactorY,
+        				tileScaleFactorZ);
         		tile.draw(mModelMatrix);
         	}
         
@@ -914,8 +953,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         		Matrix.translateM(mModelMatrix, 0, tile.x, tile.y, tileZ + tile.z);
         		Matrix.rotateM(mModelMatrix, 0, tile.rotationY, 0.0f, 1.0f, 0.0f);
         		Matrix.rotateM(mModelMatrix, 0, tile.rotationZ, 0.0f, 0.0f, 1.0f);
-        		Matrix.scaleM(mModelMatrix, 0, tileXScaleFactor, tileYScaleFactor,
-        				tileZScaleFactor);
+        		Matrix.scaleM(mModelMatrix, 0, tileScaleFactorX, tileScaleFactorY,
+        				tileScaleFactorZ);
         		tile.draw(mModelMatrix);
         	}
         
@@ -925,8 +964,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         		Matrix.translateM(mModelMatrix, 0, cell.x, cell.y, cellZ);
         		Matrix.rotateM(mModelMatrix, 0, cell.rotationY, 0.0f, 1.0f, 0.0f);
         		Matrix.rotateM(mModelMatrix, 0, cell.rotationZ, 0.0f, 0.0f, 1.0f);
-        		Matrix.scaleM(mModelMatrix, 0, cellXScaleFactor, cellYScaleFactor,
-        				cellZScaleFactor);
+        		Matrix.scaleM(mModelMatrix, 0, cellScaleFactorX, cellScaleFactorY,
+        				cellScaleFactorZ);
         		cell.draw(mModelMatrix);
         	}
         	
@@ -937,7 +976,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
             float dz = (float) Math.sin(((float)Math.PI * 4 / period) * ((int) time));
         	for (Cube credit: board.creditsCubes) {
         		Matrix.setIdentityM(mModelMatrix, 0);
-        		Matrix.translateM(mModelMatrix, 0, 0, dz, dz);
+//        		if (eyeZ - 1.5f < credit.scaleFactorZ - credit.z - dz) {
+//        			dz = -credit.scaleFactorZ - credit.z - 1.5f;
+//        		}
+        		Matrix.translateM(mModelMatrix, 0, 0, 0, eyeZ - 4);
+        		Matrix.translateM(mModelMatrix, 0, 0, dz / 2, dz / 4);
         		Matrix.rotateM(mModelMatrix, 0, angle, 0.0f, 1.0f, 0.0f);
         		Matrix.translateM(mModelMatrix, 0, credit.x, credit.y, credit.z);
         		Matrix.rotateM(mModelMatrix, 0, -angle, 0.0f, 1.0f, 0.0f);
@@ -1083,45 +1126,18 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         return result;
     }
     
-//    /** Takes a PointF holding world x, y coordinates and searches for a tile
-//     * which covers those coordinates.
-//     * @param p The coordinates in the world space.
-//     * @return A Tile object.
-//     */
-//    public Tile getSelectedTile(PointF p) {
-//    	float dx = tileXScaleFactor;
-//    	float dy = tileYScaleFactor;
-//		for (Tile tile: board.tiles) {
-////			dx = tile.scaleFactorX;
-////			dy = tile.scaleFactorY;
-//			if (p.x >= tile.x - dx && p.x <= tile.x + dx
-//					&& p.y >= tile.y - dy && p.y <= tile.y + dy) {
-//				return tile;
-//			}
-//		}
-//		return null;
-//    }
-    
-//    /** Takes a PointF holding world x, y coordinates and searches for a cell
-//     * which covers those coordinates.
-//     * @param p The coordinates in the world space.
-//     * @return A Cell object.
-//     */
-//    public Cube getSelectedCell(PointF p) {
-//    	float dx = cellXScaleFactor;
-//    	float dy = cellYScaleFactor;
-//		for (Cube cell: board.cells) {
-//			if (p.x >= cell.x - dx && p.x <= cell.x + dx
-//					&& p.y >= cell.y - dy && p.y <= cell.y + dy) {
-//				return cell;
-//			}
-//		}
-//		return null;
-//    }
-    
+    /** Takes a PointF holding world x, y coordinates and searches for a cube
+     * which covers those coordinates. Since the Cell, Tile and Line classes are
+     * subclasses of the Cube class this method can search for any of these
+     * objects and the Cube returned by the method can be cast to the desired
+     * type. For example:<br>Tile tile = (Tile) getSelectedCube(p, tiles);
+     * @param p The coordinates in the world space.
+     * @param cubes An ArrayList containing references to Cube objects.
+     * @return A Cube object.
+     */
     public Cube getSelectedCube(PointF p, ArrayList<Cube> cubes) {
-    	float dx;// = cellXScaleFactor;
-    	float dy;// = cellYScaleFactor;
+    	float dx;
+    	float dy;
 		for (Cube cube: cubes) {
 			dx = cube.scaleFactorX;
 			dy = cube.scaleFactorY;
@@ -1132,40 +1148,5 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		}
 		return null;
     }
-    
-//    /** Takes a PointF holding world x, y coordinates and searches for a tile
-//     * which covers those coordinates.
-//     * @param p The coordinates in the world space.
-//     * @return A Tile object.
-//     */
-//    public Tile getSelectedTempTile(PointF p) {
-//    	float dx = tileXScaleFactor;
-//    	float dy = tileYScaleFactor;
-//		for (Tile tile: board.tempTiles) {
-//			if (p.x >= tile.x - dx && p.x <= tile.x + dx
-//					&& p.y >= tile.y - dy && p.y <= tile.y + dy) {
-//				return tile;
-//			}
-//		}
-//		return null;
-//    }
-    
-//    /** Takes a PointF holding world x, y coordinates and searches for a tile
-//     * which covers those coordinates.
-//     * @param p The coordinates in the world space.
-//     * @param tiles The collection of tiles to search.
-//     * @return A Tile object.
-//     */
-//    public Tile getSelectedTile2(PointF p, ArrayList<Tile> tiles) {
-//    	float dx = tileXScaleFactor;
-//    	float dy = tileYScaleFactor;
-//		for (Tile tile: tiles) {
-//			if (p.x >= tile.x - dx && p.x <= tile.x + dx
-//					&& p.y >= tile.y - dy && p.y <= tile.y + dy) {
-//				return tile;
-//			}
-//		}
-//		return null;
-//    }
     
 }

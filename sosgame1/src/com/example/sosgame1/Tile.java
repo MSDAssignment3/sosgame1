@@ -10,22 +10,22 @@ public class Tile extends Cube {
     
 	public Tile(MyGLRenderer renderer, int colour, float x, float y) {
 		super(renderer, colour, x, y);
-		scaleFactorX = MyGLRenderer.tileXScaleFactor;
-		scaleFactorY = MyGLRenderer.tileYScaleFactor;
+		scaleFactorX = MyGLRenderer.tileScaleFactorX;
+		scaleFactorY = MyGLRenderer.tileScaleFactorY;
 	}
 
 	public Tile(MyGLRenderer renderer, int colour) {
 		super(renderer, colour);
-		scaleFactorX = MyGLRenderer.tileXScaleFactor;
-		scaleFactorY = MyGLRenderer.tileYScaleFactor;
+		scaleFactorX = MyGLRenderer.tileScaleFactorX;
+		scaleFactorY = MyGLRenderer.tileScaleFactorY;
 	}
 
 	public Tile(MyGLRenderer renderer, int colour, float x, float y,
 			char letter) {
 		super(renderer, colour, x, y);
 		setLetter(letter);
-		scaleFactorX = MyGLRenderer.tileXScaleFactor;
-		scaleFactorY = MyGLRenderer.tileYScaleFactor;
+		scaleFactorX = MyGLRenderer.tileScaleFactorX;
+		scaleFactorY = MyGLRenderer.tileScaleFactorY;
 	}
 
 	public char getLetter() {

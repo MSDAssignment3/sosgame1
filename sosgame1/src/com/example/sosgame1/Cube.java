@@ -16,7 +16,8 @@ public class Cube {
 	protected float scaleFactorX = 1;
 	protected float scaleFactorY = 1;
 	protected float scaleFactorZ = 1;
-	protected int textureOffset;
+	protected int textureOffset = 0;
+	protected int colourOffset = 0;
 
 	protected Cube(MyGLRenderer renderer) {
 		this.renderer = renderer;
@@ -40,7 +41,21 @@ public class Cube {
 		this.y = y;
 	}
 	
-	// TODO: Constructor as above plus front face?
+	/**
+	 * @param renderer
+	 * @param textureOffset
+	 * @param colourOffset
+	 * @param x
+	 * @param y
+	 */
+	protected Cube(MyGLRenderer renderer, int textureOffset, int colourOffset,
+			float x, float y) {
+		this.renderer = renderer;
+		this.textureOffset = textureOffset;
+		this.colourOffset = colourOffset;
+		this.x = x;
+		this.y = y;
+	}
 
 	/** Setter required for object animation of this property.
 	 * @param angle Angle of rotation about Y axis.
@@ -99,7 +114,7 @@ public class Cube {
         GLES20.glEnableVertexAttribArray(renderer.mPositionHandle);        
         
         // Pass in the color information
-        renderer.mCubeColors.position(0);
+        renderer.mCubeColors.position(colourOffset);
         GLES20.glVertexAttribPointer(renderer.mColorHandle, renderer.mColorDataSize, GLES20.GL_FLOAT, false,
         		0, renderer.mCubeColors);        
         

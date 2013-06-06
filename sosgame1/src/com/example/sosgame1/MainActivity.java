@@ -133,7 +133,7 @@ public class MainActivity extends Activity implements OnClickListener,
         Cube cube;
         float size = 0.75f;
         float posX = 1.5f;
-        float posY = -1f;
+        float posY = 0.0f;
         cube = new Cube(myGLView.mRenderer, MyGLRenderer.textureOffsetCredits, -posX, posY);
         cube.z = 0f;
         cube.scaleFactorX = size;

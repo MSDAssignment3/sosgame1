@@ -12,8 +12,9 @@ public class Line extends Cube {
 	public float endY;
 	private float scaleFactorX = 1;
 	private float scaleFactorY = 0.1f;
-	public static final int COLOUR_RED = 0;
-	public static final int COLOUR_BLUE = 180;
+	private float scaleFactorZ = 0.1f;
+	public static final int COLOUR_RED = 4 * 6 * 6;
+	public static final int COLOUR_BLUE = 8 * 6 * 6;
 	
 	private float[] modelMatrix = new float[16];
 
@@ -39,8 +40,9 @@ public class Line extends Cube {
 		this.startY = startY;
 		this.endX = endX;
 		this.endY = endY;
-		this.rotationX = colour;
+//		this.rotationX = colour;
 		z = MyGLRenderer.tileZ + 2 * scaleFactorY;
+		colourOffset = colour;
 	}
 	
 	// TODO: Constructor taking start and end points or centre and length?
@@ -77,8 +79,8 @@ public class Line extends Cube {
 		Matrix.setIdentityM(modelMatrix, 0);
 		Matrix.translateM(modelMatrix, 0, x, y, z);
 		Matrix.rotateM(modelMatrix, 0, rotationZ, 0.0f, 0.0f, 1.0f);
-		Matrix.rotateM(modelMatrix, 0, rotationX, 1.0f, 0.0f, 0.0f);
-		Matrix.scaleM(modelMatrix, 0, scaleFactorX, scaleFactorY, 0.10f);
+//		Matrix.rotateM(modelMatrix, 0, rotationX, 1.0f, 0.0f, 0.0f);
+		Matrix.scaleM(modelMatrix, 0, scaleFactorX, scaleFactorY, scaleFactorZ);
 		
 		// Pass in the position information
 		renderer.mCubePositions.position(0);		
@@ -88,9 +90,9 @@ public class Line extends Cube {
         GLES20.glEnableVertexAttribArray(renderer.mPositionHandle);        
         
         // Pass in the color information
-        renderer.lineColors.position(0);
+        renderer.mCubeColors.position(colourOffset);
         GLES20.glVertexAttribPointer(renderer.mColorHandle, renderer.mColorDataSize, GLES20.GL_FLOAT, false,
-        		0, renderer.lineColors);        
+        		0, renderer.mCubeColors);        
         
         GLES20.glEnableVertexAttribArray(renderer.mColorHandle);
         
