@@ -23,6 +23,9 @@ import com.example.sosgame1.controller.LogicControl;
 
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +34,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
@@ -71,9 +75,11 @@ public class MainActivity extends Activity implements OnClickListener,
 	}
 
 	public void onClick(View v) {
+		
+		LayoutInflater inflater = getLayoutInflater();
+		
 		switch (v.getId()) {
 		case R.id.btnView:
-			LayoutInflater inflater = getLayoutInflater();
 			viewAdjustView = inflater.inflate(R.layout.view_adjust, null);
 			if (viewAdjustView != null) {
 				mainView.addView(viewAdjustView);

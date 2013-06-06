@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/wood_bg"
+    android:clickable="true">
+
+    <ImageButton
+        android:id="@+id/btnCredits"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:background="@null"
+        android:src="@drawable/credits_button"
+        android:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/imgSounds"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnCredits"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/sounds_image" />
+
+    <SeekBar
+        android:id="@+id/seekBar1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/imgSounds"
+        android:layout_alignParentRight="true"
+        android:layout_alignRight="@+id/imgSounds"
+        android:layout_alignTop="@+id/imgSounds"
+        android:layout_marginTop="120dp" />
+    
+</RelativeLayout>
