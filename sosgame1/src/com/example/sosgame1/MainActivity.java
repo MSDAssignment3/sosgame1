@@ -18,8 +18,6 @@
 
 package com.example.sosgame1;
 
-import splash.Splash;
-
 import com.example.sosgame1.MyGLSurfaceView;
 import com.example.sosgame1.controller.LogicControl;
 import android.os.Bundle;
