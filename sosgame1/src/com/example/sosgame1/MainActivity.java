@@ -23,9 +23,6 @@ import com.example.sosgame1.controller.LogicControl;
 
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.animation.AnimatorInflater;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -63,7 +60,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		((Button) findViewById(R.id.btnCredits)).setOnClickListener(this);
 		myGLView = (MyGLSurfaceView) findViewById(R.id.myGLSurfaceView1);
 		// Pass controller instance to the GLSurfaceView
-		controller = new LogicControl();
+		controller = new LogicControl(myGLView.mRenderer.board);
 		myGLView.setController(controller);
 	}
 
