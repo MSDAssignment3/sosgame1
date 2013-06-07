@@ -211,6 +211,7 @@ public class MyGLSurfaceView extends GLSurfaceView
             		// Start continuous screen updates for duration of animation
             		setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
             		animSet.start();
+<<<<<<< HEAD
                 	
                 	// Test calling Ar's method
                 	if (Math.abs(chosenTile.x) < 3 && Math.abs(chosenTile.y) < 3) {
@@ -222,11 +223,22 @@ public class MyGLSurfaceView extends GLSurfaceView
             	} else {
             		mRenderer.board.tempTiles.clear();
             		requestRender();
+=======
+
+            		// Test calling Ar's method
+//                	if (Math.abs(chosenTile.x) < 3 && Math.abs(chosenTile.y) < 3) {
+                		PointF pt = new PointF(chosenTile.x, chosenTile.y);
+                		Point pt2 = mRenderer.board.worldToBoardXY(pt);
+                		controller.getAndCheck(pt2.y, pt2.x, "" + chosenTile.letter);
+//                	}
+
+>>>>>>> david4
             	}
             	mode = MODE_IDLE;
         		break;
         	}
         	
+<<<<<<< HEAD
 //        	if (foo != null) {
 //            	animationInProgress = true;
 //        		// Start continuous screen updates for duration of animation
@@ -258,6 +270,40 @@ public class MyGLSurfaceView extends GLSurfaceView
 //        		animSet.playTogether(zAnim, anim);
 //        		animSet.start();
 //        	}
+=======
+        	if (foo != null) {
+            	
+            	animationInProgress = true;
+        		// Start continuous screen updates for duration of animation
+        		setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+        		AnimatorSet animSet = new AnimatorSet();
+        		ObjectAnimator zAnim = ObjectAnimator.ofFloat(foo, "z",
+        				0, 1, 1, 0);
+        		zAnim.setDuration(1000);
+        		float start;
+        		float end;
+        		if (foo.rotationY == 0) {
+        			start = 0;
+        			end = 180;
+        		} else {
+        			start = 180;
+        			end = 0;
+        		}
+        		anim = ObjectAnimator.ofFloat(foo, "rotationY", start, start,
+        				end, end);
+        		anim.setDuration(1000);
+        		anim.addListener(new AnimatorListenerAdapter() {
+        			public void onAnimationEnd(Animator animation) {
+        				// Stop continuous screen updates to save battery
+        				setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        				animationInProgress = false;
+        				requestRender();
+        			}
+        		});
+        		animSet.playTogether(zAnim, anim);
+        		animSet.start();
+        	}
+>>>>>>> david4
         }
 	}
 	
