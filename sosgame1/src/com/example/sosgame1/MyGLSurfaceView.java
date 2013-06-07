@@ -88,21 +88,21 @@ public class MyGLSurfaceView extends GLSurfaceView
 //        	}
 //        }
 
-        // For screenshot
-        mRenderer.board.addTile(2, 2, Tile.COLOUR_BLUE, 'S');
-        mRenderer.board.addTile(3, 3, Tile.COLOUR_RED, 'O');
-        mRenderer.board.addTile(4, 4, Tile.COLOUR_BLUE, 'S');
-        mRenderer.board.addLine(new Point(4,4), new Point(2,2), Line.COLOUR_RED);
-        mRenderer.board.addTile(2, 0, Tile.COLOUR_BLUE, 'S');
-        mRenderer.board.addTile(2, 1, Tile.COLOUR_RED, 'O');
-        mRenderer.board.addLine(new Point(0,2), new Point(2,2), Line.COLOUR_BLUE);
-        mRenderer.board.addTile(3, 1, Tile.COLOUR_BLUE, 'S');
-        mRenderer.board.addTile(0, 5, Tile.COLOUR_RED, 'O');
-        mRenderer.board.addTile(1, 1, Tile.COLOUR_BLUE, 'S');
-        mRenderer.board.addLine(new Point(1,1), new Point(1,3), Line.COLOUR_RED);
-        mRenderer.board.addTile(3, 5, Tile.COLOUR_RED, 'O');
-        mRenderer.board.addTile(2, 6, Tile.COLOUR_BLUE, 'S');
-        mRenderer.board.addLine(4, 4, 2, 6, Line.COLOUR_BLUE);
+//        // For screenshot
+//        mRenderer.board.addTile(2, 2, Tile.COLOUR_BLUE, 'S');
+//        mRenderer.board.addTile(3, 3, Tile.COLOUR_RED, 'O');
+//        mRenderer.board.addTile(4, 4, Tile.COLOUR_BLUE, 'S');
+//        mRenderer.board.addLine(new Point(4,4), new Point(2,2), Line.COLOUR_RED);
+//        mRenderer.board.addTile(2, 0, Tile.COLOUR_BLUE, 'S');
+//        mRenderer.board.addTile(2, 1, Tile.COLOUR_RED, 'O');
+//        mRenderer.board.addLine(new Point(0,2), new Point(2,2), Line.COLOUR_BLUE);
+//        mRenderer.board.addTile(3, 1, Tile.COLOUR_BLUE, 'S');
+//        mRenderer.board.addTile(0, 5, Tile.COLOUR_RED, 'O');
+//        mRenderer.board.addTile(1, 1, Tile.COLOUR_BLUE, 'S');
+//        mRenderer.board.addLine(new Point(1,1), new Point(1,3), Line.COLOUR_RED);
+//        mRenderer.board.addTile(3, 5, Tile.COLOUR_RED, 'O');
+//        mRenderer.board.addTile(2, 6, Tile.COLOUR_BLUE, 'S');
+//        mRenderer.board.addLine(4, 4, 2, 6, Line.COLOUR_BLUE);
         
     }
     
@@ -190,8 +190,6 @@ public class MyGLSurfaceView extends GLSurfaceView
             	if (chosenTile != null) {
             		mRenderer.board.tiles.add(chosenTile);
                 	animationInProgress = true;
-            		// Start continuous screen updates for duration of animation
-            		setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
             		AnimatorSet animSet = new AnimatorSet();
             		anim = ObjectAnimator.ofFloat(chosenTile, "z",
             				chosenTile.z, 
@@ -209,10 +207,14 @@ public class MyGLSurfaceView extends GLSurfaceView
             			}
             		});
             		animSet.playTogether(anim, anim2);
+            		mRenderer.board.tempTiles.clear();
+            		// Start continuous screen updates for duration of animation
+            		setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
             		animSet.start();
+            	} else {
+            		mRenderer.board.tempTiles.clear();
+            		requestRender();
             	}
-        		mRenderer.board.tempTiles.clear();
-            	requestRender();
             	mode = MODE_IDLE;
         		break;
         	}

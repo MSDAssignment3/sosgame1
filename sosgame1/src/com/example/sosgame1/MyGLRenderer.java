@@ -948,15 +948,17 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         	}
         
         	// Draw the temporary tiles.
-        	for (Cube tile: board.tempTiles) {
-        		Matrix.setIdentityM(mModelMatrix, 0);
-        		Matrix.translateM(mModelMatrix, 0, tile.x, tile.y, tileZ + tile.z);
-        		Matrix.rotateM(mModelMatrix, 0, tile.rotationY, 0.0f, 1.0f, 0.0f);
-        		Matrix.rotateM(mModelMatrix, 0, tile.rotationZ, 0.0f, 0.0f, 1.0f);
-        		Matrix.scaleM(mModelMatrix, 0, tileScaleFactorX, tileScaleFactorY,
-        				tileScaleFactorZ);
-        		tile.draw(mModelMatrix);
-        	}
+//        	synchronized (board.tempTiles) {
+        		for (Cube tile: board.tempTiles) {
+        			Matrix.setIdentityM(mModelMatrix, 0);
+        			Matrix.translateM(mModelMatrix, 0, tile.x, tile.y, tileZ + tile.z);
+        			Matrix.rotateM(mModelMatrix, 0, tile.rotationY, 0.0f, 1.0f, 0.0f);
+        			Matrix.rotateM(mModelMatrix, 0, tile.rotationZ, 0.0f, 0.0f, 1.0f);
+        			Matrix.scaleM(mModelMatrix, 0, tileScaleFactorX, tileScaleFactorY,
+        					tileScaleFactorZ);
+        			tile.draw(mModelMatrix);
+        		}
+//        	}
         
         	// Draw the cells.
         	for (Cube cell: board.cells) {
