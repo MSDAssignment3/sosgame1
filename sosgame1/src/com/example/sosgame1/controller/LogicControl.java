@@ -210,7 +210,10 @@ public class LogicControl {
 							totalCorrect++;
 							System.out.println(answer+" Vertically");
 							System.out.println("Total correct "+totalCorrect);											
-						}
+							if (board != null) {
+								board.addLine(i, k - 2, i, k, Line.COLOUR_BLUE);
+							}
+				}
 						else
 						{
 							//System.out.println("Incorrect0");
@@ -238,7 +241,10 @@ public class LogicControl {
 							totalCorrect++;
 							System.out.println(answer+" Vertically");
 							System.out.println("Total correct "+totalCorrect);										
-						}
+							if (board != null) {
+								board.addLine(i, k - 2, i, k, Line.COLOUR_BLUE);
+							}
+			}
 						else
 						{
 							//System.out.println("Incorrect1");
