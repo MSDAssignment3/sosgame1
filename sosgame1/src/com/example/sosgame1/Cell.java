@@ -2,16 +2,16 @@ package com.example.sosgame1;
 
 public class Cell extends Cube {
 
-	public Cell(MyGLRenderer renderer, int textureOffset, float x, float y) {
+	public Cell(GLRenderer renderer, int textureOffset, float x, float y) {
 		super(renderer, textureOffset, x, y);
-		scaleFactorX = MyGLRenderer.cellScaleFactorX;
-		scaleFactorY = MyGLRenderer.cellScaleFactorY;
+		scaleFactorX = GLRenderer.cellScaleFactorX;
+		scaleFactorY = GLRenderer.cellScaleFactorY;
 	}
 
-	public Cell(MyGLRenderer renderer, int textureOffset) {
+	public Cell(GLRenderer renderer, int textureOffset) {
 		super(renderer, textureOffset);
-		scaleFactorX = MyGLRenderer.cellScaleFactorX;
-		scaleFactorY = MyGLRenderer.cellScaleFactorY;
+		scaleFactorX = GLRenderer.cellScaleFactorX;
+		scaleFactorY = GLRenderer.cellScaleFactorY;
 	}
 
 

@@ -21,7 +21,7 @@ public class Line extends Cube {
 	/** Simple line constructor.
 	 * @param renderer Reference to the renderer.
 	 */
-	public Line(MyGLRenderer renderer) {
+	public Line(GLRenderer renderer) {
 		super(renderer);
 	}
 	
@@ -33,7 +33,7 @@ public class Line extends Cube {
 	 * @param endY Line end y coordinate.
 	 * @param colour Either Line.COLOUR_RED or Line.COLOUR_BLUE.
 	 */
-	public Line(MyGLRenderer renderer, float startX,
+	public Line(GLRenderer renderer, float startX,
 			float startY, float endX, float endY, int colour) {
 		super(renderer);
 		this.startX = startX;
@@ -41,7 +41,7 @@ public class Line extends Cube {
 		this.endX = endX;
 		this.endY = endY;
 //		this.rotationX = colour;
-		z = MyGLRenderer.tileZ + 2 * scaleFactorY;
+		z = GLRenderer.tileZ + 2 * scaleFactorY;
 		colourOffset = colour;
 	}
 	

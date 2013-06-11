@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity" >
 
-    <com.example.sosgame1.MyGLSurfaceView
+    <com.example.sosgame1.GLESSurfaceView
         android:id="@+id/myGLSurfaceView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

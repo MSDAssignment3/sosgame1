@@ -1,5 +1,5 @@
 // TODO: Credit http://www.learnopengles.com/ License? Apache
-package com.example.sosgame1;
+package com.example.sosgame1.renderutils;
 
 import android.opengl.GLES20;
 import android.util.Log;

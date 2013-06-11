@@ -1,5 +1,4 @@
 // TODO: Credit http://www.learnopengles.com/ License? Apache
-// TODO: Credit http://www.learnopengles.com/ License? Apache
 package com.example.sosgame1;
 
 import java.nio.ByteBuffer;
@@ -8,6 +7,11 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
+import com.example.sosgame1.renderutils.RawResourceReader;
+import com.example.sosgame1.renderutils.ShaderHelper;
+import com.example.sosgame1.renderutils.TextureHelper;
+
 import android.content.Context;
 import android.graphics.PointF;
 import android.opengl.GLES20;
@@ -21,11 +25,8 @@ import android.util.Log;
  * This class implements our custom renderer. Note that the GL10 parameter passed in is unused for OpenGL ES 2.0
  * renderers -- the static class GLES20 is used instead.
  */
-public class MyGLRenderer implements GLSurfaceView.Renderer 
+public class GLRenderer implements GLSurfaceView.Renderer 
 {	
-	// TODO: Delete this?
-	/** Used for debug logs. */
-	private static final String TAG = "LessonFourRenderer";
 	
 	private final Context mActivityContext;
 	
@@ -230,7 +231,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	/**
 	 * Initialize the model data.
 	 */
-	public MyGLRenderer(final Context activityContext)
+	public GLRenderer(final Context activityContext)
 	{	
 		mActivityContext = activityContext;
 		

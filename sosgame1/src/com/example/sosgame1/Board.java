@@ -6,7 +6,7 @@ import android.graphics.PointF;
 
 public class Board {
 
-	private MyGLRenderer renderer = null;
+	private GLRenderer renderer = null;
 	public int sizeX = 5;
 	public int sizeY = 5;
 	private int centreX = 2;
@@ -24,7 +24,7 @@ public class Board {
 	/** Simple constructor.
 	 * @param renderer Reference to the renderer.
 	 */
-	public Board(MyGLRenderer renderer) {
+	public Board(GLRenderer renderer) {
 		this.renderer = renderer;
 	}
 	
@@ -33,7 +33,7 @@ public class Board {
 	 * @param sizeX Board x dimension = number of columns.
 	 * @param sizeY Board y dimension = number of rows.
 	 */
-	public Board(MyGLRenderer renderer, int sizeX, int sizeY) {
+	public Board(GLRenderer renderer, int sizeX, int sizeY) {
 		this.renderer = renderer;
 		reset(sizeX, sizeY);
 	}
@@ -52,7 +52,7 @@ public class Board {
 		lines.clear();
 		for (int x = 0; x < sizeX; x++) {
 			for (int y = 0; y < sizeY; y++) {
-				cells.add(new Cell(renderer, MyGLRenderer.textureOffsetCell,
+				cells.add(new Cell(renderer, GLRenderer.textureOffsetCell,
 						x - centreX, y - centreY));
 			}
 		}

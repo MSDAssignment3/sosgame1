@@ -6,7 +6,7 @@ import android.opengl.Matrix;
 
 public class Cube {
 
-	protected MyGLRenderer renderer;
+	protected GLRenderer renderer;
 	protected float x = 0;
 	protected float y = 0;
 	protected float z = 0;
@@ -19,11 +19,11 @@ public class Cube {
 	protected int textureOffset = 0;
 	protected int colourOffset = 0;
 
-	protected Cube(MyGLRenderer renderer) {
+	protected Cube(GLRenderer renderer) {
 		this.renderer = renderer;
 	}
 	
-	protected Cube(MyGLRenderer renderer, int textureOffset) {
+	protected Cube(GLRenderer renderer, int textureOffset) {
 		this.renderer = renderer;
 		this.textureOffset = textureOffset;
 	}
@@ -34,7 +34,7 @@ public class Cube {
 	 * @param x
 	 * @param y
 	 */
-	protected Cube(MyGLRenderer renderer, int textureOffset, float x, float y) {
+	protected Cube(GLRenderer renderer, int textureOffset, float x, float y) {
 		this.renderer = renderer;
 		this.textureOffset = textureOffset;
 		this.x = x;
@@ -48,7 +48,7 @@ public class Cube {
 	 * @param x
 	 * @param y
 	 */
-	protected Cube(MyGLRenderer renderer, int textureOffset, int colourOffset,
+	protected Cube(GLRenderer renderer, int textureOffset, int colourOffset,
 			float x, float y) {
 		this.renderer = renderer;
 		this.textureOffset = textureOffset;
