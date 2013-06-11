@@ -147,6 +147,10 @@ public class MyGLSurfaceView extends GLSurfaceView
 	    }
 	}
 
+	Tile sTile;
+	Tile oTile;
+	Tile chosenTile;
+	
 	/** Handle single tap.
 	 * @param e MotionEvent
 	 */
@@ -167,28 +171,40 @@ public class MyGLSurfaceView extends GLSurfaceView
         		
             	if (tappedCell != null) {
             		mode = MODE_WAIT_FOR_CHOICE;
-            		mRenderer.board.tempTiles.clear();
-            		Tile sTile = new Tile(mRenderer,
+            		sTile = new Tile(mRenderer,
             				Tile.COLOUR_BLUE, tappedCell.x - MyGLRenderer.tileScaleFactorX,
             				tappedCell.y, 'S');
             		sTile.z += MyGLRenderer.tileScaleFactorZ * 2;
-            		mRenderer.board.tempTiles.add(sTile);
-            		Tile oTile = new Tile(mRenderer,
+            		oTile = new Tile(mRenderer,
             				Tile.COLOUR_BLUE, tappedCell.x + MyGLRenderer.tileScaleFactorX,
             				tappedCell.y, 'O');
             		oTile.z += MyGLRenderer.tileScaleFactorZ * 2;
-            		mRenderer.board.tempTiles.add(oTile);
+        			// Safe way to communicate with renderer thread
+        			queueEvent(new Runnable() {
+						@Override
+						public void run() {
+							mRenderer.board.tempTiles.clear();
+							mRenderer.board.tempTiles.add(sTile);
+							mRenderer.board.tempTiles.add(oTile);
+						}
+					});
             		requestRender();
             	}
         		break;
         	case MODE_WAIT_FOR_CHOICE:
             	PointF p3 = mRenderer.getWorldXY(x, y, 
             			MyGLRenderer.tileZ + MyGLRenderer.tileScaleFactorZ * 2);
-            	Tile chosenTile = (Tile) mRenderer.getSelectedCube(p3,
+            	chosenTile = (Tile) mRenderer.getSelectedCube(p3,
             			mRenderer.board.tempTiles);
 
             	if (chosenTile != null) {
-            		mRenderer.board.tiles.add(chosenTile);
+        			// Safe way to communicate with renderer thread
+        			queueEvent(new Runnable() {
+						@Override
+						public void run() {
+							mRenderer.board.tiles.add(chosenTile);
+						}
+					});
                 	animationInProgress = true;
             		AnimatorSet animSet = new AnimatorSet();
             		anim = ObjectAnimator.ofFloat(chosenTile, "z",
@@ -207,7 +223,13 @@ public class MyGLSurfaceView extends GLSurfaceView
             			}
             		});
             		animSet.playTogether(anim, anim2);
-            		mRenderer.board.tempTiles.clear();
+        			// Safe way to communicate with renderer thread
+        			queueEvent(new Runnable() {
+						@Override
+						public void run() {
+							mRenderer.board.tempTiles.clear();
+						}
+					});
             		// Start continuous screen updates for duration of animation
             		setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
             		animSet.start();
@@ -220,7 +242,13 @@ public class MyGLSurfaceView extends GLSurfaceView
                 	}
 
             	} else {
-            		mRenderer.board.tempTiles.clear();
+        			// Safe way to communicate with renderer thread
+        			queueEvent(new Runnable() {
+						@Override
+						public void run() {
+							mRenderer.board.tempTiles.clear();
+						}
+					});
             		requestRender();
             	}
             	mode = MODE_IDLE;
