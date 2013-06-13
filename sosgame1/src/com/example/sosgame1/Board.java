@@ -94,7 +94,10 @@ public class Board {
 	public void addLine(Point start, Point end, int colour) {
 		PointF p1 = boardToWorldXY(new Point(start.x, start.y));
 		PointF p2 = boardToWorldXY(new Point(end.x, end.y));
-		lines.add(new Line(renderer, p1.x, p1.y, p2.x, p2.y, colour));
+		// Synchronise here in case the renderer is iterating across the lines.
+		synchronized (lines) {
+			lines.add(new Line(renderer, p1.x, p1.y, p2.x, p2.y, colour));
+		}
 	}
 	
 	/** Add a line.

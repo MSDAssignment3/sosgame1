@@ -226,6 +226,11 @@ public class GLRenderer implements GLSurfaceView.Renderer
 	public static final int textureOffsetCell = 4 * 6 * 6;
 	public static final int textureOffsetCredits = 6 * 6 * 6;
 	
+	/** The board holds the cell, tile and line collections. Since it is
+	 * instantiated in the renderer class I believe there should not be any
+	 * threading/concurrency problems when calling board methods because they
+	 * run on the same thread.
+	 */
 	public Board board = null;
 	
 	/**
@@ -1015,9 +1020,12 @@ public class GLRenderer implements GLSurfaceView.Renderer
 
         // Draw the lines
         if (board != null) {
-        	for (Cube line: board.lines) {
-        		line.draw();
-        	}
+        	// Synchronise here in case the logic controller is adding a line.
+        	synchronized (board.lines) {
+        		for (Cube line: board.lines) {
+        			line.draw();
+        		}
+			}
         }
         
 //        for (float x = 1; x < 3; x++) {

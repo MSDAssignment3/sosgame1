@@ -120,6 +120,7 @@ public class GLESSurfaceView extends GLSurfaceView
 	        renderer.eyeZ = scaleFactor;
 	        Log.v("eyeZ", ""+renderer.eyeZ);
 			renderer.calculateViewMatrix();
+			requestRender();
 	        return true;
 	    }
 	}
