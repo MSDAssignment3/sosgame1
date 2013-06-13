@@ -151,14 +151,16 @@ public class GLESSurfaceView extends GLSurfaceView
             				tappedCell.y, 'O');
             		oTile.z += GLRenderer.tileScaleFactorZ * 2;
         			// Safe way to communicate with renderer thread
-        			queueEvent(new Runnable() {
-						@Override
-						public void run() {
-							renderer.board.tempTiles.clear();
-							renderer.board.tempTiles.add(sTile);
-							renderer.board.tempTiles.add(oTile);
-						}
-					});
+//        			queueEvent(new Runnable() {
+//						@Override
+//						public void run() {
+            		synchronized (renderer.board.tempTiles) {
+            			renderer.board.tempTiles.clear();
+            			renderer.board.tempTiles.add(sTile);
+            			renderer.board.tempTiles.add(oTile);
+					}
+//						}
+//					});
             		requestRender();
             	}
         		break;
@@ -169,13 +171,15 @@ public class GLESSurfaceView extends GLSurfaceView
             			renderer.board.tempTiles);
 
             	if (chosenTile != null) {
-        			// Safe way to communicate with renderer thread
-        			queueEvent(new Runnable() {
-						@Override
-						public void run() {
-							renderer.board.tiles.add(chosenTile);
-						}
-					});
+//        			// Safe way to communicate with renderer thread
+//        			queueEvent(new Runnable() {
+//						@Override
+//						public void run() {
+            		synchronized (renderer.board.tiles) {
+            			renderer.board.tiles.add(chosenTile);
+					}
+//						}
+//					});
                 	animationInProgress = true;
             		AnimatorSet animSet = new AnimatorSet();
             		anim = ObjectAnimator.ofFloat(chosenTile, "z",
@@ -213,13 +217,15 @@ public class GLESSurfaceView extends GLSurfaceView
                 	}
 
             	} else {
-        			// Safe way to communicate with renderer thread
-        			queueEvent(new Runnable() {
-						@Override
-						public void run() {
-							renderer.board.tempTiles.clear();
-						}
-					});
+//        			// Safe way to communicate with renderer thread
+//        			queueEvent(new Runnable() {
+//						@Override
+//						public void run() {
+            		synchronized (renderer.board.tempTiles) {
+            			renderer.board.tempTiles.clear();
+					}
+//						}
+//					});
             		requestRender();
             	}
             	mode = MODE_IDLE;

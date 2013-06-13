@@ -143,32 +143,42 @@ public class MainActivity extends Activity implements OnClickListener,
         cube.scaleFactorY = size;
         cube.scaleFactorZ = size / 4;
         cube.rotationY = 0;
-        myGLView.renderer.board.creditsCubes.add(cube);
+        synchronized (myGLView.renderer.board.creditsCubes) {
+        	myGLView.renderer.board.creditsCubes.add(cube);
+		}
         cube = new Cube(myGLView.renderer, GLRenderer.textureOffsetCredits, posX, posY);
         cube.z = 0f;
         cube.scaleFactorX = size;
         cube.scaleFactorY = size;
         cube.scaleFactorZ = size / 4;
         cube.rotationY = 180;
-        myGLView.renderer.board.creditsCubes.add(cube);
+        synchronized (myGLView.renderer.board.creditsCubes) {
+        	myGLView.renderer.board.creditsCubes.add(cube);
+		}
         cube = new Cube(myGLView.renderer, GLRenderer.textureOffsetTileBlue, 0, posY);
         cube.z = -posX;
         cube.scaleFactorX = size;
         cube.scaleFactorY = size;
         cube.scaleFactorZ = size / 4;
         cube.rotationY = 0;
-        myGLView.renderer.board.creditsCubes.add(cube);
+        synchronized (myGLView.renderer.board.creditsCubes) {
+        	myGLView.renderer.board.creditsCubes.add(cube);
+		}
         cube = new Cube(myGLView.renderer, GLRenderer.textureOffsetTileRed, 0, posY);
         cube.z = posX;
         cube.scaleFactorX = size;
         cube.scaleFactorY = size;
         cube.scaleFactorZ = size / 4;
         cube.rotationY = 180;
-        myGLView.renderer.board.creditsCubes.add(cube);        
+        synchronized (myGLView.renderer.board.creditsCubes) {
+        	myGLView.renderer.board.creditsCubes.add(cube);
+		}
 	}
 	
 	private void deleteCredits() {
-		myGLView.renderer.board.creditsCubes.clear();
+        synchronized (myGLView.renderer.board.creditsCubes) {
+        	myGLView.renderer.board.creditsCubes.clear();
+        }
 	}
 	
 	/** Scale a value to the range 0 to 100 given a min (scaled to zero) and 

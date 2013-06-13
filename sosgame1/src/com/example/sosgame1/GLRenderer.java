@@ -226,11 +226,7 @@ public class GLRenderer implements GLSurfaceView.Renderer
 	public static final int textureOffsetCell = 4 * 6 * 6;
 	public static final int textureOffsetCredits = 6 * 6 * 6;
 	
-	/** The board holds the cell, tile and line collections. Since it is
-	 * instantiated in the renderer class I believe there should not be any
-	 * threading/concurrency problems when calling board methods because they
-	 * run on the same thread.
-	 */
+	/** The board holds the cell, tile and line collections. */
 	public Board board = null;
 	
 	/**
@@ -943,18 +939,20 @@ public class GLRenderer implements GLSurfaceView.Renderer
         
         if (board != null) {
         	// Draw the tiles.
-        	for (Cube tile: board.tiles) {
-        		Matrix.setIdentityM(mModelMatrix, 0);
-        		Matrix.translateM(mModelMatrix, 0, tile.x, tile.y, tileZ + tile.z);
-        		Matrix.rotateM(mModelMatrix, 0, tile.rotationY, 0.0f, 1.0f, 0.0f);
-        		Matrix.rotateM(mModelMatrix, 0, tile.rotationZ, 0.0f, 0.0f, 1.0f);
-        		Matrix.scaleM(mModelMatrix, 0, tileScaleFactorX, tileScaleFactorY,
-        				tileScaleFactorZ);
-        		tile.draw(mModelMatrix);
+        	synchronized (board.tiles) {
+        		for (Cube tile: board.tiles) {
+        			Matrix.setIdentityM(mModelMatrix, 0);
+        			Matrix.translateM(mModelMatrix, 0, tile.x, tile.y, tileZ + tile.z);
+        			Matrix.rotateM(mModelMatrix, 0, tile.rotationY, 0.0f, 1.0f, 0.0f);
+        			Matrix.rotateM(mModelMatrix, 0, tile.rotationZ, 0.0f, 0.0f, 1.0f);
+        			Matrix.scaleM(mModelMatrix, 0, tileScaleFactorX, tileScaleFactorY,
+        					tileScaleFactorZ);
+        			tile.draw(mModelMatrix);
+        		}
         	}
         
         	// Draw the temporary tiles.
-//        	synchronized (board.tempTiles) {
+        	synchronized (board.tempTiles) {
         		for (Cube tile: board.tempTiles) {
         			Matrix.setIdentityM(mModelMatrix, 0);
         			Matrix.translateM(mModelMatrix, 0, tile.x, tile.y, tileZ + tile.z);
@@ -964,17 +962,19 @@ public class GLRenderer implements GLSurfaceView.Renderer
         					tileScaleFactorZ);
         			tile.draw(mModelMatrix);
         		}
-//        	}
+        	}
         
         	// Draw the cells.
-        	for (Cube cell: board.cells) {
-        		Matrix.setIdentityM(mModelMatrix, 0);
-        		Matrix.translateM(mModelMatrix, 0, cell.x, cell.y, cellZ);
-        		Matrix.rotateM(mModelMatrix, 0, cell.rotationY, 0.0f, 1.0f, 0.0f);
-        		Matrix.rotateM(mModelMatrix, 0, cell.rotationZ, 0.0f, 0.0f, 1.0f);
-        		Matrix.scaleM(mModelMatrix, 0, cellScaleFactorX, cellScaleFactorY,
-        				cellScaleFactorZ);
-        		cell.draw(mModelMatrix);
+        	synchronized (board.cells) {
+        		for (Cube cell: board.cells) {
+        			Matrix.setIdentityM(mModelMatrix, 0);
+        			Matrix.translateM(mModelMatrix, 0, cell.x, cell.y, cellZ);
+        			Matrix.rotateM(mModelMatrix, 0, cell.rotationY, 0.0f, 1.0f, 0.0f);
+        			Matrix.rotateM(mModelMatrix, 0, cell.rotationZ, 0.0f, 0.0f, 1.0f);
+        			Matrix.scaleM(mModelMatrix, 0, cellScaleFactorX, cellScaleFactorY,
+        					cellScaleFactorZ);
+        			cell.draw(mModelMatrix);
+        		}
         	}
         	
         	// Draw credits cubes
@@ -982,23 +982,25 @@ public class GLRenderer implements GLSurfaceView.Renderer
             long time = SystemClock.elapsedRealtime() % period;
             float angle = (360f / period) * ((int) time);
             float dz = (float) Math.sin(((float)Math.PI * 4 / period) * ((int) time));
-        	for (Cube credit: board.creditsCubes) {
-        		Matrix.setIdentityM(mModelMatrix, 0);
-//        		if (eyeZ - 1.5f < credit.scaleFactorZ - credit.z - dz) {
-//        			dz = -credit.scaleFactorZ - credit.z - 1.5f;
-//        		}
-        		Matrix.translateM(mModelMatrix, 0, 0, 0, eyeZ - 4);
-        		Matrix.translateM(mModelMatrix, 0, 0, dz / 2, dz / 4);
-        		Matrix.rotateM(mModelMatrix, 0, angle, 0.0f, 1.0f, 0.0f);
-        		Matrix.translateM(mModelMatrix, 0, credit.x, credit.y, credit.z);
-        		Matrix.rotateM(mModelMatrix, 0, -angle, 0.0f, 1.0f, 0.0f);
-//        		Matrix.rotateM(mModelMatrix, 0, credit.rotationY, 0.0f, 1.0f, 0.0f);
-        		Matrix.rotateM(mModelMatrix, 0, credit.rotationZ, 0.0f, 0.0f, 1.0f);
-        		Matrix.scaleM(mModelMatrix, 0, credit.scaleFactorX,
-        				credit.scaleFactorY, credit.scaleFactorZ);
-        		Matrix.rotateM(mModelMatrix, 0, credit.rotationY, 0.0f, 1.0f, 0.0f);
-        		credit.draw(mModelMatrix);
-        	}
+            synchronized (board.creditsCubes) {
+            	for (Cube credit: board.creditsCubes) {
+            		Matrix.setIdentityM(mModelMatrix, 0);
+//            		if (eyeZ - 1.5f < credit.scaleFactorZ - credit.z - dz) {
+//            			dz = -credit.scaleFactorZ - credit.z - 1.5f;
+//            		}
+            		Matrix.translateM(mModelMatrix, 0, 0, 0, eyeZ - 4);
+            		Matrix.translateM(mModelMatrix, 0, 0, dz / 2, dz / 4);
+            		Matrix.rotateM(mModelMatrix, 0, angle, 0.0f, 1.0f, 0.0f);
+            		Matrix.translateM(mModelMatrix, 0, credit.x, credit.y, credit.z);
+            		Matrix.rotateM(mModelMatrix, 0, -angle, 0.0f, 1.0f, 0.0f);
+//            		Matrix.rotateM(mModelMatrix, 0, credit.rotationY, 0.0f, 1.0f, 0.0f);
+            		Matrix.rotateM(mModelMatrix, 0, credit.rotationZ, 0.0f, 0.0f, 1.0f);
+            		Matrix.scaleM(mModelMatrix, 0, credit.scaleFactorX,
+            				credit.scaleFactorY, credit.scaleFactorZ);
+            		Matrix.rotateM(mModelMatrix, 0, credit.rotationY, 0.0f, 1.0f, 0.0f);
+            		credit.draw(mModelMatrix);
+            	}
+            }
         }
         
         // Change the shader program to one that does not use textures
@@ -1027,28 +1029,6 @@ public class GLRenderer implements GLSurfaceView.Renderer
         		}
 			}
         }
-        
-//        for (float x = 1; x < 3; x++) {
-//        	Line line;
-//        	line = new Line(this, x, x, x + 2, x, Line.COLOUR_RED);
-//        	line.z = tileZ + 0.2f;
-//        	line.draw();
-//        	line = new Line(this, x, x, x, x + 2, Line.COLOUR_BLUE);
-//        	line.z = tileZ + 0.2f;
-//        	line.draw();
-//        	line = new Line(this, x, x, x + 2, x + 2, Line.COLOUR_RED);
-//        	line.z = tileZ + 0.2f;
-//        	line.draw();
-//        	line = new Line(this, -x, -x, -x - 2, -x - 2, Line.COLOUR_BLUE);
-//        	line.z = tileZ + 0.2f;
-//        	line.draw();
-//        	line = new Line(this, x, x, x + 2, x - 2, Line.COLOUR_RED);
-//        	line.z = tileZ + 0.2f;
-//        	line.draw();
-//        	line = new Line(this, x, x, x - 2, x + 2, Line.COLOUR_BLUE);
-//        	line.z = tileZ + 0.2f;
-//        	line.draw();
-//        }
         
 		GLES20.glDisable(GLES20.GL_BLEND);
 	}				

@@ -47,13 +47,24 @@ public class Board {
 		this.sizeY = sizeY;
 		centreX = sizeX / 2;
 		centreY = sizeY / 2;
-		cells.clear();
-		tiles.clear();
-		lines.clear();
-		for (int x = 0; x < sizeX; x++) {
-			for (int y = 0; y < sizeY; y++) {
-				cells.add(new Cell(renderer, GLRenderer.textureOffsetCell,
-						x - centreX, y - centreY));
+		synchronized (cells) {
+			cells.clear();
+		}
+		synchronized (tiles) {
+			tiles.clear();
+		}
+		synchronized (tempTiles) {
+			tempTiles.clear();
+		}
+		synchronized (lines) {
+			lines.clear();
+		}
+		synchronized (cells) {
+			for (int x = 0; x < sizeX; x++) {
+				for (int y = 0; y < sizeY; y++) {
+					cells.add(new Cell(renderer, GLRenderer.textureOffsetCell,
+							x - centreX, y - centreY));
+				}
 			}
 		}
 	}
@@ -66,7 +77,9 @@ public class Board {
 	 */
 	public void addTile(int row, int column, int colour, char letter) {
 		PointF p = boardToWorldXY(new Point(column, row));
-		tiles.add(new Tile(renderer, colour, p.x, p.y, letter));
+		synchronized (tiles) {
+			tiles.add(new Tile(renderer, colour, p.x, p.y, letter));
+		}
 	}
 	
 	/** Get a tile.
