@@ -42,6 +42,7 @@ public class GLESSurfaceView extends GLSurfaceView
     
     private static final int MODE_IDLE = 0;
     private static final int MODE_WAIT_FOR_CHOICE = 1;
+	private static final int MODE_NOT_YOUR_TURN = 2;
     private int mode = MODE_IDLE;
     
     private Cell tappedCell = null;
@@ -136,103 +137,103 @@ public class GLESSurfaceView extends GLSurfaceView
 
         	switch (mode) {
         	case MODE_IDLE:
-            	p = renderer.getWorldXY(x, y, 
-            			GLRenderer.cellZ + GLRenderer.cellScaleFactorZ);
-            	tappedCell = (Cell) renderer.getSelectedCube(p, renderer.board.cells);
-        		
-            	if (tappedCell != null) {
-            		mode = MODE_WAIT_FOR_CHOICE;
-            		sTile = new Tile(renderer,
-            				Tile.COLOUR_BLUE, tappedCell.x - GLRenderer.tileScaleFactorX,
-            				tappedCell.y, 'S');
-            		sTile.z += GLRenderer.tileScaleFactorZ * 2;
-            		oTile = new Tile(renderer,
-            				Tile.COLOUR_BLUE, tappedCell.x + GLRenderer.tileScaleFactorX,
-            				tappedCell.y, 'O');
-            		oTile.z += GLRenderer.tileScaleFactorZ * 2;
-        			// Safe way to communicate with renderer thread
-//        			queueEvent(new Runnable() {
-//						@Override
-//						public void run() {
-            		synchronized (renderer.board.tempTiles) {
-            			renderer.board.tempTiles.clear();
-            			renderer.board.tempTiles.add(sTile);
-            			renderer.board.tempTiles.add(oTile);
-					}
-//						}
-//					});
-            		requestRender();
-            	}
+            	showTilesToChoose(x, y);
         		break;
         	case MODE_WAIT_FOR_CHOICE:
-            	p = renderer.getWorldXY(x, y, 
-            			GLRenderer.tileZ + GLRenderer.tileScaleFactorZ * 2);
-            	chosenTile = (Tile) renderer.getSelectedCube(p,
-            			renderer.board.tempTiles);
-
-            	if (chosenTile != null) {
-//        			// Safe way to communicate with renderer thread
-//        			queueEvent(new Runnable() {
-//						@Override
-//						public void run() {
-            		synchronized (renderer.board.tiles) {
-            			renderer.board.tiles.add(chosenTile);
-					}
-//						}
-//					});
-                	animationInProgress = true;
-            		AnimatorSet animSet = new AnimatorSet();
-            		anim = ObjectAnimator.ofFloat(chosenTile, "z",
-            				chosenTile.z, 
-            				chosenTile.z - GLRenderer.tileScaleFactorZ * 2);
-            		anim.setDuration(300);
-            		anim2 = ObjectAnimator.ofFloat(chosenTile, "x",
-            				chosenTile.x, tappedCell.x);
-            		anim2.setDuration(300);
-            		anim.addListener(new AnimatorListenerAdapter() {
-            			public void onAnimationEnd(Animator animation) {
-            				// Stop continuous screen updates to save battery
-            				setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-            				animationInProgress = false;
-            				requestRender();
-            			}
-            		});
-            		animSet.playTogether(anim, anim2);
-        			// Safe way to communicate with renderer thread
-        			queueEvent(new Runnable() {
-						@Override
-						public void run() {
-							renderer.board.tempTiles.clear();
-						}
-					});
-            		// Start continuous screen updates for duration of animation
-            		setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-            		animSet.start();
-                	
-                	// Test calling Ar's method
-                	if (Math.abs(chosenTile.x) < 3 && Math.abs(chosenTile.y) < 3) {
-                		PointF pt = new PointF(chosenTile.x, chosenTile.y);
-                		Point pt2 = renderer.board.worldToBoardXY(pt);
-                		controller.getAndCheck(pt2.y, pt2.x, "" + chosenTile.letter);
-                	}
-
-            	} else {
-//        			// Safe way to communicate with renderer thread
-//        			queueEvent(new Runnable() {
-//						@Override
-//						public void run() {
-            		synchronized (renderer.board.tempTiles) {
-            			renderer.board.tempTiles.clear();
-					}
-//						}
-//					});
-            		requestRender();
-            	}
-            	mode = MODE_IDLE;
+            	chooseTile(x, y);
+        		break;
+        	case MODE_NOT_YOUR_TURN:
+        		// TODO Do we need to do anything here?
         		break;
         	}
         	
         }
+	}
+
+	/** The player has either tapped on one of the two tiles or has tapped
+	 * elsewhere. If a tile was tapped then add the tile to the tiles
+	 * collection and animate. Otherwise clear the temporary tiles.
+	 * @param x Touch x coordinate.
+	 * @param y Touch y coordinate.
+	 */
+	public void chooseTile(float x, float y) {
+		p = renderer.getWorldXY(x, y, 
+				GLRenderer.tileZ + GLRenderer.tileScaleFactorZ * 2);
+		chosenTile = (Tile) renderer.getSelectedCube(p,
+				renderer.board.tempTiles);
+
+		if (chosenTile != null) {
+			synchronized (renderer.board.tiles) {
+				renderer.board.tiles.add(chosenTile);
+			}
+			animationInProgress = true;
+			AnimatorSet animSet = new AnimatorSet();
+			anim = ObjectAnimator.ofFloat(chosenTile, "z",
+					chosenTile.z, 
+					chosenTile.z - GLRenderer.tileScaleFactorZ * 2);
+			anim.setDuration(300);
+			anim2 = ObjectAnimator.ofFloat(chosenTile, "x",
+					chosenTile.x, tappedCell.x);
+			anim2.setDuration(300);
+			anim.addListener(new AnimatorListenerAdapter() {
+				public void onAnimationEnd(Animator animation) {
+					// Stop continuous screen updates to save battery
+					setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+					animationInProgress = false;
+					requestRender();
+				}
+			});
+			animSet.playTogether(anim, anim2);
+			synchronized (renderer.board.tempTiles) {
+				renderer.board.tempTiles.clear();
+			}
+			// Start continuous screen updates for duration of animation
+			setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+			animSet.start();
+			
+			// Call the logic controller
+			PointF pt = new PointF(chosenTile.x, chosenTile.y);
+			Point pt2 = renderer.board.worldToBoardXY(pt);
+			controller.getAndCheck(pt2.y, pt2.x, "" + chosenTile.letter);
+
+		} else {
+			// Clean up if player touches anywhere not on the two tiles
+			synchronized (renderer.board.tempTiles) {
+				renderer.board.tempTiles.clear();
+			}
+			requestRender();
+		}
+		mode = MODE_IDLE;
+	}
+
+	/** Show two tiles for the player to choose from.
+	 * @param x Touch x coordinate.
+	 * @param y Touch y coordinate.
+	 */
+	public void showTilesToChoose(float x, float y) {
+		p = renderer.getWorldXY(x, y, 
+				GLRenderer.cellZ + GLRenderer.cellScaleFactorZ);
+		tappedCell = (Cell) renderer.getSelectedCube(p, renderer.board.cells);
+		
+		if (tappedCell != null) {
+			mode = MODE_WAIT_FOR_CHOICE;
+			sTile = new Tile(renderer,
+					Board.playerColourToTileColour(controller.currentPlayerColour),
+					tappedCell.x - GLRenderer.tileScaleFactorX,
+					tappedCell.y, 'S');
+			sTile.z += GLRenderer.tileScaleFactorZ * 2;
+			oTile = new Tile(renderer,
+					Board.playerColourToTileColour(controller.currentPlayerColour),
+					tappedCell.x + GLRenderer.tileScaleFactorX,
+					tappedCell.y, 'O');
+			oTile.z += GLRenderer.tileScaleFactorZ * 2;
+			synchronized (renderer.board.tempTiles) {
+				renderer.board.tempTiles.clear();
+				renderer.board.tempTiles.add(sTile);
+				renderer.board.tempTiles.add(oTile);
+			}
+			requestRender();
+		}
 	}
 	
 	private void doPan(MotionEvent e1, MotionEvent e2,

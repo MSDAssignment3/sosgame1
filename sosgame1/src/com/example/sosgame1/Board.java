@@ -102,12 +102,17 @@ public class Board {
 	/** Add a line.
 	 * @param start Start Point with x = column and y = row.
 	 * @param end End Point with x = column and y = row.
-	 * @param colour Either Line.COLOUR_RED or Line.COLOUR_BLUE.
+	 * @param colour Either Player.COLOUR_RED or Player.COLOUR_BLUE.
 	 */
 	public void addLine(Point start, Point end, int colour) {
 		PointF p1 = boardToWorldXY(new Point(start.x, start.y));
 		PointF p2 = boardToWorldXY(new Point(end.x, end.y));
 		// Synchronise here in case the renderer is iterating across the lines.
+		if (colour == Player.COLOUR_BLUE) {
+			colour = Line.COLOUR_BLUE;
+		} else {
+			colour = Line.COLOUR_RED;
+		}
 		synchronized (lines) {
 			lines.add(new Line(renderer, p1.x, p1.y, p2.x, p2.y, colour));
 		}
@@ -118,7 +123,7 @@ public class Board {
 	 * @param column1 Start column index.
 	 * @param row2 End row index.
 	 * @param column2 End column index.
-	 * @param colour Either Line.COLOUR_RED or Line.COLOUR_BLUE.
+	 * @param colour Either Player.COLOUR_RED or Player.COLOUR_BLUE.
 	 */
 	public void addLine(int row1, int column1, int row2, int column2,
 			int colour) {
@@ -139,6 +144,20 @@ public class Board {
 	 */
 	public PointF boardToWorldXY(Point p) {
 		return new PointF(p.x - centreX, centreY - p.y);
+	}
+	
+	/** Convert from the player colours to the texture offset used for the
+	 * tile colours.
+	 * @param colour Either Player.COLOUR_BLUE or Player.COLOUR_RED.
+	 * @return Either Tile.COLOUR_BLUE or Tile.COLOUR_RED.
+	 */
+	public static int playerColourToTileColour(int colour) {
+		if (colour == Player.COLOUR_BLUE) {
+			return Tile.COLOUR_BLUE;
+		} else {
+			return Tile.COLOUR_RED;
+		}
+			
 	}
 	
 }

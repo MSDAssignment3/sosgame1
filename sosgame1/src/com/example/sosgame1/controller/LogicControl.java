@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 
 import com.example.sosgame1.Board;
 import com.example.sosgame1.Line;
+import com.example.sosgame1.Player;
+import com.example.sosgame1.Tile;
 
 //Class for game logic
 public class LogicControl {
@@ -18,6 +20,8 @@ public class LogicControl {
 	//total will be 
 	private String input [][] = new String[5][5];	
 	private Board board = null;
+	
+	public int currentPlayerColour = Player.COLOUR_BLUE;
 	
 	public LogicControl()
 	{
@@ -96,7 +100,7 @@ public class LogicControl {
 							System.out.println(answer+" Horizontally");
 							System.out.println("Total correct "+totalCorrect);
 							if (board != null) {
-								board.addLine(i, k - 2, i, k, Line.COLOUR_BLUE);
+								board.addLine(i, k - 2, i, k, currentPlayerColour);
 							}
 						}
 						else
@@ -127,7 +131,7 @@ public class LogicControl {
 							System.out.println(answer+" Horizontally");
 							System.out.println("Total correct "+totalCorrect);										
 							if (board != null) {
-								board.addLine(i, k - 2, i, k, Line.COLOUR_BLUE);
+								board.addLine(i, k - 2, i, k, currentPlayerColour);
 							}
 						}
 						else
@@ -158,7 +162,7 @@ public class LogicControl {
 							System.out.println(answer+" Horizontally");
 							System.out.println("Total correct "+totalCorrect);										
 							if (board != null) {
-								board.addLine(i, k - 2, i, k, Line.COLOUR_BLUE);
+								board.addLine(i, k - 2, i, k, currentPlayerColour);
 							}
 						}
 						else
@@ -217,7 +221,7 @@ public class LogicControl {
 							System.out.println(answer+" Vertically");
 							System.out.println("Total correct "+totalCorrect);											
 							if (board != null) {
-								board.addLine(k - 2, j, k, j, Line.COLOUR_BLUE);
+								board.addLine(k - 2, j, k, j, currentPlayerColour);
 							}
 						}
 						else
@@ -248,7 +252,7 @@ public class LogicControl {
 							System.out.println(answer+" Vertically");
 							System.out.println("Total correct "+totalCorrect);										
 							if (board != null) {
-								board.addLine(k - 2, j, k, j, Line.COLOUR_BLUE);
+								board.addLine(k - 2, j, k, j, currentPlayerColour);
 							}
 						}
 						else
@@ -279,7 +283,7 @@ public class LogicControl {
 							System.out.println(answer+" Vertically");
 							System.out.println("Total correct "+totalCorrect);										
 							if (board != null) {
-								board.addLine(k - 2, j, k, j, Line.COLOUR_BLUE);
+								board.addLine(k - 2, j, k, j, currentPlayerColour);
 							}
 						}
 						else
