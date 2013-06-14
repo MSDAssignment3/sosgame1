@@ -23,6 +23,8 @@ import com.example.sosgame1.controller.LogicControl;
 
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -53,15 +55,21 @@ public class MainActivity extends Activity implements OnClickListener,
 		super.onCreate(savedInstanceState);
 		// Create an instance of the logic controller
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.activity_main);
-		mainView = (RelativeLayout) findViewById(R.id.rlMain);
-		((Button) findViewById(R.id.btnView)).setOnClickListener(this);
-		((Button) findViewById(R.id.button2)).setOnClickListener(this);
-		((Button) findViewById(R.id.btnCredits)).setOnClickListener(this);
-		myGLView = (GLESSurfaceView) findViewById(R.id.myGLSurfaceView1);
-		// Pass controller instance to the GLSurfaceView
-		controller = new LogicControl(myGLView.renderer.board);
-		myGLView.setController(controller);
+//		setContentView(R.layout.activity_main);
+//		mainView = (RelativeLayout) findViewById(R.id.rlMain);
+//		((Button) findViewById(R.id.btnView)).setOnClickListener(this);
+//		((Button) findViewById(R.id.button2)).setOnClickListener(this);
+//		((Button) findViewById(R.id.btnCredits)).setOnClickListener(this);
+//		myGLView = (GLESSurfaceView) findViewById(R.id.myGLSurfaceView1);
+//		// Pass controller instance to the GLSurfaceView
+//		controller = new LogicControl(myGLView.renderer.board);
+//		myGLView.setController(controller);
+
+//		LayoutInflater inflater = getLayoutInflater();
+		setContentView(R.layout.splash_page);
+//		viewAdjustView = inflater.inflate(R.layout.splash_page, null);
+		((ImageButton) findViewById(R.id.btnPlay)).setOnClickListener(this);
+		((ImageButton) findViewById(R.id.btnSettings)).setOnClickListener(this);
 	}
 
 	@Override
@@ -126,6 +134,38 @@ public class MainActivity extends Activity implements OnClickListener,
 				deleteCredits();
 				myGLView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 				myGLView.requestRender();
+			}
+			break;
+		case R.id.btnPlay:
+			// animate first
+			ImageButton buttonPlay = (ImageButton) findViewById(R.id.btnPlay); //can't put before switch it will be null
+			AnimatorSet btnPlayAniSet = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.button_rotate); //can't reuse
+			btnPlayAniSet.setTarget(buttonPlay);
+			btnPlayAniSet.start();
+			
+			if ( !(btnPlayAniSet.isRunning()) ) //not working
+			{
+				setContentView(R.layout.activity_main);
+				mainView = (RelativeLayout) findViewById(R.id.rlMain);
+				((Button) findViewById(R.id.btnView)).setOnClickListener(this);
+				((Button) findViewById(R.id.button2)).setOnClickListener(this);
+				((Button) findViewById(R.id.btnCredits)).setOnClickListener(this);
+				myGLView = (GLESSurfaceView) findViewById(R.id.myGLSurfaceView1);
+				// Pass controller instance to the GLSurfaceView
+				controller = new LogicControl(myGLView.renderer.board);
+				myGLView.setController(controller);
+				
+				break;
+			}
+//			if (viewAdjustView != null) {
+//				mainView.removeView(viewAdjustView);
+//			}
+//			break;
+		case R.id.btnSettings:
+			viewAdjustView = inflater.inflate(R.layout.settings_page, null);
+		    RelativeLayout testView = (RelativeLayout) findViewById(R.id.rlSplash);
+			if (viewAdjustView != null) {
+				testView.addView(viewAdjustView);
 			}
 			break;
 		}
