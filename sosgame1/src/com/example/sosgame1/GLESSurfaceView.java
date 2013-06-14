@@ -137,10 +137,14 @@ public class GLESSurfaceView extends GLSurfaceView
 
         	switch (mode) {
         	case MODE_IDLE:
-            	showTilesToChoose(x, y);
+        		p = renderer.getWorldXY(x, y, 
+        				GLRenderer.cellZ + GLRenderer.cellScaleFactorZ);
+            	showTilesToChoose(p);
         		break;
         	case MODE_WAIT_FOR_CHOICE:
-            	chooseTile(x, y);
+        		p = renderer.getWorldXY(x, y, 
+        				GLRenderer.tileZ + GLRenderer.tileScaleFactorZ * 2);
+            	chooseTile(p);
         		break;
         	case MODE_NOT_YOUR_TURN:
         		// TODO Do we need to do anything here?
@@ -153,14 +157,10 @@ public class GLESSurfaceView extends GLSurfaceView
 	/** The player has either tapped on one of the two tiles or has tapped
 	 * elsewhere. If a tile was tapped then add the tile to the tiles
 	 * collection and animate. Otherwise clear the temporary tiles.
-	 * @param x Touch x coordinate.
-	 * @param y Touch y coordinate.
+	 * @param p The x, y coordinates in the 3D world space.
 	 */
-	public void chooseTile(float x, float y) {
-		p = renderer.getWorldXY(x, y, 
-				GLRenderer.tileZ + GLRenderer.tileScaleFactorZ * 2);
-		chosenTile = (Tile) renderer.getSelectedCube(p,
-				renderer.board.tempTiles);
+	public void chooseTile(PointF p) {
+		chosenTile = (Tile) renderer.getSelectedCube(p, renderer.board.tempTiles);
 
 		if (chosenTile != null) {
 			synchronized (renderer.board.tiles) {
@@ -207,12 +207,9 @@ public class GLESSurfaceView extends GLSurfaceView
 	}
 
 	/** Show two tiles for the player to choose from.
-	 * @param x Touch x coordinate.
-	 * @param y Touch y coordinate.
+	 * @param p The x, y coordinates in the 3D world space.
 	 */
-	public void showTilesToChoose(float x, float y) {
-		p = renderer.getWorldXY(x, y, 
-				GLRenderer.cellZ + GLRenderer.cellScaleFactorZ);
+	public void showTilesToChoose(PointF p) {
 		tappedCell = (Cell) renderer.getSelectedCube(p, renderer.board.cells);
 		
 		if (tappedCell != null) {
