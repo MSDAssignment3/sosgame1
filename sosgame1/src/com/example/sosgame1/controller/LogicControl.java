@@ -5,7 +5,11 @@ import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import android.graphics.Point;
+import android.graphics.PointF;
+
 import com.example.sosgame1.Board;
+import com.example.sosgame1.Cube;
 import com.example.sosgame1.Line;
 import com.example.sosgame1.Player;
 import com.example.sosgame1.Tile;
@@ -100,7 +104,9 @@ public class LogicControl {
 							System.out.println(answer+" Horizontally");
 							System.out.println("Total correct "+totalCorrect);
 							if (board != null) {
-								board.addLine(i, k - 2, i, k, currentPlayerColour);
+								if (!board.lineAlreadyAdded(i, k - 2, i, k)) {
+									board.addLine(i, k - 2, i, k, currentPlayerColour);
+								}
 							}
 						}
 						else
@@ -131,7 +137,9 @@ public class LogicControl {
 							System.out.println(answer+" Horizontally");
 							System.out.println("Total correct "+totalCorrect);										
 							if (board != null) {
-								board.addLine(i, k - 2, i, k, currentPlayerColour);
+								if (!board.lineAlreadyAdded(i, k - 2, i, k)) {
+									board.addLine(i, k - 2, i, k, currentPlayerColour);
+								}
 							}
 						}
 						else
@@ -162,7 +170,9 @@ public class LogicControl {
 							System.out.println(answer+" Horizontally");
 							System.out.println("Total correct "+totalCorrect);										
 							if (board != null) {
-								board.addLine(i, k - 2, i, k, currentPlayerColour);
+								if (!board.lineAlreadyAdded(i, k - 2, i, k)) {
+									board.addLine(i, k - 2, i, k, currentPlayerColour);
+								}
 							}
 						}
 						else
@@ -221,7 +231,9 @@ public class LogicControl {
 							System.out.println(answer+" Vertically");
 							System.out.println("Total correct "+totalCorrect);											
 							if (board != null) {
-								board.addLine(k - 2, j, k, j, currentPlayerColour);
+								if (!board.lineAlreadyAdded(k - 2, j, k, j)) {
+									board.addLine(k - 2, j, k, j, currentPlayerColour);
+								}
 							}
 						}
 						else
@@ -252,7 +264,9 @@ public class LogicControl {
 							System.out.println(answer+" Vertically");
 							System.out.println("Total correct "+totalCorrect);										
 							if (board != null) {
-								board.addLine(k - 2, j, k, j, currentPlayerColour);
+								if (!board.lineAlreadyAdded(k - 2, j, k, j)) {
+									board.addLine(k - 2, j, k, j, currentPlayerColour);
+								}
 							}
 						}
 						else
@@ -283,7 +297,9 @@ public class LogicControl {
 							System.out.println(answer+" Vertically");
 							System.out.println("Total correct "+totalCorrect);										
 							if (board != null) {
-								board.addLine(k - 2, j, k, j, currentPlayerColour);
+								if (!board.lineAlreadyAdded(k - 2, j, k, j)) {
+									board.addLine(k - 2, j, k, j, currentPlayerColour);
+								}
 							}
 						}
 						else

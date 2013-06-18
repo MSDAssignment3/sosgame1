@@ -1,8 +1,14 @@
 package com.example.sosgame1;
 
 import java.util.ArrayList;
+
+import android.animation.ObjectAnimator;
+import android.animation.TimeInterpolator;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.view.animation.Animation;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.DecelerateInterpolator;
 
 public class Board {
 
@@ -113,9 +119,21 @@ public class Board {
 		} else {
 			colour = Line.COLOUR_RED;
 		}
+		Line line = new Line(renderer, p1.x, p1.y, p2.x, p2.y, colour);
+		float oldZ = line.z;
+		line.z += 3;
 		synchronized (lines) {
-			lines.add(new Line(renderer, p1.x, p1.y, p2.x, p2.y, colour));
+			lines.add(line);
+//			lines.add(new Line(renderer, p1.x, p1.y, p2.x, p2.y, colour));
 		}
+		animateLine(line, oldZ);
+	}
+	
+	public void animateLine(Line line, float oldZ) {
+		ObjectAnimator anim = ObjectAnimator.ofFloat(line, "z", line.z, oldZ);
+		anim.setDuration(350);
+		anim.setInterpolator(new DecelerateInterpolator());
+		anim.start();
 	}
 	
 	/** Add a line.
@@ -158,6 +176,25 @@ public class Board {
 			return Tile.COLOUR_RED;
 		}
 			
+	}
+	
+	public boolean lineAlreadyAdded(int row1, int col1, int row2, int col2) {
+		Line line;
+		PointF p1 = boardToWorldXY(new Point(col1, row1));
+		PointF p2 = boardToWorldXY(new Point(col2, row2));
+		float epsilon = 0.001f;
+		synchronized (lines) {
+			for (Cube cube: lines) {
+				line = (Line) cube;
+				if (Math.abs(line.startX - p1.x) < epsilon &&
+						Math.abs(line.startY - p1.y) < epsilon &&
+						Math.abs(line.endX - p2.x) < epsilon &&
+						Math.abs(line.endY - p2.y) < epsilon) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 }
