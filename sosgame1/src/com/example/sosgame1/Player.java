@@ -5,6 +5,9 @@ public class Player {
     private String name;
     private int score;
     
+    public static final int COLOUR_BLUE = 0;
+    public static final int COLOUR_RED = 1;
+    
     public String getName() {
             return name;
     }

@@ -1,8 +1,14 @@
 package com.example.sosgame1;
 
 import java.util.ArrayList;
+
+import android.animation.ObjectAnimator;
+import android.animation.TimeInterpolator;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.view.animation.Animation;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.DecelerateInterpolator;
 
 public class Board {
 
@@ -102,15 +108,32 @@ public class Board {
 	/** Add a line.
 	 * @param start Start Point with x = column and y = row.
 	 * @param end End Point with x = column and y = row.
-	 * @param colour Either Line.COLOUR_RED or Line.COLOUR_BLUE.
+	 * @param colour Either Player.COLOUR_RED or Player.COLOUR_BLUE.
 	 */
 	public void addLine(Point start, Point end, int colour) {
 		PointF p1 = boardToWorldXY(new Point(start.x, start.y));
 		PointF p2 = boardToWorldXY(new Point(end.x, end.y));
 		// Synchronise here in case the renderer is iterating across the lines.
-		synchronized (lines) {
-			lines.add(new Line(renderer, p1.x, p1.y, p2.x, p2.y, colour));
+		if (colour == Player.COLOUR_BLUE) {
+			colour = Line.COLOUR_BLUE;
+		} else {
+			colour = Line.COLOUR_RED;
 		}
+		Line line = new Line(renderer, p1.x, p1.y, p2.x, p2.y, colour);
+		float oldZ = line.z;
+		line.z += 3;
+		synchronized (lines) {
+			lines.add(line);
+//			lines.add(new Line(renderer, p1.x, p1.y, p2.x, p2.y, colour));
+		}
+		animateLine(line, oldZ);
+	}
+	
+	public void animateLine(Line line, float oldZ) {
+		ObjectAnimator anim = ObjectAnimator.ofFloat(line, "z", line.z, oldZ);
+		anim.setDuration(350);
+		anim.setInterpolator(new DecelerateInterpolator());
+		anim.start();
 	}
 	
 	/** Add a line.
@@ -118,7 +141,7 @@ public class Board {
 	 * @param column1 Start column index.
 	 * @param row2 End row index.
 	 * @param column2 End column index.
-	 * @param colour Either Line.COLOUR_RED or Line.COLOUR_BLUE.
+	 * @param colour Either Player.COLOUR_RED or Player.COLOUR_BLUE.
 	 */
 	public void addLine(int row1, int column1, int row2, int column2,
 			int colour) {
@@ -139,6 +162,46 @@ public class Board {
 	 */
 	public PointF boardToWorldXY(Point p) {
 		return new PointF(p.x - centreX, centreY - p.y);
+	}
+	
+	/** Convert from the player colours to the texture offset used for the
+	 * tile colours.
+	 * @param colour Either Player.COLOUR_BLUE or Player.COLOUR_RED.
+	 * @return Either Tile.COLOUR_BLUE or Tile.COLOUR_RED.
+	 */
+	public static int playerColourToTileColour(int colour) {
+		if (colour == Player.COLOUR_BLUE) {
+			return Tile.COLOUR_BLUE;
+		} else {
+			return Tile.COLOUR_RED;
+		}
+			
+	}
+	
+	/** Check if a line has already been added.
+	 * @param row1 Start row index.
+	 * @param col1 Start column index.
+	 * @param row2 End row index.
+	 * @param col2 End column index.
+	 * @return True if the line is already added. False otherwise.
+	 */
+	public boolean lineAlreadyAdded(int row1, int col1, int row2, int col2) {
+		Line line;
+		PointF p1 = boardToWorldXY(new Point(col1, row1));
+		PointF p2 = boardToWorldXY(new Point(col2, row2));
+		float epsilon = 0.001f;
+		synchronized (lines) {
+			for (Cube cube: lines) {
+				line = (Line) cube;
+				if (Math.abs(line.startX - p1.x) < epsilon &&
+						Math.abs(line.startY - p1.y) < epsilon &&
+						Math.abs(line.endX - p2.x) < epsilon &&
+						Math.abs(line.endY - p2.y) < epsilon) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 }

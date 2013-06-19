@@ -135,12 +135,6 @@ public class GLRenderer implements GLSurfaceView.Renderer
 	/** This is a handle to the cell texture data. */
 	public int cellTextureDataHandle;
 	
-//	/** Stores the tile objects. */
-//	public ArrayList<Tile> tiles = new ArrayList<Tile>();
-	
-//	/** Stores the board cell objects. */
-//	public ArrayList<Cell> cells = new ArrayList<Cell>();
-	
 	/** Viewport width. */
 	public int width;
 	
