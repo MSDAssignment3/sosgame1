@@ -178,6 +178,13 @@ public class Board {
 			
 	}
 	
+	/** Check if a line has already been added.
+	 * @param row1 Start row index.
+	 * @param col1 Start column index.
+	 * @param row2 End row index.
+	 * @param col2 End column index.
+	 * @return True if the line is already added. False otherwise.
+	 */
 	public boolean lineAlreadyAdded(int row1, int col1, int row2, int col2) {
 		Line line;
 		PointF p1 = boardToWorldXY(new Point(col1, row1));
