@@ -9,7 +9,8 @@
         android:propertyName="rotation"
         android:repeatCount="2"
         android:repeatMode="reverse"
-        android:valueTo="20"
+        android:valueFrom="-10"
+        android:valueTo="10"
         android:valueType="floatType" />
     
 </set>

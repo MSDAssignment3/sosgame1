@@ -23,6 +23,7 @@ import com.example.sosgame1.controller.LogicControl;
 
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.app.Activity;
@@ -141,22 +142,43 @@ public class MainActivity extends Activity implements OnClickListener,
 			ImageButton buttonPlay = (ImageButton) findViewById(R.id.btnPlay); //can't put before switch it will be null
 			AnimatorSet btnPlayAniSet = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.button_rotate); //can't reuse
 			btnPlayAniSet.setTarget(buttonPlay);
-			btnPlayAniSet.start();
-			
-			if ( !(btnPlayAniSet.isRunning()) ) //not working
-			{
-				setContentView(R.layout.activity_main);
-				mainView = (RelativeLayout) findViewById(R.id.rlMain);
-				((Button) findViewById(R.id.btnView)).setOnClickListener(this);
-				((Button) findViewById(R.id.button2)).setOnClickListener(this);
-				((Button) findViewById(R.id.btnCredits)).setOnClickListener(this);
-				myGLView = (GLESSurfaceView) findViewById(R.id.myGLSurfaceView1);
-				// Pass controller instance to the GLSurfaceView
-				controller = new LogicControl(myGLView.renderer.board);
-				myGLView.setController(controller);
+			btnPlayAniSet.addListener(new Animator.AnimatorListener() {
+				@Override
+				public void onAnimationStart(Animator animation) {
+					// TODO Auto-generated method stub
+				}
 				
-				break;
-			}
+				@Override
+				public void onAnimationRepeat(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+				
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					showGameScreen();
+				}
+				
+				@Override
+				public void onAnimationCancel(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+			});
+			btnPlayAniSet.start();
+
+//			if ( !(btnPlayAniSet.isRunning()) ) //not working
+//			{
+//				setContentView(R.layout.activity_main);
+//				mainView = (RelativeLayout) findViewById(R.id.rlMain);
+//				((Button) findViewById(R.id.btnView)).setOnClickListener(this);
+//				((Button) findViewById(R.id.button2)).setOnClickListener(this);
+//				((Button) findViewById(R.id.btnCredits)).setOnClickListener(this);
+//				myGLView = (GLESSurfaceView) findViewById(R.id.myGLSurfaceView1);
+//				// Pass controller instance to the GLSurfaceView
+//				controller = new LogicControl(myGLView.renderer.board);
+//				myGLView.setController(controller);
+//				
+//			}
+			break;
 //			if (viewAdjustView != null) {
 //				mainView.removeView(viewAdjustView);
 //			}
@@ -171,6 +193,18 @@ public class MainActivity extends Activity implements OnClickListener,
 		}
 	}
 
+	private void showGameScreen() {
+		setContentView(R.layout.activity_main);
+		mainView = (RelativeLayout) findViewById(R.id.rlMain);
+		((Button) findViewById(R.id.btnView)).setOnClickListener(this);
+		((Button) findViewById(R.id.button2)).setOnClickListener(this);
+		((Button) findViewById(R.id.btnCredits)).setOnClickListener(this);
+		myGLView = (GLESSurfaceView) findViewById(R.id.myGLSurfaceView1);
+		// Pass controller instance to the GLSurfaceView
+		controller = new LogicControl(myGLView.renderer.board);
+		myGLView.setController(controller);
+	}
+	
 	private void createCredits() {
         // Credits
         Cube cube;
