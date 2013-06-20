@@ -38,6 +38,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 public class MainActivity extends Activity implements OnClickListener,
 	SeekBar.OnSeekBarChangeListener {
@@ -190,7 +191,13 @@ public class MainActivity extends Activity implements OnClickListener,
 			
 		case R.id.btnSettingsGame:
 			viewToSettings(this.mainView);
+			break;
+			
+		case R.id.testUpdateScore:
+			updateScore();
+			break;
 		}
+		
 		
 	}
 	
@@ -205,6 +212,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		((Button) findViewById(R.id.button2)).setOnClickListener(this);
 		((Button) findViewById(R.id.btnCredits)).setOnClickListener(this);
 		((ImageButton) findViewById(R.id.btnSettingsGame)).setOnClickListener(this);
+		((Button) findViewById(R.id.testUpdateScore)).setOnClickListener(this);//REMOVE this when testing updateScore is not needed
 		myGLView = (GLESSurfaceView) findViewById(R.id.myGLSurfaceView1);
 		// Pass controller instance to the GLSurfaceView
 		controller = new LogicControl(myGLView.renderer.board);
@@ -213,6 +221,7 @@ public class MainActivity extends Activity implements OnClickListener,
 	
 	/**
 	 * Adds Setting view on top of the current view
+	 * @param view - the RelativeLayout where the click event occurred from
 	 */
 	private void viewToSettings(RelativeLayout view)
 	{
@@ -222,6 +231,19 @@ public class MainActivity extends Activity implements OnClickListener,
 			view.addView(viewAdjustView);
 		}
 		((ImageButton) findViewById(R.id.btnBack)).setOnClickListener(this);
+	}
+	
+	/**
+	 * THIS IS NOT YET COMPLETE
+	 * Updates the Scores on the screen
+	 */
+	private void updateScore()
+	{
+		int dummy = 1; //change and remove later
+		TextView textBlueScore = (TextView) findViewById(R.id.txtBlueScore);
+		TextView textRedScore = (TextView) findViewById(R.id.txtRedScore);
+		textBlueScore.setText(""+dummy);
+		textRedScore.setText(""+dummy);
 	}
 
 	private void createCredits() {
@@ -355,13 +377,11 @@ public class MainActivity extends Activity implements OnClickListener,
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
 		// TODO Auto-generated method stub
-		
 	}
 
 }

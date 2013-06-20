@@ -64,7 +64,7 @@
         android:src="@drawable/player_red" />
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/txtRedScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/imgPlayerRed"
@@ -81,5 +81,13 @@
         android:layout_alignParentRight="true"
         android:background="@null"
         android:src="@drawable/gear_button" />
+
+    <Button
+        android:id="@+id/testUpdateScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/btnCredits"
+        android:text="Test Update Score" />
 
 </RelativeLayout>
