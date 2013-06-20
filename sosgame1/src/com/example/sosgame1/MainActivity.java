@@ -137,25 +137,18 @@ public class MainActivity extends Activity implements OnClickListener,
 			    @Override 
 			    public void onAnimationEnd(Animator animation) {
 			    	viewToSplash();
-					        
 			    }
-
 				@Override
 				public void onAnimationCancel(Animator animation) {
 					// TODO Auto-generated method stub
-					
 				}
-
 				@Override
 				public void onAnimationRepeat(Animator animation) {
 					// TODO Auto-generated method stub
-					
 				}
-
 				@Override
 				public void onAnimationStart(Animator animation) {
 					// TODO Auto-generated method stub
-					
 				}
 			});
 			btnPlayAniSet.start();
