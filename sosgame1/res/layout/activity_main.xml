@@ -55,4 +55,31 @@
         android:text="0"
         android:textSize="80sp" />
 
+    <ImageView
+        android:id="@+id/imgPlayerRed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/player_red" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/imgPlayerRed"
+        android:layout_alignTop="@+id/imgPlayerRed"
+        android:padding="10dp"
+        android:text="0"
+        android:textSize="80sp" />
+
+    <ImageButton
+        android:id="@+id/btnSettingsGame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:background="@null"
+        android:src="@drawable/gear_button" />
+
 </RelativeLayout>
