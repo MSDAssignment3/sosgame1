@@ -10,7 +10,10 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.BounceInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 
 public class Board {
 
@@ -71,9 +74,12 @@ public class Board {
 			lines.clear();
 		}
 		float oldZ = GLRenderer.cellZ;
-		Animator[] anims = new Animator[sizeX * sizeY];
+//		Animator[] anims = new Animator[sizeX * sizeY * 3];
+		ArrayList<ObjectAnimator> animList = new ArrayList<ObjectAnimator>(); 
 		AnimatorSet animSet = new AnimatorSet();
-		int i = 0;
+//		int i = 0;
+		float oldX;
+		float oldY;
 		synchronized (cells) {
 			for (int x = 0; x < sizeX; x++) {
 				for (int y = 0; y < sizeY; y++) {
@@ -81,8 +87,19 @@ public class Board {
 							x - centreX, y - centreY);
 					cell.z = oldZ + 6;
 					cells.add(cell);
-					anims[i] = cellAnimation(cell, oldZ);
-					i++;
+//					anims[i] = cellAnimation(cell, "z", cell.z, oldZ);
+					animList.add(cellAnimation(cell, "z", cell.z, oldZ));
+//					i++;
+					oldX = cell.x;
+					cell.x = oldX + 2 * x - sizeX;
+//					anims[i] = cellAnimation(cell, "x", cell.x, oldX);
+					animList.add(cellAnimation(cell, "x", cell.x, oldX));
+//					i++;
+					oldY = cell.y;
+					cell.y = oldY + 2 * y - sizeY;
+//					anims[i] = cellAnimation(cell, "y", cell.y, oldY);
+					animList.add(cellAnimation(cell, "y", cell.y, oldY));
+//					i++;
 				}
 			}
 		}
@@ -97,45 +114,25 @@ public class Board {
 			@Override
 			public void onAnimationStart(Animator animation) {
 				surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-//				Log.v("start", "anim");
 				super.onAnimationStart(animation);
 			}
 		});
 		
-//		animSet.addListener(new Animator.AnimatorListener() {
-//			@Override
-//			public void onAnimationStart(Animator animation) {
-//				surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-//			}
-//			
-//			@Override
-//			public void onAnimationRepeat(Animator animation) {
-//				// TODO Auto-generated method stub
-//			}
-//			
-//			@Override
-//			public void onAnimationEnd(Animator animation) {
-//				surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-//			}
-//			
-//			@Override
-//			public void onAnimationCancel(Animator animation) {
-//				surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-//			}
-//		});
-		
-//		animSet.setStartDelay(1000);
-//		animSet.setDuration(1000);
+		Animator[] anims = new Animator[animList.size()];
+		anims = animList.toArray(anims);
+//		Log.v("anims", "" + anims.length);
 		animSet.playTogether(anims);
 		animSet.start();
 	}
 
-	public ObjectAnimator cellAnimation(Cell cell, float oldZ) {
+	public ObjectAnimator cellAnimation(Cell cell, String property, 
+			float start, float end) {
 		ObjectAnimator anim = new ObjectAnimator();
-		anim = ObjectAnimator.ofFloat(cell, "z", cell.z, oldZ);
-		anim.setDuration(3000);
+		anim = ObjectAnimator.ofFloat(cell, property, start, end);
+		anim.setDuration(1500);
 		anim.setInterpolator(new DecelerateInterpolator());
-		anim.setStartDelay(1000);
+//		anim.setInterpolator(new OvershootInterpolator());
+		anim.setStartDelay(200);
 		return anim;
 	}
 	
