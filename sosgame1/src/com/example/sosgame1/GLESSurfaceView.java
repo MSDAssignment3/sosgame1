@@ -71,7 +71,7 @@ public class GLESSurfaceView extends GLSurfaceView
         setRenderer(renderer);
 
         // Render the view only when there is a change in the drawing data
-        setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+//        setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 		
         setOnTouchListener(this);
         
@@ -84,7 +84,7 @@ public class GLESSurfaceView extends GLSurfaceView
         gestureDetector = new GestureDetector(context, gestureListener);
         
         // Create the board
-        renderer.setBoard(new Board(renderer, 5, 5));
+        renderer.setBoard(new Board(renderer, this, 5, 5));
         
     }
     
