@@ -2,17 +2,20 @@ package com.example.sosgame1;
 
 import java.util.ArrayList;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.animation.TimeInterpolator;
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.view.animation.Animation;
-import android.view.animation.BounceInterpolator;
+import android.opengl.GLSurfaceView;
+import android.util.Log;
 import android.view.animation.DecelerateInterpolator;
 
 public class Board {
 
 	private GLRenderer renderer = null;
+	private GLESSurfaceView surfaceView = null;
 	public int sizeX = 5;
 	public int sizeY = 5;
 	private int centreX = 2;
@@ -39,8 +42,10 @@ public class Board {
 	 * @param sizeX Board x dimension = number of columns.
 	 * @param sizeY Board y dimension = number of rows.
 	 */
-	public Board(GLRenderer renderer, int sizeX, int sizeY) {
+	public Board(GLRenderer renderer, GLESSurfaceView surfaceView,
+			int sizeX, int sizeY) {
 		this.renderer = renderer;
+		this.surfaceView = surfaceView;
 		reset(sizeX, sizeY);
 	}
 	
@@ -65,16 +70,75 @@ public class Board {
 		synchronized (lines) {
 			lines.clear();
 		}
+		float oldZ = GLRenderer.cellZ;
+		Animator[] anims = new Animator[sizeX * sizeY];
+		AnimatorSet animSet = new AnimatorSet();
+		int i = 0;
 		synchronized (cells) {
 			for (int x = 0; x < sizeX; x++) {
 				for (int y = 0; y < sizeY; y++) {
-					cells.add(new Cell(renderer, GLRenderer.textureOffsetCell,
-							x - centreX, y - centreY));
+					Cell cell = new Cell(renderer, GLRenderer.textureOffsetCell,
+							x - centreX, y - centreY);
+					cell.z = oldZ + 6;
+					cells.add(cell);
+					anims[i] = cellAnimation(cell, oldZ);
+					i++;
 				}
 			}
 		}
+
+		animSet.addListener(new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+				super.onAnimationEnd(animation);
+			}
+
+			@Override
+			public void onAnimationStart(Animator animation) {
+				surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+//				Log.v("start", "anim");
+				super.onAnimationStart(animation);
+			}
+		});
+		
+//		animSet.addListener(new Animator.AnimatorListener() {
+//			@Override
+//			public void onAnimationStart(Animator animation) {
+//				surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+//			}
+//			
+//			@Override
+//			public void onAnimationRepeat(Animator animation) {
+//				// TODO Auto-generated method stub
+//			}
+//			
+//			@Override
+//			public void onAnimationEnd(Animator animation) {
+//				surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+//			}
+//			
+//			@Override
+//			public void onAnimationCancel(Animator animation) {
+//				surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+//			}
+//		});
+		
+//		animSet.setStartDelay(1000);
+//		animSet.setDuration(1000);
+		animSet.playTogether(anims);
+		animSet.start();
 	}
 
+	public ObjectAnimator cellAnimation(Cell cell, float oldZ) {
+		ObjectAnimator anim = new ObjectAnimator();
+		anim = ObjectAnimator.ofFloat(cell, "z", cell.z, oldZ);
+		anim.setDuration(3000);
+		anim.setInterpolator(new DecelerateInterpolator());
+		anim.setStartDelay(1000);
+		return anim;
+	}
+	
 	/** Add a tile.
 	 * @param row Row index starting from zero.
 	 * @param column Column index starting from zero
@@ -113,7 +177,6 @@ public class Board {
 	public void addLine(Point start, Point end, int colour) {
 		PointF p1 = boardToWorldXY(new Point(start.x, start.y));
 		PointF p2 = boardToWorldXY(new Point(end.x, end.y));
-		// Synchronise here in case the renderer is iterating across the lines.
 		if (colour == Player.COLOUR_BLUE) {
 			colour = Line.COLOUR_BLUE;
 		} else {
@@ -122,6 +185,7 @@ public class Board {
 		Line line = new Line(renderer, p1.x, p1.y, p2.x, p2.y, colour);
 		float oldZ = line.z;
 		line.z += 3;
+		// Synchronise here in case the renderer is iterating across the lines.
 		synchronized (lines) {
 			lines.add(line);
 //			lines.add(new Line(renderer, p1.x, p1.y, p2.x, p2.y, colour));
@@ -131,7 +195,7 @@ public class Board {
 	
 	public void animateLine(Line line, float oldZ) {
 		ObjectAnimator anim = ObjectAnimator.ofFloat(line, "z", line.z, oldZ);
-		anim.setDuration(350);
+		anim.setDuration(300);
 		anim.setInterpolator(new DecelerateInterpolator());
 		anim.start();
 	}

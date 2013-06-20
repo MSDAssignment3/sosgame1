@@ -962,7 +962,7 @@ public class GLRenderer implements GLSurfaceView.Renderer
         	synchronized (board.cells) {
         		for (Cube cell: board.cells) {
         			Matrix.setIdentityM(mModelMatrix, 0);
-        			Matrix.translateM(mModelMatrix, 0, cell.x, cell.y, cellZ);
+        			Matrix.translateM(mModelMatrix, 0, cell.x, cell.y, cell.z);
         			Matrix.rotateM(mModelMatrix, 0, cell.rotationY, 0.0f, 1.0f, 0.0f);
         			Matrix.rotateM(mModelMatrix, 0, cell.rotationZ, 0.0f, 0.0f, 1.0f);
         			Matrix.scaleM(mModelMatrix, 0, cellScaleFactorX, cellScaleFactorY,
