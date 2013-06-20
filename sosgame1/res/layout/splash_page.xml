@@ -23,7 +23,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:background="@null"
-        android:src="@drawable/settings_button"
-        android:visibility="visible" />
+        android:src="@drawable/settings_button" />
 
 </RelativeLayout>

@@ -3,13 +3,19 @@
 	
     android:ordering="sequentially" >
     
-
     <objectAnimator
-    android:duration="200"
+    	android:duration="200"
         android:propertyName="rotation"
         android:repeatCount="2"
         android:repeatMode="reverse"
         android:valueTo="20"
+        android:valueType="floatType" />
+    
+    <objectAnimator
+    	android:duration="1"
+        android:propertyName="rotation"
+        android:repeatCount="1"
+        android:valueTo="0"
         android:valueType="floatType" />
     
 </set>

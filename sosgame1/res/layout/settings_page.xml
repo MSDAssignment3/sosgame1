@@ -32,6 +32,17 @@
         android:layout_alignParentRight="true"
         android:layout_alignRight="@+id/imgSounds"
         android:layout_alignTop="@+id/imgSounds"
-        android:layout_marginTop="120dp" />
+        android:layout_marginTop="120dp"
+        android:paddingLeft="100dp"
+        android:paddingRight="50dp" />
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@null"
+        android:src="@drawable/back_button" />
     
 </RelativeLayout>
