@@ -1,6 +1,7 @@
 package com.example.sosgame1;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -78,21 +79,24 @@ public class Board {
 		float oldX;
 		float oldY;
 		float oldZ;
+		long duration;
+		Random random = new Random();
 		synchronized (cells) {
 			for (int x = 0; x < sizeX; x++) {
 				for (int y = 0; y < sizeY; y++) {
 					Cell cell = new Cell(renderer, GLRenderer.textureOffsetCell,
 							x - centreX, y - centreY);
 					cells.add(cell);
+					duration = 500 + random.nextInt(2500);
 					oldZ = cell.z;
 					cell.z = oldZ + 6;
-					animList.add(cellAnimation(cell, "z", cell.z, oldZ));
+					animList.add(cellAnimation(cell, "z", cell.z, oldZ, duration));
 					oldX = cell.x;
 					cell.x = oldX + 2 * x - sizeX;
-					animList.add(cellAnimation(cell, "x", cell.x, oldX));
+					animList.add(cellAnimation(cell, "x", cell.x, oldX, duration));
 					oldY = cell.y;
 					cell.y = oldY + 2 * y - sizeY;
-					animList.add(cellAnimation(cell, "y", cell.y, oldY));
+					animList.add(cellAnimation(cell, "y", cell.y, oldY, duration));
 				}
 			}
 		}
@@ -100,13 +104,13 @@ public class Board {
 		animSet.addListener(new AnimatorListenerAdapter() {
 			@Override
 			public void onAnimationEnd(Animator animation) {
-				surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+				surfaceView.decrementAnimations();
 				super.onAnimationEnd(animation);
 			}
 
 			@Override
 			public void onAnimationStart(Animator animation) {
-				surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+				surfaceView.incrementAnimations();
 				super.onAnimationStart(animation);
 			}
 		});
@@ -117,11 +121,19 @@ public class Board {
 		animSet.start();
 	}
 
+	/** Create an object animator to animate a cell.
+	 * @param cell The cell to be animated.
+	 * @param property The cell property to be animated.
+	 * @param start The property start value.
+	 * @param end The property end value.
+	 * @param duration The duration of the animation.
+	 * @return An ObjectAnimator object.
+	 */
 	public ObjectAnimator cellAnimation(Cell cell, String property, 
-			float start, float end) {
+			float start, float end, long duration) {
 		ObjectAnimator anim = new ObjectAnimator();
 		anim = ObjectAnimator.ofFloat(cell, property, start, end);
-		anim.setDuration(1500);
+		anim.setDuration(duration);
 		anim.setInterpolator(new DecelerateInterpolator());
 //		anim.setInterpolator(new OvershootInterpolator());
 		anim.setStartDelay(200);
@@ -177,15 +189,27 @@ public class Board {
 		// Synchronise here in case the renderer is iterating across the lines.
 		synchronized (lines) {
 			lines.add(line);
-//			lines.add(new Line(renderer, p1.x, p1.y, p2.x, p2.y, colour));
 		}
 		animateLine(line, oldZ);
 	}
 	
 	public void animateLine(Line line, float oldZ) {
 		ObjectAnimator anim = ObjectAnimator.ofFloat(line, "z", line.z, oldZ);
-		anim.setDuration(300);
+		anim.setDuration(500);
 		anim.setInterpolator(new DecelerateInterpolator());
+		anim.addListener(new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				surfaceView.decrementAnimations();
+				super.onAnimationEnd(animation);
+			}
+
+			@Override
+			public void onAnimationStart(Animator animation) {
+				surfaceView.incrementAnimations();
+				super.onAnimationStart(animation);
+			}
+		});
 		anim.start();
 	}
 	
