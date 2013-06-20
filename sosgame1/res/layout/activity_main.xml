@@ -52,7 +52,7 @@
         android:layout_alignLeft="@+id/imgPlayerBlue"
         android:layout_alignTop="@+id/imgPlayerBlue"
         android:padding="10dp"
-        android:text="0"
+        android:text="@string/zero"
         android:textSize="80sp" />
 
     <ImageView
@@ -70,7 +70,7 @@
         android:layout_alignRight="@+id/imgPlayerRed"
         android:layout_alignTop="@+id/imgPlayerRed"
         android:padding="10dp"
-        android:text="0"
+        android:text="@string/zero"
         android:textSize="80sp" />
 
     <ImageButton

@@ -161,7 +161,7 @@ public class MainActivity extends Activity implements OnClickListener,
 			btnSettingsAniSet.addListener(new AnimatorListener() {
 			    @Override 
 			    public void onAnimationEnd(Animator animation) {
-			    	viewToSettings();       
+			    	viewToSettings(viewSplash);       
 			    }
 				@Override
 				public void onAnimationCancel(Animator animation) {
@@ -184,8 +184,12 @@ public class MainActivity extends Activity implements OnClickListener,
 		case R.id.btnBack:
 			if (viewAdjustView != null) {
 				viewSplash.removeView(viewAdjustView);
+				mainView.removeView(viewAdjustView);
 			}
 			break;
+			
+		case R.id.btnSettingsGame:
+			viewToSettings(this.mainView);
 		}
 		
 	}
@@ -200,6 +204,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		((Button) findViewById(R.id.btnView)).setOnClickListener(this);
 		((Button) findViewById(R.id.button2)).setOnClickListener(this);
 		((Button) findViewById(R.id.btnCredits)).setOnClickListener(this);
+		((ImageButton) findViewById(R.id.btnSettingsGame)).setOnClickListener(this);
 		myGLView = (GLESSurfaceView) findViewById(R.id.myGLSurfaceView1);
 		// Pass controller instance to the GLSurfaceView
 		controller = new LogicControl(myGLView.renderer.board);
@@ -209,12 +214,12 @@ public class MainActivity extends Activity implements OnClickListener,
 	/**
 	 * Adds Setting view on top of the current view
 	 */
-	private void viewToSettings()
+	private void viewToSettings(RelativeLayout view)
 	{
 		LayoutInflater inflater = getLayoutInflater();
 		viewAdjustView = inflater.inflate(R.layout.settings_page, null);
 		if (viewAdjustView != null) {
-			viewSplash.addView(viewAdjustView);
+			view.addView(viewAdjustView);
 		}
 		((ImageButton) findViewById(R.id.btnBack)).setOnClickListener(this);
 	}
