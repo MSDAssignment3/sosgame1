@@ -73,33 +73,26 @@ public class Board {
 		synchronized (lines) {
 			lines.clear();
 		}
-		float oldZ = GLRenderer.cellZ;
-//		Animator[] anims = new Animator[sizeX * sizeY * 3];
 		ArrayList<ObjectAnimator> animList = new ArrayList<ObjectAnimator>(); 
 		AnimatorSet animSet = new AnimatorSet();
-//		int i = 0;
 		float oldX;
 		float oldY;
+		float oldZ;
 		synchronized (cells) {
 			for (int x = 0; x < sizeX; x++) {
 				for (int y = 0; y < sizeY; y++) {
 					Cell cell = new Cell(renderer, GLRenderer.textureOffsetCell,
 							x - centreX, y - centreY);
-					cell.z = oldZ + 6;
 					cells.add(cell);
-//					anims[i] = cellAnimation(cell, "z", cell.z, oldZ);
+					oldZ = cell.z;
+					cell.z = oldZ + 6;
 					animList.add(cellAnimation(cell, "z", cell.z, oldZ));
-//					i++;
 					oldX = cell.x;
 					cell.x = oldX + 2 * x - sizeX;
-//					anims[i] = cellAnimation(cell, "x", cell.x, oldX);
 					animList.add(cellAnimation(cell, "x", cell.x, oldX));
-//					i++;
 					oldY = cell.y;
 					cell.y = oldY + 2 * y - sizeY;
-//					anims[i] = cellAnimation(cell, "y", cell.y, oldY);
 					animList.add(cellAnimation(cell, "y", cell.y, oldY));
-//					i++;
 				}
 			}
 		}
@@ -120,7 +113,6 @@ public class Board {
 		
 		Animator[] anims = new Animator[animList.size()];
 		anims = animList.toArray(anims);
-//		Log.v("anims", "" + anims.length);
 		animSet.playTogether(anims);
 		animSet.start();
 	}
