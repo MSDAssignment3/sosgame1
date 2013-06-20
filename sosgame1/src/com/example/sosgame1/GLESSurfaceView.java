@@ -85,7 +85,7 @@ public class GLESSurfaceView extends GLSurfaceView
         gestureDetector = new GestureDetector(context, gestureListener);
         
         // Create the board
-        renderer.setBoard(new Board(renderer, this, 9, 9));
+        renderer.setBoard(new Board(renderer, this, 5, 5));
         
     }
     
