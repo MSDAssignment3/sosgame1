@@ -154,9 +154,9 @@ public class GLRenderer implements GLSurfaceView.Renderer
 	public float eyeY = -1.0f;
 	
 	/** Eye/camera z coordinate used in view matrix. */
-	public float eyeZ = 2.0f;	// 5x5
+//	public float eyeZ = 2.0f;	// 5x5
 //	public float eyeZ = 3.5f;	// 7x7
-//	public float eyeZ = 5.5f;	// 9x9
+	public float eyeZ = 5.5f;	// 9x9
 //	public float eyeZ = 7.5f;	// 11x11
 //	public float eyeZ = 17.5f;	// 21x21
 	

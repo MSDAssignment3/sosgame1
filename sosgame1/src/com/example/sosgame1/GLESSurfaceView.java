@@ -51,6 +51,7 @@ public class GLESSurfaceView extends GLSurfaceView
 	private Tile oTile;
 	private Tile chosenTile;
 	private PointF p = new PointF();
+	private int animationCounter = 0;
 	
     public GLESSurfaceView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -71,7 +72,7 @@ public class GLESSurfaceView extends GLSurfaceView
         setRenderer(renderer);
 
         // Render the view only when there is a change in the drawing data
-//        setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 		
         setOnTouchListener(this);
         
@@ -159,6 +160,9 @@ public class GLESSurfaceView extends GLSurfaceView
 	 * collection and animate. Otherwise clear the temporary tiles.
 	 * @param p The x, y coordinates in the 3D world space.
 	 */
+	/**
+	 * @param p
+	 */
 	public void chooseTile(PointF p) {
 		chosenTile = (Tile) renderer.getSelectedCube(p, renderer.board.tempTiles);
 
@@ -178,7 +182,7 @@ public class GLESSurfaceView extends GLSurfaceView
 			anim.addListener(new AnimatorListenerAdapter() {
 				public void onAnimationEnd(Animator animation) {
 					// Stop continuous screen updates to save battery
-					setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+					decrementAnimations();
 					animationInProgress = false;
 					requestRender();
 				}
@@ -188,7 +192,7 @@ public class GLESSurfaceView extends GLSurfaceView
 				renderer.board.tempTiles.clear();
 			}
 			// Start continuous screen updates for duration of animation
-			setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+			incrementAnimations();
 			animSet.start();
 			
 			// Call the logic controller
@@ -266,4 +270,18 @@ public class GLESSurfaceView extends GLSurfaceView
         return true;
     }
 
+    public void incrementAnimations() {
+    	animationCounter++;
+    	if (animationCounter == 1) {
+    		setRenderMode(RENDERMODE_CONTINUOUSLY);
+    	}
+    }
+    
+    public void decrementAnimations() {
+    	animationCounter--;
+    	if (animationCounter == 0) {
+    		setRenderMode(RENDERMODE_WHEN_DIRTY);
+    	}
+    }
+    
 }
