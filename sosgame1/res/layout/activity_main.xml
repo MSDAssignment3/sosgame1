@@ -16,7 +16,7 @@
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/btnView"
         android:text="SplashTest" />
 
@@ -24,8 +24,8 @@
         android:id="@+id/btnView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
         android:text="View" />
 
     <Button
@@ -33,9 +33,61 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="14dp"
+        android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/button2"
         android:text="Credits" />
+
+    <ImageView
+        android:id="@+id/imgPlayerBlue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/player_blue" />
+
+    <TextView
+        android:id="@+id/txtBlueScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/imgPlayerBlue"
+        android:layout_alignTop="@+id/imgPlayerBlue"
+        android:padding="10dp"
+        android:text="@string/zero"
+        android:textSize="80sp" />
+
+    <ImageView
+        android:id="@+id/imgPlayerRed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/player_red" />
+
+    <TextView
+        android:id="@+id/txtRedScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/imgPlayerRed"
+        android:layout_alignTop="@+id/imgPlayerRed"
+        android:padding="10dp"
+        android:text="@string/zero"
+        android:textSize="80sp" />
+
+    <ImageButton
+        android:id="@+id/btnSettingsGame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:background="@null"
+        android:src="@drawable/gear_button" />
+
+    <Button
+        android:id="@+id/testUpdateScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/btnCredits"
+        android:text="Test Update Score" />
 
 </RelativeLayout>
