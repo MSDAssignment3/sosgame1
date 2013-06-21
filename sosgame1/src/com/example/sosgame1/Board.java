@@ -74,6 +74,15 @@ public class Board {
 		synchronized (lines) {
 			lines.clear();
 		}
+		
+		// Adjust eyeZ for different board sizes
+		if (sizeX <= 5) {
+			renderer.eyeZ = 2;
+		} else {
+			renderer.eyeZ = 3.5f + (sizeX - 7);
+		}
+		renderer.calculateViewMatrix();
+		
 		ArrayList<ObjectAnimator> animList = new ArrayList<ObjectAnimator>(); 
 		AnimatorSet animSet = new AnimatorSet();
 		float oldX;
