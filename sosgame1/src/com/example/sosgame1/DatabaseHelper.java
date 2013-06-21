@@ -5,22 +5,31 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class Database extends SQLiteOpenHelper {
+/**
+ * Creates the Database.
+ * @author Bea
+ * Created through the tutorials from:
+ * http://www.vogella.com/articles/AndroidSQLite/article.html
+ * http://androiddevelopmentworld.blogspot.co.nz/2013/04/android-sqlite-tutorial.html
+ */
+public class DatabaseHelper extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "sos.db";
 	private static final int DATABASE_VERSION = 2;
-	private static final String TABLE_SCORE = "score";
-	private static final String COLUMN_ID = "score_id";
-	private static final String COLUMN_PLAYER = "player";
-	private static final String COLUMN_VALUE = "score_value";
+	
+	public  static final String TABLE_SCORE = "score";
+	public  static final String COLUMN_ID = "score_id";
+	public  static final String COLUMN_PLAYER = "player";
+	public  static final String COLUMN_VALUE = "score_value";
 	
 	// Database creation sql statement
 	private static final String DATABASE_CREATE = "create table "
 	  + TABLE_SCORE + "(" + COLUMN_ID
 	  + " integer primary key autoincrement, " + COLUMN_PLAYER
-	  + " text not null, " + COLUMN_VALUE + "text not null);";
+	  + " text not null, " + COLUMN_VALUE + "integer not null);";
+	//SQLite datatype, INTEGER, can store up to 8-bytes. LONG datatypes are 8-byte
 	
-	public Database(Context context) {
+	public DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 
@@ -31,11 +40,10 @@ public class Database extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		Log.w(Database.class.getName(), "Upgrading database from version " + oldVersion + " to "
+		Log.w(DatabaseHelper.class.getName(), "Upgrading database from version " + oldVersion + " to "
 		    + newVersion + ", which will destroy all old data");
 	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCORE);
 	    onCreate(db);
-		
 	}
 
 }

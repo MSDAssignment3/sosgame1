@@ -9,14 +9,14 @@ package com.example.sosgame1;
  */
 public class Score {
 	
-	private int scoreId;
+	private long scoreId;
 	private String player;
 	private int scoreValue;
 	
-	public int getScoreId() {
+	public long getScoreId() {
 		return scoreId;
 	}
-	public void setScoreId(int scoreId) {
+	public void setScoreId(long scoreId) {
 		this.scoreId = scoreId;
 	}
 	public String getPlayer() {
