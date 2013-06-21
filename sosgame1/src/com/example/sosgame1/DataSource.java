@@ -58,7 +58,7 @@ public class DataSource {
 				 + " = " + id, null);
 	}
 
-	public List<Score> getAllComments() {
+	public List<Score> getAllScores() {
 		List<Score> scores = new ArrayList<Score>();
 
 		Cursor cursor = database.query(DatabaseHelper.TABLE_SCORE,

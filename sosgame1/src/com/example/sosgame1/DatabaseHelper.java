@@ -26,7 +26,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_CREATE = "create table "
 	  + TABLE_SCORE + "(" + COLUMN_ID
 	  + " integer primary key autoincrement, " + COLUMN_PLAYER
-	  + " text not null, " + COLUMN_VALUE + "integer not null);";
+	  + " text not null, " + COLUMN_VALUE + " integer not null)";
 	//SQLite datatype, INTEGER, can store up to 8-bytes. LONG datatypes are 8-byte
 	
 	public DatabaseHelper(Context context) {
@@ -45,5 +45,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCORE);
 	    onCreate(db);
 	}
+
+	//FOR MISTAKES
+//	@Override
+//	public void onOpen(SQLiteDatabase db) {
+//		super.onOpen(db);
+//		db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCORE);
+//		onCreate(db);
+//	}
 
 }
