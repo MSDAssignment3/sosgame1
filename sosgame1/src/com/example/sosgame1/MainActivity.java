@@ -18,16 +18,15 @@
 
 package com.example.sosgame1;
 
-import com.example.sosgame1.GLESSurfaceView;
-import com.example.sosgame1.controller.LogicControl;
+import java.util.List;
 
-import android.opengl.GLSurfaceView;
-import android.os.Bundle;
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.app.Activity;
+import android.opengl.GLSurfaceView;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,6 +38,8 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.example.sosgame1.controller.LogicControl;
 
 public class MainActivity extends Activity implements OnClickListener,
 	SeekBar.OnSeekBarChangeListener {
@@ -53,6 +54,8 @@ public class MainActivity extends Activity implements OnClickListener,
     private boolean isPanningY = false;
     private LogicControl controller = null;
     private boolean rollCredits = false;
+    
+    private DataSource dataSource;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +66,12 @@ public class MainActivity extends Activity implements OnClickListener,
 		((ImageButton) findViewById(R.id.btnPlay)).setOnClickListener(this);
 		((ImageButton) findViewById(R.id.btnSettings)).setOnClickListener(this);
 		viewSplash = (RelativeLayout) findViewById(R.id.rlSplash);
+		
+		//DB
+		dataSource = new DataSource(this);
+	    dataSource.open();
+	    //get all Scores, to be diplayed
+//	    List<Score> scores = dataSource.getAllScores(); //TEST LATER
 	}
 
 	@Override
@@ -196,6 +205,10 @@ public class MainActivity extends Activity implements OnClickListener,
 		case R.id.testUpdateScore:
 			updateScore();
 			break;
+			
+		case R.id.testSaveScore:
+			saveScore();
+			break;
 		}
 		
 		
@@ -213,6 +226,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		((Button) findViewById(R.id.btnCredits)).setOnClickListener(this);
 		((ImageButton) findViewById(R.id.btnSettingsGame)).setOnClickListener(this);
 		((Button) findViewById(R.id.testUpdateScore)).setOnClickListener(this);//REMOVE this when testing updateScore is not needed
+		((Button) findViewById(R.id.testSaveScore)).setOnClickListener(this);//REMOVE this when testing saveScore is not needed
 		myGLView = (GLESSurfaceView) findViewById(R.id.myGLSurfaceView1);
 		// Pass controller instance to the GLSurfaceView
 		controller = new LogicControl(myGLView.renderer.board);
@@ -223,8 +237,7 @@ public class MainActivity extends Activity implements OnClickListener,
 	 * Adds Setting view on top of the current view
 	 * @param view - the RelativeLayout where the click event occurred from
 	 */
-	private void viewToSettings(RelativeLayout view)
-	{
+	private void viewToSettings(RelativeLayout view){
 		LayoutInflater inflater = getLayoutInflater();
 		viewAdjustView = inflater.inflate(R.layout.settings_page, null);
 		if (viewAdjustView != null) {
@@ -237,14 +250,22 @@ public class MainActivity extends Activity implements OnClickListener,
 	 * THIS IS NOT YET COMPLETE
 	 * Updates the Scores on the screen
 	 */
-	private void updateScore()
-	{
+	private void updateScore(){
 		int dummy = 1; //change and remove later
 		TextView textBlueScore = (TextView) findViewById(R.id.txtBlueScore);
 		TextView textRedScore = (TextView) findViewById(R.id.txtRedScore);
 		textBlueScore.setText(""+dummy);
 		textRedScore.setText(""+dummy);
 	}
+	
+	/**
+	 * Save score to the DB
+	 */
+	private void saveScore(){
+		TextView textBlueScore = (TextView) findViewById(R.id.txtBlueScore);
+		Score score = dataSource.createScore( "TEST", Integer.parseInt((String) textBlueScore.getText()) );
+	}
+	
 
 	private void createCredits() {
         // Credits
