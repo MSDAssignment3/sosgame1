@@ -90,4 +90,13 @@
         android:layout_toRightOf="@+id/btnCredits"
         android:text="Test Update Score" />
 
+    <Button
+        android:id="@+id/testSaveScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btnCredits"
+        android:layout_alignBottom="@+id/btnCredits"
+        android:layout_toRightOf="@+id/testUpdateScore"
+        android:text="Test Save Score" />
+
 </RelativeLayout>
