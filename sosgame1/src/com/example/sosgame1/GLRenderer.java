@@ -59,17 +59,11 @@ public class GLRenderer implements GLSurfaceView.Renderer
 	/** Stores cube vertex colours. */
 	public final FloatBuffer mCubeColors;
 	
-//	/** Stores line vertex colours. */
-//	public final FloatBuffer lineColors;
-	
 	/** Stores cube vertex normals. */
 	public final FloatBuffer mCubeNormals;
 	
 	/** Stores cube texture coordinates. */
 	public final FloatBuffer mCubeTextureCoordinates;
-	
-//	/** Stores cell texture coordinates. */
-//	public final FloatBuffer cellTextureCoordinates;
 	
 	/** This will be used to pass in the transformation matrix. */
 	public int mMVPMatrixHandle;
@@ -155,10 +149,6 @@ public class GLRenderer implements GLSurfaceView.Renderer
 	
 	/** Eye/camera z coordinate used in view matrix. */
 	public float eyeZ = 2.0f;	// 5x5
-//	public float eyeZ = 3.5f;	// 7x7
-//	public float eyeZ = 5.5f;	// 9x9
-//	public float eyeZ = 7.5f;	// 11x11
-//	public float eyeZ = 17.5f;	// 21x21
 	
 	/** Eye/camera x look coordinate used in view matrix. */
 	public float lookX = 0.0f;
@@ -215,9 +205,16 @@ public class GLRenderer implements GLSurfaceView.Renderer
 	/** Scales the cell z dimensions. */
 	public static final float cellScaleFactorZ = 0.125f;
 	
+	/** Offset into the texture coordinates array. */
 	public static final int textureOffsetTileBlue = 0;
+
+	/** Offset into the texture coordinates array. */
 	public static final int textureOffsetTileRed = 2 * 6 * 6;
+
+	/** Offset into the texture coordinates array. */
 	public static final int textureOffsetCell = 4 * 6 * 6;
+
+	/** Offset into the texture coordinates array. */
 	public static final int textureOffsetCredits = 6 * 6 * 6;
 	
 	/** The board holds the cell, tile and line collections. */
@@ -713,10 +710,6 @@ public class GLRenderer implements GLSurfaceView.Renderer
         .order(ByteOrder.nativeOrder()).asFloatBuffer();							
 		mCubeColors.put(cubeColorData).position(0);
 		
-//		lineColors = ByteBuffer.allocateDirect(lineColorData.length * mBytesPerFloat)
-//		        .order(ByteOrder.nativeOrder()).asFloatBuffer();							
-//		lineColors.put(lineColorData).position(0);
-				
 		mCubeNormals = ByteBuffer.allocateDirect(cubeNormalData.length * mBytesPerFloat)
         .order(ByteOrder.nativeOrder()).asFloatBuffer();							
 		mCubeNormals.put(cubeNormalData).position(0);
@@ -724,36 +717,12 @@ public class GLRenderer implements GLSurfaceView.Renderer
 		mCubeTextureCoordinates = ByteBuffer.allocateDirect(cubeTextureCoordinateData.length * mBytesPerFloat)
 		.order(ByteOrder.nativeOrder()).asFloatBuffer();
 		mCubeTextureCoordinates.put(cubeTextureCoordinateData).position(0);
-		
-//		cellTextureCoordinates = ByteBuffer.allocateDirect(cellTextureCoordinateData.length * mBytesPerFloat)
-//		.order(ByteOrder.nativeOrder()).asFloatBuffer();
-//		cellTextureCoordinates.put(cellTextureCoordinateData).position(0);
-		
-//		RenderingData.initData();
-		
-//		// Make some tiles
-//        for (float x = -4; x < 5; x++) {
-//        	for (float y = -4; y < 5; y++) {
-//        		tiles.add(new Tile(this, textureOffsetTileBlue, x, y));
-//        		if (y == 1) {
-//        			tiles.get(tiles.size() - 1).setLetter('O');
-//        		}
-//        	}
-//        }
-		
-//        // Make some cells
-//        for (float x = -5; x < 6; x++) {
-//        	for (float y = -5; y < 6; y++) {
-//        		cells.add(new Cell(this, x, y));
-//        	}
-//        }
-
-//        for (Cell cell: board.cells) {
-//        	cells.add(cell);
-//        }
         
 	}
 	
+	/** Set a reference to the board instance.
+	 * @param board The board instance.
+	 */
 	public void setBoard(Board board) {
 		this.board = board;
 	}
@@ -786,27 +755,6 @@ public class GLRenderer implements GLSurfaceView.Renderer
 		// Enable depth testing
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 		
-		// The below glEnable() call is a holdover from OpenGL ES 1, and is not needed in OpenGL ES 2.
-		// Enable texture mapping
-		// GLES20.glEnable(GLES20.GL_TEXTURE_2D);
-			
-		// Position the eye in front of the origin.
-//		eyeX = 0.0f;
-//		eyeY = -1.0f;
-		// TODO: Code to change eyeZ when grid size changes
-//		final float eyeZ = 4.0f; // For 5x5
-//		eyeZ = 3.5f; // For 9x9
-
-		// We are looking toward the distance
-//		lookX = 0.0f;
-//		lookY = 0.0f;
-//		lookZ = -5.0f;
-
-		// Set our up vector. This is where our head would be pointing were we holding the camera.
-//		upX = 0.0f;
-//		upY = 1.0f;
-//		upZ = 0.0f;
-
 		// Set the view matrix. This matrix can be said to represent the camera position.
 		// NOTE: In OpenGL 1, a ModelView matrix is used, which is a combination of a model and
 		// view matrix. In OpenGL 2, we can keep track of these matrices separately if we choose.
@@ -824,17 +772,7 @@ public class GLRenderer implements GLSurfaceView.Renderer
 		mProgramHandle = ShaderHelper.createAndLinkProgram(vertexShaderHandle, fragmentShaderHandle, 
 				new String[] {"a_Position",  "a_Color", "a_Normal", "a_TexCoordinate"});								                                							       
         
-		// TODO: Delete point stuff.
-		// Define a simple shader program for our point.
-//        final String pointVertexShader = getShader(R.raw.point_vertex_shader);        	       
-//        final String pointFragmentShader = getShader(R.raw.point_fragment_shader);
-//        
-//        final int pointVertexShaderHandle = ShaderHelper.compileShader(GLES20.GL_VERTEX_SHADER, pointVertexShader);
-//        final int pointFragmentShaderHandle = ShaderHelper.compileShader(GLES20.GL_FRAGMENT_SHADER, pointFragmentShader);
-//        mPointProgramHandle = ShaderHelper.createAndLinkProgram(pointVertexShaderHandle, pointFragmentShaderHandle, 
-//        		new String[] {"a_Position"}); 
-        
-        // Define a shader program without texture.
+        // Define a shader program without texture for drawing lines.
         final String noTexVertexShader = getShader(R.raw.per_pixel_vertex_shader_no_tex);        	       
         final String noTexFragmentShader = getShader(R.raw.per_pixel_fragment_shader_no_tex);
         
@@ -846,8 +784,6 @@ public class GLRenderer implements GLSurfaceView.Renderer
         // Load the texture atlas
         cubeTextureDataHandle = TextureHelper.loadTexture(mActivityContext,
         		R.drawable.atlas2);
-//        cellTextureDataHandle = TextureHelper.loadTexture(mActivityContext,
-//        		R.drawable.board1);
 	}	
 	
 	@Override
@@ -860,34 +796,24 @@ public class GLRenderer implements GLSurfaceView.Renderer
 
 		// Create a new perspective projection matrix. The height will stay the same
 		// while the width will vary as per aspect ratio.
-		float scaleFactor = 1;//2.2f;
 		final float ratio = (float) width / height;
-		Log.v("ratio", ""+ratio);
-		final float left;// = -ratio;
-		final float right;// = ratio;
-		final float bottom;// = -1.0f * scaleFactor;
-		final float top;// = 1.0f * scaleFactor;
+		final float left;
+		final float right;
+		final float bottom;
+		final float top;
 		if (height > width) {
-			left = -ratio * scaleFactor;
-			right = ratio * scaleFactor;
-			bottom = -1.0f * scaleFactor;
-			top = 1.0f * scaleFactor;
-//			eyeZ = (right - left) * (-tileZ) / (board.sizeX - (right - left));
-//			Log.v("board.sizeX", "" + board.sizeX);
-//			Log.v("eyeZ", "" + eyeZ);
+			left = -ratio;
+			right = ratio;
+			bottom = -1.0f;
+			top = 1.0f;
 		} else {
-			left = -1 * scaleFactor;
-			right = 1 * scaleFactor;
-			bottom = -1.0f * scaleFactor / ratio;
-			top = 1.0f * scaleFactor / ratio;
+			left = -1;
+			right = 1;
+			bottom = -1.0f / ratio;
+			top = 1.0f / ratio;
 		}
 		
 		Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
-//		Matrix.orthoM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
-
-//        int[] maxTextureSize = new int[1];
-//        GLES20.glGetIntegerv(GLES20.GL_MAX_TEXTURE_SIZE, maxTextureSize, 0);
-//        Log.v("maxTextureSize", "" + maxTextureSize[0]);
         
 }	
 
@@ -925,7 +851,6 @@ public class GLRenderer implements GLSurfaceView.Renderer
         // Calculate position of the light. Rotate and then push into the distance.
         Matrix.setIdentityM(mLightModelMatrix, 0);
         Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, tileZ);      
-//        Matrix.rotateM(mLightModelMatrix, 0, angleInDegrees, 0.0f, 1.0f, 0.0f);
         Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
                
         Matrix.multiplyMV(mLightPosInWorldSpace, 0, mLightModelMatrix, 0, mLightPosInModelSpace, 0);
@@ -979,15 +904,11 @@ public class GLRenderer implements GLSurfaceView.Renderer
             synchronized (board.creditsCubes) {
             	for (Cube credit: board.creditsCubes) {
             		Matrix.setIdentityM(mModelMatrix, 0);
-//            		if (eyeZ - 1.5f < credit.scaleFactorZ - credit.z - dz) {
-//            			dz = -credit.scaleFactorZ - credit.z - 1.5f;
-//            		}
             		Matrix.translateM(mModelMatrix, 0, 0, 0, eyeZ - 4);
             		Matrix.translateM(mModelMatrix, 0, 0, dz / 2, dz / 4);
             		Matrix.rotateM(mModelMatrix, 0, angle, 0.0f, 1.0f, 0.0f);
             		Matrix.translateM(mModelMatrix, 0, credit.x, credit.y, credit.z);
             		Matrix.rotateM(mModelMatrix, 0, -angle, 0.0f, 1.0f, 0.0f);
-//            		Matrix.rotateM(mModelMatrix, 0, credit.rotationY, 0.0f, 1.0f, 0.0f);
             		Matrix.rotateM(mModelMatrix, 0, credit.rotationZ, 0.0f, 0.0f, 1.0f);
             		Matrix.scaleM(mModelMatrix, 0, credit.scaleFactorX,
             				credit.scaleFactorY, credit.scaleFactorZ);
@@ -1009,7 +930,6 @@ public class GLRenderer implements GLSurfaceView.Renderer
         mMVPMatrixHandle = GLES20.glGetUniformLocation(noTexProgramHandle, "u_MVPMatrix");
         mMVMatrixHandle = GLES20.glGetUniformLocation(noTexProgramHandle, "u_MVMatrix"); 
         mLightPosHandle = GLES20.glGetUniformLocation(noTexProgramHandle, "u_LightPos");
-//        mTextureUniformHandle = GLES20.glGetUniformLocation(noTexProgramHandle, "u_Texture");
         mPositionHandle = GLES20.glGetAttribLocation(noTexProgramHandle, "a_Position");
         mColorHandle = GLES20.glGetAttribLocation(noTexProgramHandle, "a_Color");
         mNormalHandle = GLES20.glGetAttribLocation(noTexProgramHandle, "a_Normal"); 
