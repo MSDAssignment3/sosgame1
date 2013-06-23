@@ -16,16 +16,38 @@ import android.view.animation.BounceInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 
+/** The board class holds collections of the various 3D objects and provides
+ * methods for creating new 3D objects.
+ * 
+ * @author David Moore
+ */
 public class Board {
 
+	/** Reference to the renderer. */
 	private GLRenderer renderer = null;
+	
+	/** Reference to the GLSurfaceView. */
 	private GLESSurfaceView surfaceView = null;
+	
+	/** The board width. */
 	public int sizeX = 5;
+	
+	/** The board height. */
 	public int sizeY = 5;
+	
+	/** The column index for the board centre. */
 	private int centreX = 2;
+	
+	/** The row index for the board centre. */
 	private int centreY = 2;
+	
+	/** Holds the board cells. */
 	public ArrayList<Cube> cells = new ArrayList<Cube>();
+	
+	/** Holds the tiles. */
 	public ArrayList<Cube> tiles = new ArrayList<Cube>();
+	
+	/** Holds the lines.*/
 	public ArrayList<Cube> lines = new ArrayList<Cube>();
 	
 	/** Holds the tiles displayed for user selection. */
@@ -85,9 +107,9 @@ public class Board {
 		
 		ArrayList<ObjectAnimator> animList = new ArrayList<ObjectAnimator>(); 
 		AnimatorSet animSet = new AnimatorSet();
-		float oldX;
-		float oldY;
-		float oldZ;
+		float endX;
+		float endY;
+		float endZ;
 		long duration;
 		Random random = new Random();
 		synchronized (cells) {
@@ -97,15 +119,15 @@ public class Board {
 							x - centreX, y - centreY);
 					cells.add(cell);
 					duration = 500 + random.nextInt(2500);
-					oldZ = cell.z;
-					cell.z = oldZ + 6;
-					animList.add(cellAnimation(cell, "z", cell.z, oldZ, duration));
-					oldX = cell.x;
-					cell.x = oldX + 2 * x - sizeX;
-					animList.add(cellAnimation(cell, "x", cell.x, oldX, duration));
-					oldY = cell.y;
-					cell.y = oldY + 2 * y - sizeY;
-					animList.add(cellAnimation(cell, "y", cell.y, oldY, duration));
+					endZ = cell.z;
+					cell.z = endZ + 6;
+					animList.add(cellAnimation(cell, "z", cell.z, endZ, duration));
+					endX = cell.x;
+					cell.x = endX + 2 * x - sizeX;
+					animList.add(cellAnimation(cell, "x", cell.x, endX, duration));
+					endY = cell.y;
+					cell.y = endY + 2 * y - sizeY;
+					animList.add(cellAnimation(cell, "y", cell.y, endY, duration));
 				}
 			}
 		}
@@ -193,17 +215,21 @@ public class Board {
 			colour = Line.COLOUR_RED;
 		}
 		Line line = new Line(renderer, p1.x, p1.y, p2.x, p2.y, colour);
-		float oldZ = line.z;
+		float endZ = line.z;
 		line.z += 3;
 		// Synchronise here in case the renderer is iterating across the lines.
 		synchronized (lines) {
 			lines.add(line);
 		}
-		animateLine(line, oldZ);
+		animateLine(line, endZ);
 	}
 	
-	public void animateLine(Line line, float oldZ) {
-		ObjectAnimator anim = ObjectAnimator.ofFloat(line, "z", line.z, oldZ);
+	/** Animates the z property of a line.
+	 * @param line The line.
+	 * @param endZ The value of z at the end of the animation.
+	 */
+	public void animateLine(Line line, float endZ) {
+		ObjectAnimator anim = ObjectAnimator.ofFloat(line, "z", line.z, endZ);
 		anim.setDuration(500);
 		anim.setInterpolator(new DecelerateInterpolator());
 		anim.addListener(new AnimatorListenerAdapter() {

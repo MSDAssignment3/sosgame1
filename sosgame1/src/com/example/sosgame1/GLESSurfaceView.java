@@ -160,9 +160,6 @@ public class GLESSurfaceView extends GLSurfaceView
 	 * collection and animate. Otherwise clear the temporary tiles.
 	 * @param p The x, y coordinates in the 3D world space.
 	 */
-	/**
-	 * @param p
-	 */
 	public void chooseTile(PointF p) {
 		chosenTile = (Tile) renderer.getSelectedCube(p, renderer.board.tempTiles);
 
@@ -270,6 +267,9 @@ public class GLESSurfaceView extends GLSurfaceView
         return true;
     }
 
+    /** Called when a 3D animation is started. If the number of animations is
+     * one then start continuous rendering.
+     */
     public void incrementAnimations() {
     	animationCounter++;
     	if (animationCounter == 1) {
@@ -277,6 +277,9 @@ public class GLESSurfaceView extends GLSurfaceView
     	}
     }
     
+    /** Called when a 3D animation ends. If the number of animations is
+     * zero then stop continuous rendering.
+     */
     public void decrementAnimations() {
     	animationCounter--;
     	if (animationCounter == 0) {
