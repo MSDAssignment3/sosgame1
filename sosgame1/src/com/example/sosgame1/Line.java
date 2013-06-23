@@ -4,18 +4,41 @@ package com.example.sosgame1;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
+/** This class is used to show lines on the board when a player completes
+ * the word "SOS".
+ * @author David Moore
+ */
 public class Line extends Cube {
 
+	/** Line start x coordinate. */
 	public float startX;
+	
+	/** Line start y coordinate. */
 	public float startY;
+
+	/** Line end x coordinate. */
 	public float endX;
+	
+	/** Line end y coordinate. */
 	public float endY;
+	
+	/** X scale factor. */
 	private float scaleFactorX = 1;
+
+	/** Y scale factor. */
 	private float scaleFactorY = 0.1f;
+
+	/** Z scale factor. */
 	private float scaleFactorZ = 0.1f;
+	
+	/** Line colour is an offset into an array of texture coordinates. */
 	public static final int COLOUR_RED = 4 * 6 * 6;
+	
+	/** Line colour is an offset into an array of texture coordinates. */
 	public static final int COLOUR_BLUE = 8 * 6 * 6;
 	
+	/** The model matrix is used to rotate/translate/scale the line in the 
+	 * 3D world space. */
 	private float[] modelMatrix = new float[16];
 
 	/** Simple line constructor.
@@ -40,13 +63,9 @@ public class Line extends Cube {
 		this.startY = startY;
 		this.endX = endX;
 		this.endY = endY;
-//		this.rotationX = colour;
 		z = GLRenderer.tileZ + 2 * scaleFactorY;
 		colourOffset = colour;
 	}
-	
-	// TODO: Constructor taking start and end points or centre and length?
-	// TODO: Constructor as above plus front face?
 	
 	/** Draws a line. */			
 	public void draw()
@@ -76,10 +95,10 @@ public class Line extends Cube {
 			x = startX + (endX - startX) / 2;
 			y = startY + (endY - startY) / 2;
 		}
+
 		Matrix.setIdentityM(modelMatrix, 0);
 		Matrix.translateM(modelMatrix, 0, x, y, z);
 		Matrix.rotateM(modelMatrix, 0, rotationZ, 0.0f, 0.0f, 1.0f);
-//		Matrix.rotateM(modelMatrix, 0, rotationX, 1.0f, 0.0f, 0.0f);
 		Matrix.scaleM(modelMatrix, 0, scaleFactorX, scaleFactorY, scaleFactorZ);
 		
 		// Pass in the position information
@@ -102,13 +121,6 @@ public class Line extends Cube {
         		0, renderer.mCubeNormals);
         
         GLES20.glEnableVertexAttribArray(renderer.mNormalHandle);
-        
-//        // Pass in the texture coordinate information
-//        renderer.mCubeTextureCoordinates.position(0);
-//        GLES20.glVertexAttribPointer(renderer.mTextureCoordinateHandle, renderer.mTextureCoordinateDataSize, GLES20.GL_FLOAT, false, 
-//        		0, renderer.mCubeTextureCoordinates);
-//        
-//        GLES20.glEnableVertexAttribArray(renderer.mTextureCoordinateHandle);
         
 		// This multiplies the view matrix by the model matrix, and stores the result in the MVP matrix
         // (which currently contains model * view).
