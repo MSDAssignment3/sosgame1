@@ -3,10 +3,10 @@
     android:id="@+id/rlSettings"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/wood_bg"
     android:clickable="true" >
-
-    <ImageButton
+<!--     android:background="@drawable/wood_bg"
+ -->
+    <ImageButton
         android:id="@+id/btnCredits"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

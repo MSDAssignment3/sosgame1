@@ -18,7 +18,7 @@ public class LogicControl {
 	private String three;
 	private int totalCorrect = 0;
 	//total will be 
-	private String input [][] = new String[5][5];	
+	private String input [][] = new String[25][25];	
 	
 	private boolean firstPlayer = false;  
 	private boolean secondPlayer = true;
@@ -764,12 +764,14 @@ public class LogicControl {
 		if(firstPlayer==true)
 		{
 			firstPlayerScore++;
+			board.playerOne.setScore(firstPlayerScore);
 			giveTurnToFirst =true;
 			System.out.println("FirstPlayer"+firstPlayerScore);
 		}
 		else if(secondPlayer==true)
 		{
 			secondPlayerScore++;
+			board.playerTwo.setScore(secondPlayerScore);
 			giveTurnToSecond = true;
 			System.out.println("SecondPlayer"+secondPlayerScore);
 		}
