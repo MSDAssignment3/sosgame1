@@ -42,7 +42,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="false"
         android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@drawable/player_red"
+        android:scaleType="centerCrop"
         android:src="@drawable/player_blue" />
 
     <TextView
@@ -51,6 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/imgPlayerBlue"
         android:layout_alignTop="@+id/imgPlayerBlue"
+        android:scaleType="centerCrop"
         android:padding="10dp"
         android:text="@string/zero"
         android:textSize="80sp" />
@@ -59,8 +63,11 @@
         android:id="@+id/imgPlayerRed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignLeft="@drawable/player_blue"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@drawable/player_blue"
+        android:scaleType="centerCrop"
         android:src="@drawable/player_red" />
 
     <TextView
@@ -69,6 +76,7 @@
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/imgPlayerRed"
         android:layout_alignTop="@+id/imgPlayerRed"
+        android:scaleType="centerCrop"
         android:padding="10dp"
         android:text="@string/zero"
         android:textSize="80sp" />
@@ -79,6 +87,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:scaleType="centerCrop"
         android:background="@null"
         android:src="@drawable/gear_button" />
 
