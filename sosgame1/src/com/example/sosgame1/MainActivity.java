@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// TODO Is this all that is required for the Apache license? Change copyright?
-// Words about what changes were made?
-
+/*
+ * Portions of this class are derived from the sample code at
+ * http://developer.android.com/training/graphics/opengl/index.html
+ */
 package com.example.sosgame1;
-
-import java.util.List;
 
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.app.Activity;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -47,7 +45,7 @@ import com.example.sosgame1.controller.LogicControl;
 public class MainActivity extends Activity implements OnClickListener,
 	SeekBar.OnSeekBarChangeListener {
 
-    private GLESSurfaceView myGLView;
+    private GLESSurfaceView myGLView = null;
     private RelativeLayout mainView;
     private RelativeLayout viewSplash;
     private View viewAdjustView = null;
@@ -56,14 +54,13 @@ public class MainActivity extends Activity implements OnClickListener,
     private boolean isPanningX = false;
     private boolean isPanningY = false;
     private LogicControl controller = null;
-    private boolean rollCredits = false;
-    
+    private boolean rollCredits = false;    
     private DataSource dataSource;
-
+    
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// Create an instance of the logic controller
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.splash_page);
 		((ImageButton) findViewById(R.id.btnPlay)).setOnClickListener(this);
@@ -232,7 +229,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		((Button) findViewById(R.id.testUpdateScore)).setOnClickListener(this);//REMOVE this when testing updateScore is not needed
 		((Button) findViewById(R.id.testSaveScore)).setOnClickListener(this);//REMOVE this when testing saveScore is not needed
 		myGLView = (GLESSurfaceView) findViewById(R.id.myGLSurfaceView1);
-		myGLView.renderer.board.reset(7, 7);
+		myGLView.renderer.board.reset(7,7);
 		// Pass controller instance to the GLSurfaceView
 		controller = new LogicControl(myGLView.renderer.board, 7, 7);
 		myGLView.setController(controller);
@@ -429,6 +426,20 @@ public class MainActivity extends Activity implements OnClickListener,
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	protected void onPause() {
+		myGLView.onPause();
+		super.onPause();
+	}
+
+	@Override
+	protected void onResume() {
+		if (myGLView != null) {
+			myGLView.onResume();
+		}
+		super.onResume();
 	}
 
 }
