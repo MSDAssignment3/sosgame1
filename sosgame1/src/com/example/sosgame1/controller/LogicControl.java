@@ -508,7 +508,7 @@ public class LogicControl {
 		String answer = "";	
 		int newI = 1;
 		
-		while(columns>=(boardColumns - 3))      //j >= than existing columns -2 (array start from zero so -3)
+		while(columns>=2)          //j >= than existing columns -2 (array start from zero so -3)
 		{						
 				// j 
 				for(int i=0,j=forJ;i<=columns;j--,i++)
