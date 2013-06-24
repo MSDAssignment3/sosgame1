@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// TODO Is this all that is required for the Apache license? Change copyright?
-// Words about what changes were made?
-
+/*
+ * Portions of this class are derived from the sample code at
+ * http://developer.android.com/training/graphics/opengl/index.html
+ */
 package com.example.sosgame1;
 
 import android.animation.Animator;
@@ -41,7 +42,7 @@ import com.example.sosgame1.controller.LogicControl;
 public class MainActivity extends Activity implements OnClickListener,
 	SeekBar.OnSeekBarChangeListener {
 
-    private GLESSurfaceView myGLView;
+    private GLESSurfaceView myGLView = null;
     private RelativeLayout mainView;
     private RelativeLayout viewSplash;
     private View viewAdjustView = null;
@@ -401,6 +402,20 @@ public class MainActivity extends Activity implements OnClickListener,
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	protected void onPause() {
+		myGLView.onPause();
+		super.onPause();
+	}
+
+	@Override
+	protected void onResume() {
+		if (myGLView != null) {
+			myGLView.onResume();
+		}
+		super.onResume();
 	}
 
 }
