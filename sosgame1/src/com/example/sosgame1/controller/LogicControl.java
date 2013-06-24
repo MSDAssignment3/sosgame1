@@ -34,6 +34,8 @@ public class LogicControl {
 	public int currentPlayerColour = Player.COLOUR_BLUE;  //blue for player 1 and red for player 2
 	private Board board = null;
 	private int numEntered = 0;
+	public Player p1;
+	public Player p2;
 	
 	public LogicControl()
 	{
@@ -52,6 +54,8 @@ public class LogicControl {
 		boardRows = i;  
 		boardColumns = j; 
 		input = new String[boardRows][boardColumns];	
+		p1 = new Player();
+		p2 = new Player();
 		
 		if(i==5)
 		{
@@ -202,8 +206,7 @@ public class LogicControl {
 					checkHorizontal(i,j,9);	
 				break;
 				
-				}
-				
+				}				
 										
 			}
 		}		
@@ -253,8 +256,7 @@ public class LogicControl {
 					checkVertical(i,j,9);
 				break;
 			
-				}
-				
+				}				
 										
 			}
 		}
@@ -312,8 +314,7 @@ public class LogicControl {
 						}
 						
 						if(k<columns)//if there are more cells to check then start from previous cell
-						{
-							//System.out.println(k+","+columns+"less than columns");
+						{							
 							k=k-2;
 						}
 						
@@ -359,7 +360,6 @@ public class LogicControl {
 					if(input[i][k]!=null)
 					{
 						answer += input[i][k].toString();	
-						//System.out.println(answer+i+","+k);	
 					}
 					count++;
 					if(count==3)
@@ -388,12 +388,10 @@ public class LogicControl {
 								storeCoordinates(temI1,temJ1,temI2,temJ2,temI3,temJ3);
 
 							}
-						}
+						}						
 						
-						//System.out.println(i+","+columns+k);
 						if(k>0)//if there are more cells to check then start from previous cell
-						{
-							//System.out.println(i+","+columns+k+"greater than 0");
+						{							
 							k=k+2;
 							i=i-2;
 						}
@@ -437,11 +435,8 @@ public class LogicControl {
 					if(input[i+newI][j]!=null)
 					{
 						answer += input[i+newI][j].toString();	
-						//System.out.println(answer+i+","+k);	
 					}
-					count++;
-					//System.out.println(i+","+columns+j);
-					//System.out.println(count);
+					count++;					
 					if(count==3)
 					{
 						answer.trim();						
@@ -471,11 +466,9 @@ public class LogicControl {
 						
 						//System.out.println(i+","+columns+j);
 						if(j<columns)//if there are more cells to check then start from previous cell
-						{
-							//System.out.println(i+","+columns+j+"less than columns");
+						{							
 							j=j-2;
-							i=i-2;
-							//System.out.println(i+","+columns+j+"less than columns");
+							i=i-2;							
 						}
 						
 						//reset
@@ -515,12 +508,9 @@ public class LogicControl {
 				{
 					if(input[i+newI][j]!=null)
 					{
-						answer += input[i+newI][j].toString();	
-						//System.out.println(answer+i+","+k);	
+						answer += input[i+newI][j].toString();							
 					}
 					count++;
-					//System.out.println(i+","+columns+j);
-					//System.out.println(count);
 					if(count==3)
 					{
 						answer.trim();						
@@ -551,11 +541,9 @@ public class LogicControl {
 						
 						//System.out.println(i+","+columns+j);
 						if(i<columns)//if there are more cells to check then start from previous cell
-						{
-							//System.out.println(i+","+columns+j+"less than columns");
+						{							
 							j=j+2;
 							i=i-2;
-							//System.out.println(i+","+columns+j+"less than columns");
 						}
 						
 						//reset
@@ -595,14 +583,11 @@ public class LogicControl {
 			crossed=crossedCoordinateList.get(listSize);
 			
 			if(i1==crossed.getI1()&&j1==crossed.getJ1())
-			{
-				System.out.println(crossed.getI1()+""+crossed.getJ1());
+			{				
 				if( i2==crossed.getI2()&&j2==crossed.getJ2())
-				{
-					System.out.println(crossed.getI2()+""+crossed.getJ2());
+				{					
 					if( i3==crossed.getI3()&&j3==crossed.getJ3())
-					{
-						System.out.println(crossed.getI3()+""+crossed.getJ3());
+					{						
 						hasStored = true;
 						break;
 					}
@@ -621,15 +606,17 @@ public class LogicControl {
 	{
 		if(firstPlayer==true)
 		{
-			firstPlayerScore++;
+			firstPlayerScore++;			
 			giveTurnToFirst =true;
-			System.out.println("FirstPlayer"+firstPlayerScore);
+			p1.setScore(firstPlayerScore);
+			System.out.println("FirstPlayer"+p1.getScore());
 		}
 		else if(secondPlayer==true)
 		{
 			secondPlayerScore++;
 			giveTurnToSecond = true;
-			System.out.println("SecondPlayer"+secondPlayerScore);
+			p2.setScore(secondPlayerScore);
+			System.out.println("SecondPlayer"+p2.getScore());
 		}
 	}
 	

@@ -53,8 +53,7 @@ public class MainActivity extends Activity implements OnClickListener,
     private boolean isPanningX = false;
     private boolean isPanningY = false;
     private LogicControl controller = null;
-    private boolean rollCredits = false;
-    
+    private boolean rollCredits = false;    
     private DataSource dataSource;
 
 	@Override
@@ -228,9 +227,9 @@ public class MainActivity extends Activity implements OnClickListener,
 		((Button) findViewById(R.id.testUpdateScore)).setOnClickListener(this);//REMOVE this when testing updateScore is not needed
 		((Button) findViewById(R.id.testSaveScore)).setOnClickListener(this);//REMOVE this when testing saveScore is not needed
 		myGLView = (GLESSurfaceView) findViewById(R.id.myGLSurfaceView1);
-		myGLView.renderer.board.reset(7, 7);
+		myGLView.renderer.board.reset(9, 9);
 		// Pass controller instance to the GLSurfaceView
-		controller = new LogicControl(myGLView.renderer.board,7,7);
+		controller = new LogicControl(myGLView.renderer.board,9,9);
 		myGLView.setController(controller);
 	}
 	
