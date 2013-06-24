@@ -17,7 +17,6 @@ public class LogicControl {
 	private String two;
 	private String three;
 	private int totalCorrect = 0;
-	//total will be 
 	private String input [][];
 	
 	private int boardRows =0;
@@ -202,8 +201,7 @@ public class LogicControl {
 					checkHorizontal(i,j,9);	
 				break;
 				
-				}
-				
+				}				
 										
 			}
 		}		
@@ -253,8 +251,7 @@ public class LogicControl {
 					checkVertical(i,j,9);
 				break;
 			
-				}
-				
+				}				
 										
 			}
 		}
@@ -312,8 +309,7 @@ public class LogicControl {
 						}
 						
 						if(k<columns)//if there are more cells to check then start from previous cell
-						{
-							//System.out.println(k+","+columns+"less than columns");
+						{							
 							k=k-2;
 						}
 						
@@ -359,7 +355,6 @@ public class LogicControl {
 					if(input[i][k]!=null)
 					{
 						answer += input[i][k].toString();	
-						//System.out.println(answer+i+","+k);	
 					}
 					count++;
 					if(count==3)
@@ -388,12 +383,10 @@ public class LogicControl {
 								storeCoordinates(temI1,temJ1,temI2,temJ2,temI3,temJ3);
 
 							}
-						}
+						}						
 						
-						//System.out.println(i+","+columns+k);
 						if(k>0)//if there are more cells to check then start from previous cell
-						{
-							//System.out.println(i+","+columns+k+"greater than 0");
+						{							
 							k=k+2;
 							i=i-2;
 						}
@@ -437,11 +430,8 @@ public class LogicControl {
 					if(input[i+newI][j]!=null)
 					{
 						answer += input[i+newI][j].toString();	
-						//System.out.println(answer+i+","+k);	
 					}
-					count++;
-					//System.out.println(i+","+columns+j);
-					//System.out.println(count);
+					count++;					
 					if(count==3)
 					{
 						answer.trim();						
@@ -471,11 +461,9 @@ public class LogicControl {
 						
 						//System.out.println(i+","+columns+j);
 						if(j<columns)//if there are more cells to check then start from previous cell
-						{
-							//System.out.println(i+","+columns+j+"less than columns");
+						{							
 							j=j-2;
-							i=i-2;
-							//System.out.println(i+","+columns+j+"less than columns");
+							i=i-2;							
 						}
 						
 						//reset
@@ -515,12 +503,9 @@ public class LogicControl {
 				{
 					if(input[i+newI][j]!=null)
 					{
-						answer += input[i+newI][j].toString();	
-						//System.out.println(answer+i+","+k);	
+						answer += input[i+newI][j].toString();							
 					}
 					count++;
-					//System.out.println(i+","+columns+j);
-					//System.out.println(count);
 					if(count==3)
 					{
 						answer.trim();						
@@ -551,11 +536,9 @@ public class LogicControl {
 						
 						//System.out.println(i+","+columns+j);
 						if(i<columns)//if there are more cells to check then start from previous cell
-						{
-							//System.out.println(i+","+columns+j+"less than columns");
+						{							
 							j=j+2;
 							i=i-2;
-							//System.out.println(i+","+columns+j+"less than columns");
 						}
 						
 						//reset
@@ -595,14 +578,11 @@ public class LogicControl {
 			crossed=crossedCoordinateList.get(listSize);
 			
 			if(i1==crossed.getI1()&&j1==crossed.getJ1())
-			{
-				System.out.println(crossed.getI1()+""+crossed.getJ1());
+			{				
 				if( i2==crossed.getI2()&&j2==crossed.getJ2())
-				{
-					System.out.println(crossed.getI2()+""+crossed.getJ2());
+				{					
 					if( i3==crossed.getI3()&&j3==crossed.getJ3())
-					{
-						System.out.println(crossed.getI3()+""+crossed.getJ3());
+					{						
 						hasStored = true;
 						break;
 					}
