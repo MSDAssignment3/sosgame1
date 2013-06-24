@@ -18,12 +18,15 @@
 
 package com.example.sosgame1;
 
-import com.example.sosgame1.GLESSurfaceView;
-import com.example.sosgame1.controller.LogicControl;
+import java.util.List;
 
+import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
+import android.app.Activity;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.app.Activity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,12 +37,16 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
+
+import com.example.sosgame1.controller.LogicControl;
 
 public class MainActivity extends Activity implements OnClickListener,
 	SeekBar.OnSeekBarChangeListener {
 
     private GLESSurfaceView myGLView;
     private RelativeLayout mainView;
+    private RelativeLayout viewSplash;
     private View viewAdjustView = null;
     private float xOffset;
     private float yOffset;
@@ -47,22 +54,24 @@ public class MainActivity extends Activity implements OnClickListener,
     private boolean isPanningY = false;
     private LogicControl controller = null;
     private boolean rollCredits = false;
+    
+    private DataSource dataSource;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// Create an instance of the logic controller
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.activity_main);
-		mainView = (RelativeLayout) findViewById(R.id.rlMain);
-		((Button) findViewById(R.id.btnView)).setOnClickListener(this);
-		((Button) findViewById(R.id.button2)).setOnClickListener(this);
-		((Button) findViewById(R.id.btnCredits)).setOnClickListener(this);
-		myGLView = (GLESSurfaceView) findViewById(R.id.myGLSurfaceView1);
-		myGLView.renderer.board.reset(7, 7);
-		// Pass controller instance to the GLSurfaceView
-		controller = new LogicControl(myGLView.renderer.board,7,7);
-		myGLView.setController(controller);
+		setContentView(R.layout.splash_page);
+		((ImageButton) findViewById(R.id.btnPlay)).setOnClickListener(this);
+		((ImageButton) findViewById(R.id.btnSettings)).setOnClickListener(this);
+		viewSplash = (RelativeLayout) findViewById(R.id.rlSplash);
+		
+		//DB
+		dataSource = new DataSource(this);
+	    dataSource.open();
+	    //get all Scores, to be diplayed
+//	    List<Score> scores = dataSource.getAllScores(); //TEST LATER
 	}
 
 	@Override
@@ -129,8 +138,135 @@ public class MainActivity extends Activity implements OnClickListener,
 				myGLView.requestRender();
 			}
 			break;
+		case R.id.btnPlay:
+			// animate first
+			ImageButton buttonPlay = (ImageButton) findViewById(R.id.btnPlay); //can't put before switch it will be null
+			AnimatorSet btnPlayAniSet = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.button_rotate); //can't reuse
+			btnPlayAniSet.setTarget(buttonPlay);
+			btnPlayAniSet.addListener(new Animator.AnimatorListener() {
+			    @Override 
+			    public void onAnimationEnd(Animator animation) {
+			    	viewToSplash();
+			    }
+				@Override
+				public void onAnimationCancel(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+				@Override
+				public void onAnimationRepeat(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+				@Override
+				public void onAnimationStart(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+			});
+			btnPlayAniSet.start();
+			break;  
+
+		case R.id.btnSettings:
+			ImageButton buttonSettings = (ImageButton) findViewById(R.id.btnSettings); //can't put before switch it will be null
+			AnimatorSet btnSettingsAniSet = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.button_rotate); //can't reuse
+			btnSettingsAniSet.setTarget(buttonSettings);
+			btnSettingsAniSet.addListener(new AnimatorListener() {
+			    @Override 
+			    public void onAnimationEnd(Animator animation) {
+			    	viewToSettings(viewSplash);       
+			    }
+				@Override
+				public void onAnimationCancel(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+
+				@Override
+				public void onAnimationRepeat(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+
+				@Override
+				public void onAnimationStart(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+			});
+			btnSettingsAniSet.start();
+			break;
+
+		case R.id.btnBack:
+			if (viewAdjustView != null) {
+				viewSplash.removeView(viewAdjustView);
+				mainView.removeView(viewAdjustView);
+			}
+			break;
+			
+		case R.id.btnSettingsGame:
+			viewToSettings(this.mainView);
+			break;
+			
+		case R.id.testUpdateScore:
+			updateScore();
+			break;
+			
+		case R.id.testSaveScore:
+			saveScore();
+			break;
 		}
+		
+		
 	}
+	
+	/**
+	 * Changes the contentView to the Game view itself
+	 */
+	private void viewToSplash()
+	{
+    	setContentView(R.layout.activity_main);
+		mainView = (RelativeLayout) findViewById(R.id.rlMain);
+		((Button) findViewById(R.id.btnView)).setOnClickListener(this);
+		((Button) findViewById(R.id.button2)).setOnClickListener(this);
+		((Button) findViewById(R.id.btnCredits)).setOnClickListener(this);
+		((ImageButton) findViewById(R.id.btnSettingsGame)).setOnClickListener(this);
+		((Button) findViewById(R.id.testUpdateScore)).setOnClickListener(this);//REMOVE this when testing updateScore is not needed
+		((Button) findViewById(R.id.testSaveScore)).setOnClickListener(this);//REMOVE this when testing saveScore is not needed
+		myGLView = (GLESSurfaceView) findViewById(R.id.myGLSurfaceView1);
+		myGLView.renderer.board.reset(7, 7);
+		// Pass controller instance to the GLSurfaceView
+		controller = new LogicControl(myGLView.renderer.board,7,7);
+		myGLView.setController(controller);
+	}
+	
+	/**
+	 * Adds Setting view on top of the current view
+	 * @param view - the RelativeLayout where the click event occurred from
+	 */
+	private void viewToSettings(RelativeLayout view){
+		LayoutInflater inflater = getLayoutInflater();
+		viewAdjustView = inflater.inflate(R.layout.settings_page, null);
+		if (viewAdjustView != null) {
+			view.addView(viewAdjustView);
+		}
+		((ImageButton) findViewById(R.id.btnBack)).setOnClickListener(this);
+	}
+	
+	/**
+	 * THIS IS NOT YET COMPLETE
+	 * Updates the Scores on the screen
+	 */
+	private void updateScore(){
+		int dummy = 1; //change and remove later
+		TextView textBlueScore = (TextView) findViewById(R.id.txtBlueScore);
+		TextView textRedScore = (TextView) findViewById(R.id.txtRedScore);
+		textBlueScore.setText(""+dummy);
+		textRedScore.setText(""+dummy);
+	}
+	
+	/**
+	 * Save score to the DB
+	 */
+	private void saveScore(){
+		TextView textBlueScore = (TextView) findViewById(R.id.txtBlueScore);
+		Score score = dataSource.createScore( "TEST", Integer.parseInt((String) textBlueScore.getText()) );
+	}
+	
 
 	private void createCredits() {
         // Credits
@@ -263,13 +399,11 @@ public class MainActivity extends Activity implements OnClickListener,
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
 		// TODO Auto-generated method stub
-		
 	}
 
 }

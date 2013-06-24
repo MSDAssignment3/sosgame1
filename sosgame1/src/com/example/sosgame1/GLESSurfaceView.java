@@ -51,6 +51,7 @@ public class GLESSurfaceView extends GLSurfaceView
 	private Tile oTile;
 	private Tile chosenTile;
 	private PointF p = new PointF();
+	private int animationCounter = 0;
 	
     public GLESSurfaceView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -82,10 +83,11 @@ public class GLESSurfaceView extends GLSurfaceView
         // Set up a gesture listener and detector to handle other gestures
         gestureListener = new GestureListener();
         gestureDetector = new GestureDetector(context, gestureListener);
-        Board board = new Board(renderer, 5, 5);
+        Board board = new Board(renderer,this, 5, 5);
         // Create the board
-        renderer.setBoard(board);
-        
+
+        renderer.setBoard(new Board(renderer, this, 5, 5));
+
     }
     
     public void setController(LogicControl controller) {
@@ -178,7 +180,7 @@ public class GLESSurfaceView extends GLSurfaceView
 			anim.addListener(new AnimatorListenerAdapter() {
 				public void onAnimationEnd(Animator animation) {
 					// Stop continuous screen updates to save battery
-					setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+					decrementAnimations();
 					animationInProgress = false;
 					requestRender();
 				}
@@ -188,7 +190,7 @@ public class GLESSurfaceView extends GLSurfaceView
 				renderer.board.tempTiles.clear();
 			}
 			// Start continuous screen updates for duration of animation
-			setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+			incrementAnimations();
 			animSet.start();
 			
 			// Call the logic controller
@@ -266,4 +268,24 @@ public class GLESSurfaceView extends GLSurfaceView
         return true;
     }
 
+    /** Called when a 3D animation is started. If the number of animations is
+     * one then start continuous rendering.
+     */
+    public void incrementAnimations() {
+    	animationCounter++;
+    	if (animationCounter == 1) {
+    		setRenderMode(RENDERMODE_CONTINUOUSLY);
+    	}
+    }
+    
+    /** Called when a 3D animation ends. If the number of animations is
+     * zero then stop continuous rendering.
+     */
+    public void decrementAnimations() {
+    	animationCounter--;
+    	if (animationCounter == 0) {
+    		setRenderMode(RENDERMODE_WHEN_DIRTY);
+    	}
+    }
+    
 }

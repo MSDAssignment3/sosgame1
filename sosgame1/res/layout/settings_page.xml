@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:android1="http://schemas.android.com/apk/res/android"
-    android:id="@+id/RelativeLayout1"
+    android:id="@+id/rlSettings"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/wood_bg"
@@ -13,7 +12,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:adjustViewBounds="true"
         android:background="@null"
+        android:scaleType="centerCrop"
         android:src="@drawable/credits_button"
         android:visibility="visible" />
 
@@ -23,6 +24,9 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/btnCredits"
         android:layout_alignParentRight="true"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:scaleType="centerCrop"
         android:src="@drawable/sounds_image" />
 
     <SeekBar
@@ -33,33 +37,17 @@
         android:layout_alignParentRight="true"
         android:layout_alignRight="@+id/imgSounds"
         android:layout_alignTop="@+id/imgSounds"
-        android:layout_marginTop="120dp" />
+        android:layout_marginTop="120dp"
+        android:paddingLeft="100dp"
+        android:paddingRight="50dp" />
 
-    <RadioGroup
-        android1:id="@+id/radioGroup1"
-        android1:layout_width="wrap_content"
-        android1:layout_height="wrap_content"
-        android1:layout_alignTop="@+id/imgSounds"
-        android1:layout_centerHorizontal="true" >
-
-        <RadioButton
-            android1:id="@+id/radio0"
-            android1:layout_width="wrap_content"
-            android1:layout_height="wrap_content"
-            android1:checked="true"
-            android1:text="RadioButton" />
-
-        <RadioButton
-            android1:id="@+id/radio1"
-            android1:layout_width="wrap_content"
-            android1:layout_height="wrap_content"
-            android1:text="RadioButton" />
-
-        <RadioButton
-            android1:id="@+id/radio2"
-            android1:layout_width="wrap_content"
-            android1:layout_height="wrap_content"
-            android1:text="RadioButton" />
-    </RadioGroup>
-
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@null"
+        android:src="@drawable/back_button" />
+    
 </RelativeLayout>

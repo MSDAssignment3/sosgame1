@@ -1,24 +1,53 @@
 package com.example.sosgame1;
 
 import java.util.ArrayList;
+import java.util.Random;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.animation.TimeInterpolator;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.opengl.GLSurfaceView;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 
+/** The board class holds collections of the various 3D objects and provides
+ * methods for creating new 3D objects.
+ * 
+ * @author David Moore
+ */
 public class Board {
 
+	/** Reference to the renderer. */
 	private GLRenderer renderer = null;
+	
+	/** Reference to the GLSurfaceView. */
+	private GLESSurfaceView surfaceView = null;
+	
+	/** The board width. */
 	public int sizeX = 5;
+	
+	/** The board height. */
 	public int sizeY = 5;
+	
+	/** The column index for the board centre. */
 	private int centreX = 2;
+	
+	/** The row index for the board centre. */
 	private int centreY = 2;
+	
+	/** Holds the board cells. */
 	public ArrayList<Cube> cells = new ArrayList<Cube>();
+	
+	/** Holds the tiles. */
 	public ArrayList<Cube> tiles = new ArrayList<Cube>();
+	
+	/** Holds the lines.*/
 	public ArrayList<Cube> lines = new ArrayList<Cube>();
 	
 	/** Holds the tiles displayed for user selection. */
@@ -39,8 +68,10 @@ public class Board {
 	 * @param sizeX Board x dimension = number of columns.
 	 * @param sizeY Board y dimension = number of rows.
 	 */
-	public Board(GLRenderer renderer, int sizeX, int sizeY) {
+	public Board(GLRenderer renderer, GLESSurfaceView surfaceView,
+			int sizeX, int sizeY) {
 		this.renderer = renderer;
+		this.surfaceView = surfaceView;
 		reset(sizeX, sizeY);
 	}
 	
@@ -65,16 +96,81 @@ public class Board {
 		synchronized (lines) {
 			lines.clear();
 		}
+		
+		// Adjust eyeZ for different board sizes
+		if (sizeX <= 5) {
+			renderer.eyeZ = 2;
+		} else {
+			renderer.eyeZ = 3.5f + (sizeX - 7);
+		}
+		renderer.calculateViewMatrix();
+		
+		ArrayList<ObjectAnimator> animList = new ArrayList<ObjectAnimator>(); 
+		AnimatorSet animSet = new AnimatorSet();
+		float endX;
+		float endY;
+		float endZ;
+		long duration;
+		Random random = new Random();
 		synchronized (cells) {
 			for (int x = 0; x < sizeX; x++) {
 				for (int y = 0; y < sizeY; y++) {
-					cells.add(new Cell(renderer, GLRenderer.textureOffsetCell,
-							x - centreX, y - centreY));
+					Cell cell = new Cell(renderer, GLRenderer.textureOffsetCell,
+							x - centreX, y - centreY);
+					cells.add(cell);
+					duration = 500 + random.nextInt(2500);
+					endZ = cell.z;
+					cell.z = endZ + 6;
+					animList.add(cellAnimation(cell, "z", cell.z, endZ, duration));
+					endX = cell.x;
+					cell.x = endX + 2 * x - sizeX;
+					animList.add(cellAnimation(cell, "x", cell.x, endX, duration));
+					endY = cell.y;
+					cell.y = endY + 2 * y - sizeY;
+					animList.add(cellAnimation(cell, "y", cell.y, endY, duration));
 				}
 			}
 		}
+
+		animSet.addListener(new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				surfaceView.decrementAnimations();
+				super.onAnimationEnd(animation);
+			}
+
+			@Override
+			public void onAnimationStart(Animator animation) {
+				surfaceView.incrementAnimations();
+				super.onAnimationStart(animation);
+			}
+		});
+		
+		Animator[] anims = new Animator[animList.size()];
+		anims = animList.toArray(anims);
+		animSet.playTogether(anims);
+		animSet.start();
 	}
 
+	/** Create an object animator to animate a cell.
+	 * @param cell The cell to be animated.
+	 * @param property The cell property to be animated.
+	 * @param start The property start value.
+	 * @param end The property end value.
+	 * @param duration The duration of the animation.
+	 * @return An ObjectAnimator object.
+	 */
+	public ObjectAnimator cellAnimation(Cell cell, String property, 
+			float start, float end, long duration) {
+		ObjectAnimator anim = new ObjectAnimator();
+		anim = ObjectAnimator.ofFloat(cell, property, start, end);
+		anim.setDuration(duration);
+		anim.setInterpolator(new DecelerateInterpolator());
+//		anim.setInterpolator(new OvershootInterpolator());
+		anim.setStartDelay(200);
+		return anim;
+	}
+	
 	/** Add a tile.
 	 * @param row Row index starting from zero.
 	 * @param column Column index starting from zero
@@ -113,26 +209,42 @@ public class Board {
 	public void addLine(Point start, Point end, int colour) {
 		PointF p1 = boardToWorldXY(new Point(start.x, start.y));
 		PointF p2 = boardToWorldXY(new Point(end.x, end.y));
-		// Synchronise here in case the renderer is iterating across the lines.
 		if (colour == Player.COLOUR_BLUE) {
 			colour = Line.COLOUR_BLUE;
 		} else {
 			colour = Line.COLOUR_RED;
 		}
 		Line line = new Line(renderer, p1.x, p1.y, p2.x, p2.y, colour);
-		float oldZ = line.z;
+		float endZ = line.z;
 		line.z += 3;
+		// Synchronise here in case the renderer is iterating across the lines.
 		synchronized (lines) {
 			lines.add(line);
-//			lines.add(new Line(renderer, p1.x, p1.y, p2.x, p2.y, colour));
 		}
-		animateLine(line, oldZ);
+		animateLine(line, endZ);
 	}
 	
-	public void animateLine(Line line, float oldZ) {
-		ObjectAnimator anim = ObjectAnimator.ofFloat(line, "z", line.z, oldZ);
-		anim.setDuration(350);
+	/** Animates the z property of a line.
+	 * @param line The line.
+	 * @param endZ The value of z at the end of the animation.
+	 */
+	public void animateLine(Line line, float endZ) {
+		ObjectAnimator anim = ObjectAnimator.ofFloat(line, "z", line.z, endZ);
+		anim.setDuration(500);
 		anim.setInterpolator(new DecelerateInterpolator());
+		anim.addListener(new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				surfaceView.decrementAnimations();
+				super.onAnimationEnd(animation);
+			}
+
+			@Override
+			public void onAnimationStart(Animator animation) {
+				surfaceView.incrementAnimations();
+				super.onAnimationStart(animation);
+			}
+		});
 		anim.start();
 	}
 	
