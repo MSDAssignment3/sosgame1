@@ -33,7 +33,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="false"
         android:layout_alignParentTop="true"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
         android:src="@drawable/player_blue" />
 
     <TextView
@@ -42,9 +45,10 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/imgPlayerBlue"
         android:layout_alignTop="@+id/imgPlayerBlue"
-        android:padding="10dp"
+        android:padding="3dp"
+        android:scaleType="centerCrop"
         android:text="@string/zero"
-        android:textSize="80sp" />
+        android:textSize="50sp" />
 
     <ImageView
         android:id="@+id/imgPlayerRed"
@@ -52,6 +56,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
         android:src="@drawable/player_red" />
 
     <TextView
@@ -60,9 +66,10 @@
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/imgPlayerRed"
         android:layout_alignTop="@+id/imgPlayerRed"
-        android:padding="10dp"
+        android:padding="3dp"
+        android:scaleType="centerCrop"
         android:text="@string/zero"
-        android:textSize="80sp" />
+        android:textSize="50sp" />
 
     <ImageButton
         android:id="@+id/btnSettingsGame"
@@ -70,7 +77,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:adjustViewBounds="true"
         android:background="@null"
+        android:scaleType="centerCrop"
         android:src="@drawable/gear_button" />
 
     <Button

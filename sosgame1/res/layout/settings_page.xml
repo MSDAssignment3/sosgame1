@@ -15,8 +15,7 @@
         android:adjustViewBounds="true"
         android:background="@null"
         android:scaleType="centerCrop"
-        android:src="@drawable/credits_button"
-        android:visibility="visible" />
+        android:src="@drawable/credits_button" />
 
     <ImageView
         android:id="@+id/imgSounds"
@@ -48,6 +47,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:background="@null"
+        android:scaleType="centerCrop"
         android:src="@drawable/back_button" />
     
 </RelativeLayout>
