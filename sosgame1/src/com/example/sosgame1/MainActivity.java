@@ -30,11 +30,14 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.sosgame1.controller.LogicControl;
@@ -61,7 +64,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.splash_page);
 		((ImageButton) findViewById(R.id.btnPlay)).setOnClickListener(this);
-		((ImageButton) findViewById(R.id.btnSettings)).setOnClickListener(this);
+		((ImageButton) findViewById(R.id.btnPlayMultiple)).setOnClickListener(this);
 		viewSplash = (RelativeLayout) findViewById(R.id.rlSplash);
 		
 		//DB
@@ -143,7 +146,7 @@ public class MainActivity extends Activity implements OnClickListener,
 			btnPlayAniSet.addListener(new Animator.AnimatorListener() {
 			    @Override 
 			    public void onAnimationEnd(Animator animation) {
-			    	viewToSplash();
+			    	viewToGame();
 			    }
 				@Override
 				public void onAnimationCancel(Animator animation) {
@@ -161,14 +164,15 @@ public class MainActivity extends Activity implements OnClickListener,
 			btnPlayAniSet.start();
 			break;  
 
-		case R.id.btnSettings:
-			ImageButton buttonSettings = (ImageButton) findViewById(R.id.btnSettings); //can't put before switch it will be null
-			AnimatorSet btnSettingsAniSet = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.button_rotate); //can't reuse
-			btnSettingsAniSet.setTarget(buttonSettings);
-			btnSettingsAniSet.addListener(new AnimatorListener() {
+		case R.id.btnPlayMultiple:
+			ImageButton btnPlayMultiple = (ImageButton) findViewById(R.id.btnPlayMultiple); //can't put before switch it will be null
+			AnimatorSet btnMultipleAniSet = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.button_rotate); //can't reuse
+			btnMultipleAniSet.setTarget(btnPlayMultiple);
+			btnMultipleAniSet.addListener(new AnimatorListener() {
 			    @Override 
 			    public void onAnimationEnd(Animator animation) {
-			    	viewToSettings(viewSplash);       
+			    	//show a spinner
+			    	chooseServerClient();
 			    }
 				@Override
 				public void onAnimationCancel(Animator animation) {
@@ -185,7 +189,7 @@ public class MainActivity extends Activity implements OnClickListener,
 					// TODO Auto-generated method stub
 				}
 			});
-			btnSettingsAniSet.start();
+			btnMultipleAniSet.start();
 			break;
 
 		case R.id.btnBack:
@@ -214,7 +218,7 @@ public class MainActivity extends Activity implements OnClickListener,
 	/**
 	 * Changes the contentView to the Game view itself
 	 */
-	private void viewToSplash()
+	private void viewToGame()
 	{
     	setContentView(R.layout.activity_main);
 		mainView = (RelativeLayout) findViewById(R.id.rlMain);
@@ -265,6 +269,26 @@ public class MainActivity extends Activity implements OnClickListener,
 		Score score = dataSource.createScore( "TEST", Integer.parseInt((String) textBlueScore.getText()) );
 	}
 	
+
+	/**
+	 * Add a spinner for choosing server or client on multiplayer type of game
+	 */
+	private void chooseServerClient()
+	{
+//		Spinner spinnerServerClient = (Spinner) findViewById(R.id.spinner);
+////		spinnerServerClient.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT));
+//		// Create an ArrayAdapter using the string array and a default spinner layout
+//		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+//		        R.array.multiplayer_array, android.R.layout.simple_spinner_item);
+//		// Specify the layout to use when the list of choices appears
+//		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//		// Apply the adapter to the spinner
+//		spinnerServerClient.setAdapter(adapter);
+////		((RelativeLayout) viewSplash).addView(spinnerServerClient);
+//		spinnerServerClient.setVisibility(View.VISIBLE);
+	}
+
+
 	/** Create credits cubes */
 	private void createCredits() {
         Cube cube;
