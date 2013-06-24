@@ -55,7 +55,8 @@ public class MainActivity extends Activity implements OnClickListener,
     private LogicControl controller = null;
     private boolean rollCredits = false;    
     private DataSource dataSource;
-
+    
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

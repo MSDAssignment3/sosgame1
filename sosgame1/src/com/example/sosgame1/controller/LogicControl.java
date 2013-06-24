@@ -17,7 +17,6 @@ public class LogicControl {
 	private String two;
 	private String three;
 	private int totalCorrect = 0;
-	//total will be 
 	private String input [][];
 	
 	private int boardRows =0;
