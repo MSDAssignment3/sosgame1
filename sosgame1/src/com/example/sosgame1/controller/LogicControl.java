@@ -18,18 +18,22 @@ public class LogicControl {
 	private String three;
 	private int totalCorrect = 0;
 	//total will be 
-	private String input [][] = new String[25][25];	
+	private String input [][];
 	
-	private boolean firstPlayer = false;  
-	private boolean secondPlayer = true;
+	private int boardRows =0;
+	private int boardColumns = 0;
+	private int control = 0;
+	
+	private boolean firstPlayer = true;  
+	private boolean secondPlayer = false;
 	private boolean giveTurnToFirst = false;
 	private boolean giveTurnToSecond = false;	
 	private int firstPlayerScore = 0;
 	private int secondPlayerScore = 0;
 	private List <CrossedCoordinate> crossedCoordinateList = new ArrayList<CrossedCoordinate>();
 	public int currentPlayerColour = Player.COLOUR_BLUE;  //blue for player 1 and red for player 2
-	//public int secondPlayerColour = Player.COLOUR_RED;
 	private Board board = null;
+	private int numEntered = 0;
 	
 	public LogicControl()
 	{
@@ -40,6 +44,32 @@ public class LogicControl {
 	{
 		this.board = board;
 	}
+	
+	//change
+	public LogicControl(Board board,int i,int j)
+	{
+		this.board = board;
+		boardRows = i;  
+		boardColumns = j; 
+		input = new String[boardRows][boardColumns];	
+		
+		if(i==5)
+		{
+			control=3;
+		}
+		
+		if(i==7)
+		{
+			control = 5;
+		}
+		
+		if(i==9)
+		{
+			control = 7;
+		}
+		
+	}
+	
 	
 	//TODO need to modify
 	public void getPlayerNames()
@@ -73,7 +103,17 @@ public class LogicControl {
 	
 	public void getAndCheck(int indexRow,int indexColumn,String inputValue)
 	{
-		 input[indexRow][indexColumn] =inputValue;
+		boolean canEnter = true;
+		if (canEnter == true)
+		{
+		input[indexRow][indexColumn] =inputValue;
+		 numEntered++;
+		 checkHorizontally();
+		 checkVertically();
+		 checkTopRight();
+		 checkTopLeft();
+		 checkBottomLeft();
+		 checkBottomRight();
 		 
 		 //toggling boolean value
 		 if(firstPlayer==true && giveTurnToFirst==false)
@@ -91,13 +131,31 @@ public class LogicControl {
 		 
 		 giveTurnToFirst = false; //reset
 		 giveTurnToSecond = false; //reset
+		}
 		 
-		 checkHorizontally();
-		 checkVertically();
-		 checkTopRight();
-		 checkTopLeft();
-		 checkBottomLeft();
-		 checkBottomRight();
+		 	if(control==3)  // this is for 5*5 Board
+			{
+				if(numEntered==25)
+				{
+					
+				}
+			}
+			
+			if(control == 5) // this is for 7*7 Board
+			{
+				if(numEntered==49)
+				{
+					
+				}
+			}
+			
+			if(control == 7) // this is for 9*9 Board
+			{
+				if(numEntered==81)
+				{
+					
+				}
+			}
 	}
 	
 	/**
@@ -105,144 +163,43 @@ public class LogicControl {
 	 */
 	public void checkHorizontally()
 	{
-		int count =0;
-		String answer = "";
-		String lastAnswer = "";
 		
 		//total 25
-		for(int i=0;i<5;i++)   //checking horizontally
+		for(int i=0;i<boardColumns;i++)   //checking horizontally
 		{
-			answer = "";
 			//it will check 3 times for each row (for example (0,1,2),(1,2,3),(2,3,4))
-			for(int j=0;j<3;j++)  
+			for(int j=0;j<control;j++)  
 			{ 
 				
 				switch(j)
 				{
 				
 				case(0):
-					for(int k=0;k<3;k++)
-					{
-					if(input[i][k]!=null)
-					{
-						answer += input[i][k].toString();	
-					}
-					count++;
-					if(count==3)  //check for every three cells
-					{					
-						answer.trim();						
-						if(answer.equalsIgnoreCase("SOS"))
-						{		
-							//get coordinates
-							int temI1 = i;
-							int temJ1 = k-2;
-							int temI2 = i;
-							int temJ2 = k-1;
-							int temI3 = i;
-							int temJ3 = k;
-							boolean hasStored = checkIfStored(temI1,temJ1,temI2,temJ2,temI3,temJ3);						
-							
-							if(hasStored==false)
-							{
-								totalCorrect++;
-								changePlayerTurn();							
-								board.addLine(temI1, temJ1, temI3, temJ3 , currentPlayerColour);
-								System.out.println(answer+" Horizontally");
-								System.out.println("Total correct "+totalCorrect);									
-								
-								//store coordinates							
-								storeCoordinates(temI1,temJ1,temI2,temJ2,temI3,temJ3);								
-							}
-						}		
-						
-						count = 0; //reset counts	to 0					
-						answer = "";
-					}
-				  }
+					checkHorizontal(i,j,3);	
 				break;
 				
 				case(1):
-					for(int k=1;k<4;k++)
-					{
-					if(input[i][k]!=null)
-					{
-						answer += input[i][k].toString();	
-					}
-					count++;
-					if(count==3)  //check for every three cells
-					{					
-						answer.trim();						
-						if(answer.equalsIgnoreCase("SOS"))
-						{		
-							//get coordinates
-							int temI1 = i;
-							int temJ1 = k-2;
-							int temI2 = i;
-							int temJ2 = k-1;
-							int temI3 = i;
-							int temJ3 = k;
-							boolean hasStored = checkIfStored(temI1,temJ1,temI2,temJ2,temI3,temJ3);	
-							
-							if(hasStored==false)
-							{
-								totalCorrect++;
-								changePlayerTurn();		
-								System.out.println(answer+" Horizontally");
-								System.out.println("Total correct "+totalCorrect);										
-								board.addLine(temI1, temJ1, temI3, temJ3 , currentPlayerColour);
-								//store coordinates							
-								storeCoordinates(temI1,temJ1,temI2,temJ2,temI3,temJ3);
-							}							
-							
-						}
-						count = 0; //reset counts	to 0					
-						answer = "";	
-					}
-				  }
+					checkHorizontal(i,j,4);	
 				break;
 				
 				case(2):
-					for(int k=2;k<5;k++)
-					{
-					if(input[i][k]!=null)
-					{
-						answer += input[i][k].toString();	
-					}
-					count++;
-					if(count==3)  //check for every three cells
-					{					
-						answer.trim();						
-						if(answer.equalsIgnoreCase("SOS"))
-						{	
-							//get coordinates
-							int temI1 = i;
-							int temJ1 = k-2;
-							int temI2 = i;
-							int temJ2 = k-1;
-							int temI3 = i;
-							int temJ3 = k;
-							
-							boolean hasStored = checkIfStored(temI1,temJ1,temI2,temJ2,temI3,temJ3);		
-							
-							System.out.println(hasStored+"case2");
-							if(hasStored==false)
-							{
-								totalCorrect++;
-								changePlayerTurn();	
-								board.addLine(temI1, temJ1, temI3, temJ3 , currentPlayerColour);
-								System.out.println(answer+" Horizontally");
-								System.out.println("Total correct "+totalCorrect);							
-	
-								//store coordinates							
-								storeCoordinates(temI1,temJ1,temI2,temJ2,temI3,temJ3);	
-							}
-						}
-						
-						
-						count = 0; //reset counts	to 0					
-						answer = "";	
-					}
-				  }
+					checkHorizontal(i,j,5);	
+				break;
+				
+				case(3):
+					checkHorizontal(i,j,6);	
+				break;
+				
+				case(4):
+					checkHorizontal(i,j,7);	
+				break;
+				
+				case(5):
+					checkHorizontal(i,j,8);	
+				break;
+				
+				case(6):
+					checkHorizontal(i,j,9);	
 				break;
 				
 				}
@@ -258,146 +215,44 @@ public class LogicControl {
 	 * For checking vertically. 
 	 */
 	public void checkVertically()
-	{		
-		int count =0;
-		String answer = "";
-		String lastAnswer = "";		
-		
-		for(int j=0;j<5;j++)   //checking vertically
+	{			
+		for(int j=0;j<boardRows;j++)   //checking vertically
 		{
-			answer = "";
 			//it will check 3 times for each column (for example (0,1,2),(1,2,3),(2,3,4))
-			for(int i=0;i<3;i++)  
+			for(int i=0;i<control;i++)  
 			{ 
 				
 				switch(i)
 				{
 				
 				case(0):
-					for(int k=0;k<3;k++)
-					{
-					if(input[k][j]!=null)
-					{
-						answer += input[k][j].toString();	
-					}
-					count++;
-					if(count==3)  //check for every three cells
-					{					
-						answer.trim();						
-						if(answer.equalsIgnoreCase("SOS"))
-						{		
-							//get coordinates
-							int temI1 = k-2;
-							int temJ1 = j;
-							int temI2 = k-1;
-							int temJ2 = j;
-							int temI3 = k;
-							int temJ3 = j;
-							boolean hasStored = checkIfStored(temI1,temJ1,temI2,temJ2,temI3,temJ3);
-							
-							if(hasStored==false)
-							{
-								totalCorrect++;
-								changePlayerTurn();
-								board.addLine(temI1, temJ1, temI3, temJ3 , currentPlayerColour);
-								System.out.println(answer+" Vertically");
-								System.out.println("Total correct "+totalCorrect);		
-								
-								//store coordinates							
-								storeCoordinates(temI1,temJ1,temI2,temJ2,temI3,temJ3);
-
-							}
-						}
-								
-						
-						count = 0; //reset counts	to 0					
-						answer = "";
-					}
-				  }
+					checkVertical(i,j,3);
 				break;
 				
 				case(1):
-					for(int k=1;k<4;k++)
-					{
-					if(input[k][j]!=null)
-					{
-						answer += input[k][j].toString();	
-					}
-					count++;
-					if(count==3)  //check for every three cells
-					{					
-						answer.trim();						
-						if(answer.equalsIgnoreCase("SOS"))
-						{	
-							//get coordinates
-							int temI1 = k-2;
-							int temJ1 = j;
-							int temI2 = k-1;
-							int temJ2 = j;
-							int temI3 = k;
-							int temJ3 = j;
-							boolean hasStored = checkIfStored(temI1,temJ1,temI2,temJ2,temI3,temJ3);
-							
-							if(hasStored==false)
-							{
-								totalCorrect++;
-								changePlayerTurn();
-								board.addLine(temI1, temJ1, temI3, temJ3 , currentPlayerColour);
-								System.out.println(answer+" Vertically");
-								System.out.println("Total correct "+totalCorrect);	
-								
-								//store coordinates							
-								storeCoordinates(temI1,temJ1,temI2,temJ2,temI3,temJ3);
-
-							}
-						}	
-						
-						count = 0; //reset counts	to 0					
-						answer = "";	
-					}
-				  }
+					checkVertical(i,j,4);
 				break;
 				
 				case(2):
-					for(int k=2;k<5;k++)
-					{
-					if(input[k][j]!=null)
-					{
-						answer += input[k][j].toString();	
-					}
-					count++;
-					if(count==3)  //check for every three cells
-					{					
-						answer.trim();						
-						if(answer.equalsIgnoreCase("SOS"))
-						{		
-							//get coordinates
-							int temI1 = k-2;
-							int temJ1 = j;
-							int temI2 = k-1;
-							int temJ2 = j;
-							int temI3 = k;
-							int temJ3 = j;
-							boolean hasStored = checkIfStored(temI1,temJ1,temI2,temJ2,temI3,temJ3);
-							
-							if(hasStored==false)
-							{							
-								totalCorrect++;
-								changePlayerTurn();
-								System.out.println(answer+" Vertically");
-								System.out.println("Total correct "+totalCorrect);			
-								board.addLine(temI1, temJ1, temI3, temJ3 , currentPlayerColour);
-								//store coordinates							
-								storeCoordinates(temI1,temJ1,temI2,temJ2,temI3,temJ3);
-							}
-						}
-						
-						count = 0; //reset counts	to 0					
-						answer = "";	
-					}
-				  }
+					checkVertical(i,j,5);
 				break;
 				
+				case(3):
+					checkVertical(i,j,6);
+				break;
+				
+				case(4):
+					checkVertical(i,j,7);
+				break;
+				
+				case(5):
+					checkVertical(i,j,8);
+				break;
+				
+				case(6):
+					checkVertical(i,j,9);
+				break;
+			
 				}
 				
 										
@@ -411,10 +266,12 @@ public class LogicControl {
 	 */
 	public void checkTopRight()
 	{
-		//j value will start from existing columns -2 (array start from 0)
-		int i=0,j=2;
-		int columns = 2; //start from 2 and will increment till it is  equal to 4 
+		//j value will start from existing columns -2 (array start from 0 so -3)
+		//int i=0,j=2;
+		int i=0,j=boardColumns - 3;
+		int columns = 2; // will increment till it is  equal to columns -1 
 		int count =0;
+		int columnControl = boardColumns -1;
 		String answer = "";	
 		
 		while(j!=-1)
@@ -471,7 +328,7 @@ public class LogicControl {
 			//reset
 			answer="";
 			count=0;
-			if(columns<4)
+			if(columns<columnControl)
 			{
 				columns++;
 			}
@@ -487,13 +344,14 @@ public class LogicControl {
 	 */
 	public void checkTopLeft()
 	{
-		//j value will start from existing columns -2 (array start from 0)
+		//j value will start from 2
 		int j=2;
-		int columns = 2; //start from 2 and will increment till it is  equal to 4 
+		int columns = 2; // will increment till it is  equal to columns -1 
 		int count =0;
 		String answer = "";	
+		int columnControl = boardColumns -1;
 		
-		while(j<5)
+		while(j<boardColumns)
 		{						
 				// k=j 
 				for(int k=columns,i=0;k>=0;k--,i++)
@@ -551,7 +409,7 @@ public class LogicControl {
 			//reset
 			answer="";
 			count=0;
-			if(columns<4)
+			if(columns<columnControl)
 			{
 				columns++;
 			}
@@ -567,11 +425,11 @@ public class LogicControl {
 	public void checkBottomLeft()
 	{
 		//j value will start from zero
-		int columns = 3; //start from existing columns - 1 (array start from zero) 
+		int columns = boardColumns - 2; //start from existing columns - 1 (array start from zero so -2) 
 		int count =0;
 		String answer = "";	
 		int newI = 1;
-		while(columns>=2)      //j >= than existing columns -2 (array start from zero)
+		while(columns>=2)          
 		{						
 				// j 
 				for(int i=0,j=0;j<=columns;j++,i++)
@@ -643,17 +501,17 @@ public class LogicControl {
 	 */
 	public void checkBottomRight()
 	{
-		//j value will start from existing columns value
-		//int j = 4;
-		int columns = 3; //start from existing columns - 1 (array start from zero) 
+		//j value will start from existing columns value -1		
+		int forJ = boardColumns - 1;
+		int columns =  boardColumns - 2; ; //start from existing columns - 1 (array start from zero so -2) 
 		int count =0;
 		String answer = "";	
 		int newI = 1;
 		
-		while(columns>=2)      //j >= than existing columns -2 (array start from zero)
+		while(columns>=2)          //j >= than existing columns -2 (array start from zero so -3)
 		{						
 				// j 
-				for(int i=0,j=4;i<=columns;j--,i++)
+				for(int i=0,j=forJ;i<=columns;j--,i++)
 				{
 					if(input[i+newI][j]!=null)
 					{
@@ -785,6 +643,99 @@ public class LogicControl {
 		CrossedCoordinate cro = new CrossedCoordinate(i1,j1,i2,j2,i3,j3);
 		crossedCoordinateList.add(cro);			
 	}
+	
+	public void checkHorizontal(int i,int j,int counter)
+	{
+		int count =0;
+		String answer = "";
+		for(int k=j;k<counter;k++)
+		{
+		if(input[i][k]!=null)
+		{
+			answer += input[i][k].toString();	
+		}
+		count++;
+		if(count==3)  //check for every three cells
+		{					
+			answer.trim();						
+			if(answer.equalsIgnoreCase("SOS"))
+			{		
+				//get coordinates
+				int temI1 = i;
+				int temJ1 = k-2;
+				int temI2 = i;
+				int temJ2 = k-1;
+				int temI3 = i;
+				int temJ3 = k;
+				boolean hasStored = checkIfStored(temI1,temJ1,temI2,temJ2,temI3,temJ3);						
+				
+				if(hasStored==false)
+				{
+					totalCorrect++;
+					changePlayerTurn();							
+					board.addLine(temI1, temJ1, temI3, temJ3 , currentPlayerColour);
+					System.out.println(answer+" Horizontally");
+					System.out.println("Total correct "+totalCorrect);									
+					
+					//store coordinates							
+					storeCoordinates(temI1,temJ1,temI2,temJ2,temI3,temJ3);								
+				}
+			}		
+			
+			count = 0; //reset counts	to 0					
+			answer = "";
+		}
+	  }
+	
+	}
+
+	
+	public void checkVertical(int i,int j,int counter)
+	{
+		int count =0;
+		String answer = "";
+		for(int k=i;k<counter;k++)
+		{
+		if(input[k][j]!=null)
+		{
+			answer += input[k][j].toString();	
+		}
+		count++;
+		if(count==3)  //check for every three cells
+		{					
+			answer.trim();						
+			if(answer.equalsIgnoreCase("SOS"))
+			{		
+				//get coordinates
+				int temI1 = k-2;
+				int temJ1 = j;
+				int temI2 = k-1;
+				int temJ2 = j;
+				int temI3 = k;
+				int temJ3 = j;
+				boolean hasStored = checkIfStored(temI1,temJ1,temI2,temJ2,temI3,temJ3);
+				
+				if(hasStored==false)
+				{
+					totalCorrect++;
+					changePlayerTurn();
+					board.addLine(temI1, temJ1, temI3, temJ3 , currentPlayerColour);
+					System.out.println(answer+" Vertically");
+					System.out.println("Total correct "+totalCorrect);		
+					
+					//store coordinates							
+					storeCoordinates(temI1,temJ1,temI2,temJ2,temI3,temJ3);
+
+				}
+			}
+					
+			
+			count = 0; //reset counts	to 0					
+			answer = "";
+		}
+	  }
+	}
+	
 	
 }
 
