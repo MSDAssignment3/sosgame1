@@ -18,14 +18,11 @@
 
 package com.example.sosgame1;
 
-import java.util.List;
-
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.app.Activity;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -60,7 +57,6 @@ public class MainActivity extends Activity implements OnClickListener,
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// Create an instance of the logic controller
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.splash_page);
 		((ImageButton) findViewById(R.id.btnPlay)).setOnClickListener(this);
