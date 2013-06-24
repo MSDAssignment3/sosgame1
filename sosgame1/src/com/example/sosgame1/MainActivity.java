@@ -131,10 +131,10 @@ public class MainActivity extends Activity implements OnClickListener,
 			rollCredits = !rollCredits;
 			if (rollCredits) {
 				createCredits();
-				myGLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+				myGLView.incrementAnimations();
 			} else {
 				deleteCredits();
-				myGLView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+				myGLView.decrementAnimations();
 				myGLView.requestRender();
 			}
 			break;
@@ -223,14 +223,14 @@ public class MainActivity extends Activity implements OnClickListener,
 		mainView = (RelativeLayout) findViewById(R.id.rlMain);
 		((Button) findViewById(R.id.btnView)).setOnClickListener(this);
 		((Button) findViewById(R.id.button2)).setOnClickListener(this);
-		((Button) findViewById(R.id.btnCredits)).setOnClickListener(this);
+//		((Button) findViewById(R.id.btnCredits)).setOnClickListener(this);
 		((ImageButton) findViewById(R.id.btnSettingsGame)).setOnClickListener(this);
 		((Button) findViewById(R.id.testUpdateScore)).setOnClickListener(this);//REMOVE this when testing updateScore is not needed
 		((Button) findViewById(R.id.testSaveScore)).setOnClickListener(this);//REMOVE this when testing saveScore is not needed
 		myGLView = (GLESSurfaceView) findViewById(R.id.myGLSurfaceView1);
-		myGLView.renderer.board.reset(9, 9);
+		myGLView.renderer.board.reset(7,7);
 		// Pass controller instance to the GLSurfaceView
-		controller = new LogicControl(myGLView.renderer.board,9,9);
+		controller = new LogicControl(myGLView.renderer.board, 7, 7);
 		myGLView.setController(controller);
 	}
 	
@@ -245,6 +245,7 @@ public class MainActivity extends Activity implements OnClickListener,
 			view.addView(viewAdjustView);
 		}
 		((ImageButton) findViewById(R.id.btnBack)).setOnClickListener(this);
+		((ImageButton) findViewById(R.id.btnCredits)).setOnClickListener(this);
 	}
 	
 	/**
@@ -267,9 +268,8 @@ public class MainActivity extends Activity implements OnClickListener,
 		Score score = dataSource.createScore( "TEST", Integer.parseInt((String) textBlueScore.getText()) );
 	}
 	
-
+	/** Create credits cubes */
 	private void createCredits() {
-        // Credits
         Cube cube;
         float size = 0.75f;
         float posX = 1.5f;
@@ -312,8 +312,9 @@ public class MainActivity extends Activity implements OnClickListener,
 		}
 	}
 	
+	/** Delete credits cubes */
 	private void deleteCredits() {
-        synchronized (myGLView.renderer.board.creditsCubes) {
+		synchronized (myGLView.renderer.board.creditsCubes) {
         	myGLView.renderer.board.creditsCubes.clear();
         }
 	}

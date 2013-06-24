@@ -56,6 +56,9 @@ public class Board {
 	/** Holds the cubes displayed during credits animation. */
 	public ArrayList<Cube> creditsCubes = new ArrayList<Cube>();
 	
+	public Player playerOne;
+	public Player playerTwo;
+	
 	/** Simple constructor.
 	 * @param renderer Reference to the renderer.
 	 */
@@ -82,6 +85,8 @@ public class Board {
 	public void reset(int sizeX, int sizeY) {
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
+		playerOne = new Player();
+		playerTwo = new Player();
 		centreX = sizeX / 2;
 		centreY = sizeY / 2;
 		synchronized (cells) {

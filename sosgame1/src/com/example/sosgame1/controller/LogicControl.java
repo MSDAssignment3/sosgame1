@@ -33,8 +33,6 @@ public class LogicControl {
 	public int currentPlayerColour = Player.COLOUR_BLUE;  //blue for player 1 and red for player 2
 	private Board board = null;
 	private int numEntered = 0;
-	public Player p1;
-	public Player p2;
 	
 	public LogicControl()
 	{
@@ -53,8 +51,6 @@ public class LogicControl {
 		boardRows = i;  
 		boardColumns = j; 
 		input = new String[boardRows][boardColumns];	
-		p1 = new Player();
-		p2 = new Player();
 		
 		if(i==5)
 		{
@@ -605,17 +601,17 @@ public class LogicControl {
 	{
 		if(firstPlayer==true)
 		{
-			firstPlayerScore++;			
+			firstPlayerScore++;
+			board.playerOne.setScore(firstPlayerScore);
 			giveTurnToFirst =true;
-			p1.setScore(firstPlayerScore);
-			System.out.println("FirstPlayer"+p1.getScore());
+			System.out.println("FirstPlayer"+firstPlayerScore);
 		}
 		else if(secondPlayer==true)
 		{
 			secondPlayerScore++;
+			board.playerTwo.setScore(secondPlayerScore);
 			giveTurnToSecond = true;
-			p2.setScore(secondPlayerScore);
-			System.out.println("SecondPlayer"+p2.getScore());
+			System.out.println("SecondPlayer"+secondPlayerScore);
 		}
 	}
 	
