@@ -60,6 +60,8 @@ public class MainActivity extends Activity implements OnClickListener,
     private boolean rollCredits = false;
     private boolean adjustView = false;
     private DataSource dataSource;
+    private int boardColumns = 5; //default
+    private int boardRows = 5;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -151,7 +153,7 @@ public class MainActivity extends Activity implements OnClickListener,
 			btnPlayAniSet.addListener(new Animator.AnimatorListener() {
 			    @Override 
 			    public void onAnimationEnd(Animator animation) {
-			    	viewToGame();
+			    	chooseBoardSize();
 			    }
 				@Override
 				public void onAnimationCancel(Animator animation) {
@@ -236,9 +238,9 @@ public class MainActivity extends Activity implements OnClickListener,
 		((Button) findViewById(R.id.testUpdateScore)).setOnClickListener(this);//REMOVE this when testing updateScore is not needed
 		((Button) findViewById(R.id.testSaveScore)).setOnClickListener(this);//REMOVE this when testing saveScore is not needed
 		myGLView = (GLESSurfaceView) findViewById(R.id.myGLSurfaceView1);
-		myGLView.renderer.board.reset(7,7);
+		myGLView.renderer.board.reset(boardRows,boardColumns);
 		// Pass controller instance to the GLSurfaceView
-		controller = new LogicControl(myGLView.renderer.board, 7, 7);
+		controller = new LogicControl(myGLView.renderer.board, boardRows, boardColumns);
 		myGLView.setController(controller);
 	}
 	
@@ -260,6 +262,7 @@ public class MainActivity extends Activity implements OnClickListener,
 	 * THIS IS NOT YET COMPLETE
 	 * Updates the Scores on the screen
 	 */
+	//TODO: Is there a better way for this to be accessible to another class?
 	private void updateScore(){
 		int dummy = 1; //change and remove later
 		TextView textBlueScore = (TextView) findViewById(R.id.txtBlueScore);
@@ -282,7 +285,7 @@ public class MainActivity extends Activity implements OnClickListener,
 	 */
 	private void chooseServerClient()
 	{
-		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 		alertDialogBuilder.setTitle("Multiplayer, are you the...");
 		alertDialogBuilder.setItems(R.array.multiplayer_array, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
@@ -330,6 +333,34 @@ public class MainActivity extends Activity implements OnClickListener,
             }
 		});
 		AlertDialog alertDialog = alertDialogBuilder.create();
+		alertDialog.show();
+	}
+	
+	/**
+	 * 
+	 */
+	private void chooseBoardSize()
+	{
+		AlertDialog.Builder alertBoardSize = new AlertDialog.Builder(context);
+		alertBoardSize.setTitle("Choose board size");
+		alertBoardSize.setItems(R.array.board_size_array, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+            	if (which == 0) { //5x5
+            		boardRows = 5;
+            		boardColumns = 5;
+            	}
+            	else if (which == 1) { //7x7
+            		boardRows = 7;
+            		boardColumns = 7;
+            	}
+            	else if (which == 2) { //9x9
+            		boardRows = 9;
+            		boardColumns = 9;
+            	}
+            	viewToGame();
+            }
+		});
+		AlertDialog alertDialog = alertBoardSize.create();
 		alertDialog.show();
 	}
 
