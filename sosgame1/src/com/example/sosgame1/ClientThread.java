@@ -73,7 +73,7 @@ public class ClientThread implements Runnable {
 	public void setMessage(int msgtype, String message) {
 		uiMsg = message;
 		msgNum = msgtype;
-		if (uiMsg != null && msgNum == 0) {
+		if (uiMsg != null && msgNum == 0 && out != null) {
 			Log.d("Client", "Sending command.");
 			try {
 				out.writeInt(msgNum);

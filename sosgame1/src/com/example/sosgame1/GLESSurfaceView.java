@@ -163,70 +163,37 @@ public class GLESSurfaceView extends GLSurfaceView
 	private void doSingleTap(MotionEvent e) {
 		float x = e.getX();
 		float y = e.getY();
-        if (server == null && client == null) {
-			if (!animationInProgress && !scaleDetector.isInProgress()) {
+		if (!animationInProgress && !scaleDetector.isInProgress()) {
 
-				switch (mode) {
-				case MODE_IDLE:
-					p = renderer.getWorldXY(x, y, GLRenderer.cellZ
-							+ GLRenderer.cellScaleFactorZ);
+			switch (mode) {
+			case MODE_IDLE:
+				p = renderer.getWorldXY(x, y, GLRenderer.cellZ
+						+ GLRenderer.cellScaleFactorZ);
+				Tile tile = (Tile) renderer.getSelectedCube(p, renderer.board.tiles);
+				if (tile == null) {
 					showTilesToChoose(p);
-					break;
-				case MODE_WAIT_FOR_CHOICE:
-					p = renderer.getWorldXY(x, y, GLRenderer.tileZ
-							+ GLRenderer.tileScaleFactorZ * 2);
-					chooseTile(p);
-					break;
-				case MODE_NOT_YOUR_TURN:
-					// TODO Do we need to do anything here?
-					break;
+					if (server != null && client == null) {
+						server.setMessage(Constant.POINT, p.x + ","+p.y);
+					} else if (server == null && client != null) {
+						client.setMessage(Constant.POINT, p.x + ","+p.y);
+					}
 				}
+				break;
+			case MODE_WAIT_FOR_CHOICE:
+				p = renderer.getWorldXY(x, y, GLRenderer.tileZ
+						+ GLRenderer.tileScaleFactorZ * 2);
+				chooseTile(p);
+				if (server != null && client == null) {
+					server.setMessage(Constant.POINT, p.x + ","+p.y);
+				} else if (server == null && client != null) {
+					client.setMessage(Constant.POINT, p.x + ","+p.y);
+				}
+				break;
+			case MODE_NOT_YOUR_TURN:
+				// TODO Do we need to do anything here?
+				break;
 			}
 		}
-        else if(server != null && client == null) //This instance is the server
-        {
-			if (!animationInProgress && !scaleDetector.isInProgress()) {
-
-				switch (mode) {
-				case MODE_IDLE:
-					p = renderer.getWorldXY(x, y, GLRenderer.cellZ + GLRenderer.cellScaleFactorZ);
-					server.setMessage(Constant.POINT, p.x + ","+p.y);
-					showTilesToChoose(p);
-					break;
-				case MODE_WAIT_FOR_CHOICE:
-					p = renderer.getWorldXY(x, y, GLRenderer.tileZ
-							+ GLRenderer.tileScaleFactorZ * 2);
-					server.setMessage(Constant.POINT, p.x + ","+p.y);
-					chooseTile(p);
-					break;
-				case MODE_NOT_YOUR_TURN:
-					// TODO Do we need to do anything here?
-					break;
-				}
-			}
-        }
-//        else if(client != null && server == null) //This instance is the client
-//        {
-//			if (!animationInProgress && !scaleDetector.isInProgress()) {
-//
-//				switch (mode) {
-//				case MODE_IDLE:
-//					p = renderer.getWorldXY(x, y, GLRenderer.cellZ + GLRenderer.cellScaleFactorZ);
-//					showTilesToChoose(p);
-//					client.setMessage(Constant.POINT, p.x + ","+p.y);
-//					break;
-//				case MODE_WAIT_FOR_CHOICE:
-//					p = renderer.getWorldXY(x, y, GLRenderer.tileZ
-//							+ GLRenderer.tileScaleFactorZ * 2);
-//					chooseTile(p);
-//					client.setMessage(Constant.POINT, p.x + ","+p.y);
-//					break;
-//				case MODE_NOT_YOUR_TURN:
-//					// TODO Do we need to do anything here?
-//					break;
-//				}
-//			}
-//        }
 	}
 
 	/** The player has either tapped on one of the two tiles or has tapped

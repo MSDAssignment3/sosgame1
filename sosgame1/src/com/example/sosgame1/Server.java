@@ -111,8 +111,7 @@ public class Server implements Runnable{
 	
 	public void setMessage(int msgType, String msgIn)
 	{
-		message = msgIn;
-		if (message != null) {
+		if (message != null && out != null) {
 			Log.d("Server", "Sending message in progress");
 			try {
 				out.writeInt(msgType);
