@@ -24,6 +24,9 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,6 +37,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -45,6 +49,7 @@ import com.example.sosgame1.controller.LogicControl;
 public class MainActivity extends Activity implements OnClickListener,
 	SeekBar.OnSeekBarChangeListener {
 
+	Context context = this;
     private GLESSurfaceView myGLView = null;
     private RelativeLayout mainView;
     private RelativeLayout viewSplash;
@@ -271,23 +276,44 @@ public class MainActivity extends Activity implements OnClickListener,
 	
 
 	/**
-	 * Add a spinner for choosing server or client on multiplayer type of game
+	 * Add alertDialogs for choosing server or client on multiplayer type of game
 	 */
 	private void chooseServerClient()
 	{
-//		Spinner spinnerServerClient = (Spinner) findViewById(R.id.spinner);
-////		spinnerServerClient.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT));
-//		// Create an ArrayAdapter using the string array and a default spinner layout
-//		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-//		        R.array.multiplayer_array, android.R.layout.simple_spinner_item);
-//		// Specify the layout to use when the list of choices appears
-//		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//		// Apply the adapter to the spinner
-//		spinnerServerClient.setAdapter(adapter);
-////		((RelativeLayout) viewSplash).addView(spinnerServerClient);
-//		spinnerServerClient.setVisibility(View.VISIBLE);
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+		alertDialogBuilder.setTitle("Multiplayer, are you the...");
+		alertDialogBuilder.setItems(R.array.multiplayer_array, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+            // The 'which' argument contains the index position of the selected item
+            	if (which == 0) { //Server. /////Is there a better way? A constant or something?
+            		//Show IP Adress /////PETER?
+            	}
+            	else if (which == 1) { //Client
+            		//Input IP address of Server
+            		AlertDialog.Builder alertIp = new AlertDialog.Builder(context);
+            		// Set an EditText view to get user input 
+            		final EditText txtIp = new EditText(context);
+            		alertIp.setView(txtIp);
+            		alertIp.setTitle("Enter IP address of Server device");
+            		alertIp.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            			public void onClick(DialogInterface dialog, int whichButton) {
+//            			  String value = txtIp.getText().toString();
+            			  // Do something with value!
+//            				 viewToGame();
+            			}
+            		});
+            		alertIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            			  public void onClick(DialogInterface dialog, int whichButton) {
+            			    // Canceled.
+            			  }
+            		});
+            		alertIp.show();
+            	}
+            }
+		});
+		AlertDialog alertDialog = alertDialogBuilder.create();
+		alertDialog.show();
 	}
-
 
 	/** Create credits cubes */
 	private void createCredits() {
