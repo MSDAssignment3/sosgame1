@@ -297,10 +297,8 @@ public class MainActivity extends Activity implements OnClickListener,
             		alertIp.setMessage("["+ip+"]" + "\nInput this in the other device.");
             		alertIp.setPositiveButton("Got it, Play!", new DialogInterface.OnClickListener() {
             			public void onClick(DialogInterface dialog, int whichButton) {
-//            			  String value = txtIp.getText().toString();
-            			  // Do something with value!
-//            				 viewToGame();
-            				String msg = server.displayMessage();
+            				 viewToGame();
+            				String msg = server.getMessage();
             				Log.d("SOSGAMGE", msg);
             			}
             		});

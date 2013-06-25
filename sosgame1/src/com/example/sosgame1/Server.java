@@ -1,66 +1,82 @@
 package com.example.sosgame1;
 
-import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
-import java.util.Enumeration;
 
 import android.os.Handler;
 import android.util.Log;
 
 public class Server implements Runnable{
 	
-    public static String SERVERIP = Utils.getIPAddress(true); //Default IP Address
+   //Default IP Address
  
-    public static final int SERVERPORT = 12345;
- 
+    // default ip
+    public static String SERVERIP = Utils.getIPAddress(true);
+    String line = null;
     private Handler handler = new Handler();
-    private String message;
+    private Socket client;
     private ServerSocket serverSocket;
+    private String temp = "";
+    private DataInputStream in;
+    private DataOutputStream out;
+    private String message = "";
 	@Override
 	public void run() {
-		try {
+        try {
             if (SERVERIP != null) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                    	Log.d("Message", "Listening on IP: "+SERVERIP);
+                        Log.d("SERVER", "Listening on IP: " + SERVERIP);
                     }
                 });
-                serverSocket = new ServerSocket(SERVERPORT);
+                serverSocket = new ServerSocket(Constant.SERVER_PORT);
                 while (true) {
-                    Socket client = serverSocket.accept();
+                    // listen for incoming clients
+                    client = serverSocket.accept();
+                    in = new DataInputStream(client.getInputStream());
+                    out = new DataOutputStream(client.getOutputStream());
+                    out.writeInt(Constant.MESSAGE);
+                    out.writeUTF("You are connected");
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                        	Log.d("Server", "Connected");
+                            Log.d("SERVER","Connected.");
                         }
                     });
 
                     try {
-                        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                        String line = null;
-                        while ((message = in.readLine()) != null) {
-                            Log.d("ServerActivity", line);
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    // do whatever you want to the front end
-                                    // this is where you can be creative
-                                	Log.d("ServerActivity", message);
-                                }
-                            });
-                        }
+                      while(true){
+                      	int msg = in.readInt();
+                      	switch(msg)
+                      	{
+                      	case Constant.MESSAGE:
+                      		temp = in.readUTF();
+                      		handler.post(new Runnable() {
+									
+									@Override
+									public void run() {
+										Log.d("Server","temp");
+										
+									}
+								});
+                      		out.writeInt(Constant.MESSAGE);
+                      		out.writeUTF("Message recieved: "+ temp);
+                      		out.flush();
+                      		break;
+                      	case Constant.EXIT:
+                      		client.close();
+                      		break;
+                      	}
+                      }
                     } catch (Exception e) {
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                            	message = "Oops. Connection interrupted. Please reconnect your phones.";
+                            	Log.d("Server","Oops. Connection interrupted. Please reconnect your phones.");
                             }
                         });
                         e.printStackTrace();
@@ -70,7 +86,7 @@ public class Server implements Runnable{
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                    	message = "Couldn't detect internet connection.";
+                    	Log.d("Server","Couldn't detect internet connection.");
                     }
                 });
             }
@@ -78,15 +94,31 @@ public class Server implements Runnable{
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                	message = "Error";
+                	Log.d("Server","Error");
                 }
             });
             e.printStackTrace();
         }
-	}
+    }
 
-	public String displayMessage()
+	public String getMessage()
 	{
 		return message;
 	}  
+	
+	public void setMessage(String msgIn)
+	{
+		message = msgIn;
+		if (message != null) {
+			Log.d("Server", "Sending message in progress");
+			try {
+				out.writeInt(Constant.MESSAGE);
+				out.writeUTF(message);
+				out.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			Log.d("Server", "Sent To Client");
+		}
+	}
 }
