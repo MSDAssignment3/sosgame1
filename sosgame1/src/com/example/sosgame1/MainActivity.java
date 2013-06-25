@@ -430,7 +430,9 @@ public class MainActivity extends Activity implements OnClickListener,
 
 	@Override
 	protected void onPause() {
-		myGLView.onPause();
+		if (myGLView != null) {
+			myGLView.onPause();
+		}
 		super.onPause();
 	}
 
