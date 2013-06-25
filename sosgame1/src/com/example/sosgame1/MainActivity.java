@@ -33,15 +33,12 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.sosgame1.controller.LogicControl;
@@ -49,7 +46,7 @@ import com.example.sosgame1.controller.LogicControl;
 public class MainActivity extends Activity implements OnClickListener,
 	SeekBar.OnSeekBarChangeListener {
 
-	Context context = this;
+	private Context context = this;
     private GLESSurfaceView myGLView = null;
     private RelativeLayout mainView;
     private RelativeLayout viewSplash;
@@ -61,7 +58,6 @@ public class MainActivity extends Activity implements OnClickListener,
     private LogicControl controller = null;
     private boolean rollCredits = false;    
     private DataSource dataSource;
-    
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -199,7 +195,9 @@ public class MainActivity extends Activity implements OnClickListener,
 
 		case R.id.btnBack:
 			if (viewAdjustView != null) {
-				viewSplash.removeView(viewAdjustView);
+				if (rollCredits) {
+					deleteCredits();
+				}
 				mainView.removeView(viewAdjustView);
 			}
 			break;
@@ -216,8 +214,7 @@ public class MainActivity extends Activity implements OnClickListener,
 			saveScore();
 			break;
 		}
-		
-		
+
 	}
 	
 	/**
@@ -287,15 +284,10 @@ public class MainActivity extends Activity implements OnClickListener,
             // The 'which' argument contains the index position of the selected item
             	if (which == 0) { //Server. /////Is there a better way? A constant or something?
             		//Show IP Adress /////PETER?
-            	}
-            	else if (which == 1) { //Client
-            		//Input IP address of Server
             		AlertDialog.Builder alertIp = new AlertDialog.Builder(context);
-            		// Set an EditText view to get user input 
-            		final EditText txtIp = new EditText(context);
-            		alertIp.setView(txtIp);
-            		alertIp.setTitle("Enter IP address of Server device");
-            		alertIp.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            		alertIp.setTitle("This server's IP address");
+            		alertIp.setMessage("[ip adress]" + "Input this in the other device.");
+            		alertIp.setPositiveButton("Got it, Play!", new DialogInterface.OnClickListener() {
             			public void onClick(DialogInterface dialog, int whichButton) {
 //            			  String value = txtIp.getText().toString();
             			  // Do something with value!
@@ -308,6 +300,27 @@ public class MainActivity extends Activity implements OnClickListener,
             			  }
             		});
             		alertIp.show();
+            	}
+            	else if (which == 1) { //Client
+            		//Input IP address of Server
+            		AlertDialog.Builder alertInputIp = new AlertDialog.Builder(context);
+            		// Set an EditText view to get user input 
+            		final EditText txtIp = new EditText(context);
+            		alertInputIp.setView(txtIp);
+            		alertInputIp.setTitle("Enter IP address of Server device");
+            		alertInputIp.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            			public void onClick(DialogInterface dialog, int whichButton) {
+//            			  String value = txtIp.getText().toString();
+            			  // Do something with value!
+//            				 viewToGame();
+            			}
+            		});
+            		alertInputIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            			  public void onClick(DialogInterface dialog, int whichButton) {
+            			    // Canceled.
+            			  }
+            		});
+            		alertInputIp.show();
             	}
             }
 		});
