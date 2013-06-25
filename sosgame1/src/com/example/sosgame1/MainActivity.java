@@ -196,7 +196,10 @@ public class MainActivity extends Activity implements OnClickListener,
 		case R.id.btnBack:
 			if (viewAdjustView != null) {
 				if (rollCredits) {
+					rollCredits = !rollCredits;
 					deleteCredits();
+					myGLView.decrementAnimations();
+					myGLView.requestRender();
 				}
 				mainView.removeView(viewAdjustView);
 			}
