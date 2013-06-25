@@ -13,20 +13,13 @@
         android:layout_centerVertical="true" />
 
     <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/btnView"
-        android:text="SplashTest" />
-
-    <Button
         android:id="@+id/btnView"
+        style="android:buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:text="View" />
+        android:text="Adjust View" />
 
     <ImageView
         android:id="@+id/imgPlayerBlue"
@@ -87,7 +80,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/button2"
+        android:layout_toRightOf="@+id/btnView"
         android:text="Test Update Score" />
 
     <Button
