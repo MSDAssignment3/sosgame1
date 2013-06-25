@@ -131,6 +131,7 @@ public class MainActivity extends Activity implements OnClickListener,
 			} else {
 				if (viewAdjustView != null) {
 					mainView.removeView(viewAdjustView);
+					viewAdjustView = null;
 				}
 			}
 			break;
@@ -208,6 +209,7 @@ public class MainActivity extends Activity implements OnClickListener,
 					myGLView.requestRender();
 				}
 				mainView.removeView(viewSettings);
+				viewSettings = null;
 			}
 			break;
 			
