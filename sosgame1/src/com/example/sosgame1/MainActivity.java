@@ -264,9 +264,7 @@ public class MainActivity extends Activity implements OnClickListener,
 	 * THIS IS NOT YET COMPLETE
 	 * Updates the Scores on the screen
 	 */
-	//TODO: Is there a better way for this to be accessible to another class?
 	public void updateScore(int playerBlueScore, int playerRedScore){
-		int dummy = 1; //change and remove later
 		TextView textBlueScore = (TextView) findViewById(R.id.txtBlueScore);
 		TextView textRedScore = (TextView) findViewById(R.id.txtRedScore);
 		textBlueScore.setText(""+playerBlueScore);
@@ -276,26 +274,40 @@ public class MainActivity extends Activity implements OnClickListener,
 	/**
 	 * Save score to the DB
 	 */
-	private void saveScore(String playerName){
-		TextView textBlueScore = (TextView) findViewById(R.id.txtBlueScore);
-		Score score = dataSource.createScore( playerName, Integer.parseInt((String) textBlueScore.getText()) );
+	private void saveScore(String playerName, int playerScore){
+		Score score = dataSource.createScore( playerName, playerScore);
 	}
 	
 	/**
 	 * End game interface
 	 * Gets name of winner
 	 */
-	public void endGame()
-	{
+	public void endGame() {
 		AlertDialog.Builder alertEnd = new AlertDialog.Builder(context);
 		String winner = "";
+		int winnerScore = 0;
+		TextView textBlueScore = (TextView) findViewById(R.id.txtBlueScore);
+		TextView textRedScore = (TextView) findViewById(R.id.txtRedScore);
+		if(Integer.parseInt((String) textBlueScore.getText()) > Integer.parseInt((String) textRedScore.getText())) {
+			winner = "BLUE";
+			winnerScore = Integer.parseInt((String) textBlueScore.getText());
+		}
+		else if(Integer.parseInt((String) textBlueScore.getText()) < Integer.parseInt((String) textRedScore.getText())) {
+			winner = "RED";
+			winnerScore = Integer.parseInt((String) textRedScore.getText());
+		}
+		else if(Integer.parseInt((String) textBlueScore.getText()) == Integer.parseInt((String) textRedScore.getText())) {
+			winner = "BLUE & RED";
+			winnerScore = Integer.parseInt((String) textBlueScore.getText());
+		}
+		final int finalWinnerScore = winnerScore;
 		final EditText txtWinner = new EditText(context);
-		alertEnd.setTitle("Game ended! Player " + winner + "won! Enter winner's name:");
+		alertEnd.setTitle("Game ended! Player " + winner + " won! Enter winner's name:");
 		alertEnd.setView(txtWinner);
 		alertEnd.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				String winnerName = txtWinner.getText().toString(); 
-				saveScore(winnerName);
+				saveScore(winnerName, finalWinnerScore);
 			}
 		});
 		alertEnd.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -366,7 +378,7 @@ public class MainActivity extends Activity implements OnClickListener,
 	}
 	
 	/**
-	 * 
+	 * Interface that makes the user choose a board size
 	 */
 	private void chooseBoardSize()
 	{
