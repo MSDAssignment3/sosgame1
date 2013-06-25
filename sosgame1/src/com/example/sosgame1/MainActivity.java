@@ -221,9 +221,9 @@ public class MainActivity extends Activity implements OnClickListener,
 //			updateScore();
 //			break;
 			
-		case R.id.testSaveScore:
-			saveScore();
-			break;
+//		case R.id.testSaveScore:
+//			saveScore();
+//			break;
 		}
 
 	}
@@ -276,11 +276,36 @@ public class MainActivity extends Activity implements OnClickListener,
 	/**
 	 * Save score to the DB
 	 */
-	private void saveScore(){
+	private void saveScore(String playerName){
 		TextView textBlueScore = (TextView) findViewById(R.id.txtBlueScore);
-		Score score = dataSource.createScore( "TEST", Integer.parseInt((String) textBlueScore.getText()) );
+		Score score = dataSource.createScore( playerName, Integer.parseInt((String) textBlueScore.getText()) );
 	}
 	
+	/**
+	 * End game interface
+	 * Gets name of winner
+	 */
+	public void endGame()
+	{
+		AlertDialog.Builder alertEnd = new AlertDialog.Builder(context);
+		String winner = "";
+		final EditText txtWinner = new EditText(context);
+		alertEnd.setTitle("Game ended! Player " + winner + "won! Enter winner's name:");
+		alertEnd.setView(txtWinner);
+		alertEnd.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				String winnerName = txtWinner.getText().toString(); 
+				saveScore(winnerName);
+			}
+		});
+		alertEnd.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			  public void onClick(DialogInterface dialog, int whichButton) {
+			    // Canceled.
+			  }
+		});
+		alertEnd.show();
+		//TODO:go back to menu or show highscores
+	}
 
 	/**
 	 * Add alertDialogs for choosing server or client on multiplayer type of game

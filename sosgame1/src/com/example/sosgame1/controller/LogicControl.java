@@ -141,7 +141,7 @@ public class LogicControl {
 			{
 				if(numEntered==25)
 				{
-					
+					mainActivity.endGame();
 				}
 			}
 			
@@ -149,7 +149,7 @@ public class LogicControl {
 			{
 				if(numEntered==49)
 				{
-					
+					mainActivity.endGame();
 				}
 			}
 			
@@ -157,7 +157,7 @@ public class LogicControl {
 			{
 				if(numEntered==81)
 				{
-					
+					mainActivity.endGame();
 				}
 			}
 	}
