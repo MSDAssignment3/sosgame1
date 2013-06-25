@@ -271,7 +271,6 @@ public class MainActivity extends Activity implements OnClickListener,
 		Score score = dataSource.createScore( "TEST", Integer.parseInt((String) textBlueScore.getText()) );
 	}
 	
-
 	/**
 	 * Add alertDialogs for choosing server or client on multiplayer type of game
 	 */
