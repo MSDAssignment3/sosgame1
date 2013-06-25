@@ -499,6 +499,10 @@ public class MainActivity extends Activity implements OnClickListener,
 			}
 			mainView.removeView(viewSettings);
 			viewSettings = null;
+		} else if (viewAdjustView != null) {
+			mainView.removeView(viewAdjustView);
+			viewAdjustView = null;
+			adjustView = !adjustView;
 		} else {
 			super.onBackPressed();
 		}
