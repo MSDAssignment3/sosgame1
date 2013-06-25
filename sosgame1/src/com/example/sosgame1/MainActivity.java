@@ -51,12 +51,14 @@ public class MainActivity extends Activity implements OnClickListener,
     private RelativeLayout mainView;
     private RelativeLayout viewSplash;
     private View viewAdjustView = null;
+    private View viewSettings = null;
     private float xOffset;
     private float yOffset;
     private boolean isPanningX = false;
     private boolean isPanningY = false;
     private LogicControl controller = null;
-    private boolean rollCredits = false;    
+    private boolean rollCredits = false;
+    private boolean adjustView = false;
     private DataSource dataSource;
     private int boardColumns = 5; //default
     private int boardRows = 5;
@@ -90,44 +92,47 @@ public class MainActivity extends Activity implements OnClickListener,
 		
 		switch (v.getId()) {
 		case R.id.btnView:
-			viewAdjustView = inflater.inflate(R.layout.view_adjust, null);
-			if (viewAdjustView != null) {
-				mainView.addView(viewAdjustView);
-		        ((SeekBar) findViewById(R.id.seekX)).setOnSeekBarChangeListener(this);
-		        ((SeekBar) findViewById(R.id.seekY)).setOnSeekBarChangeListener(this);
-		        ((SeekBar) findViewById(R.id.seekZ)).setOnSeekBarChangeListener(this);
-		        ((SeekBar) findViewById(R.id.seekPanX)).setOnSeekBarChangeListener(this);
-		        ((SeekBar) findViewById(R.id.seekPanY)).setOnSeekBarChangeListener(this);
-		        if (myGLView != null) {
-		        	int setting;
-		        	setting = toProgress(myGLView.renderer.eyeX, 
-		        			myGLView.renderer.eyeXMin, 
-		        			myGLView.renderer.eyeXMax);
-		        	((SeekBar) findViewById(R.id.seekX)).setProgress(setting);
-		        	setting = toProgress(myGLView.renderer.eyeY, 
-		        			myGLView.renderer.eyeYMin, 
-		        			myGLView.renderer.eyeYMax);
-		        	((SeekBar) findViewById(R.id.seekY)).setProgress(setting);
-		        	setting = toProgress(myGLView.renderer.eyeZ, 
-		        			myGLView.renderer.eyeZMin, 
-		        			myGLView.renderer.eyeZMax);
-		        	((SeekBar) findViewById(R.id.seekZ)).setProgress(setting);
-		        	setting = toProgress(myGLView.renderer.lookX, 
-		        			myGLView.renderer.eyeXMin, 
-		        			myGLView.renderer.eyeXMax);
-		        	((SeekBar) findViewById(R.id.seekPanX)).setProgress(setting);
-		        	setting = toProgress(myGLView.renderer.lookY, 
-		        			myGLView.renderer.eyeYMin, 
-		        			myGLView.renderer.eyeYMax);
-		        	((SeekBar) findViewById(R.id.seekPanY)).setProgress(setting);
-		        	xOffset = myGLView.renderer.eyeX - myGLView.renderer.lookX;
-		        	yOffset = myGLView.renderer.eyeY - myGLView.renderer.lookY;
-		        }
-			}
-			break;
-		case R.id.button2:
-			if (viewAdjustView != null) {
-				mainView.removeView(viewAdjustView);
+			adjustView = !adjustView;
+			if (adjustView) {
+				viewAdjustView = inflater.inflate(R.layout.view_adjust, null);
+				if (viewAdjustView != null) {
+					mainView.addView(viewAdjustView);
+					((SeekBar) findViewById(R.id.seekX)).setOnSeekBarChangeListener(this);
+					((SeekBar) findViewById(R.id.seekY)).setOnSeekBarChangeListener(this);
+					((SeekBar) findViewById(R.id.seekZ)).setOnSeekBarChangeListener(this);
+					((SeekBar) findViewById(R.id.seekPanX)).setOnSeekBarChangeListener(this);
+					((SeekBar) findViewById(R.id.seekPanY)).setOnSeekBarChangeListener(this);
+					if (myGLView != null) {
+						int setting;
+						setting = toProgress(myGLView.renderer.eyeX, 
+								myGLView.renderer.eyeXMin, 
+								myGLView.renderer.eyeXMax);
+						((SeekBar) findViewById(R.id.seekX)).setProgress(setting);
+						setting = toProgress(myGLView.renderer.eyeY, 
+								myGLView.renderer.eyeYMin, 
+								myGLView.renderer.eyeYMax);
+						((SeekBar) findViewById(R.id.seekY)).setProgress(setting);
+						setting = toProgress(myGLView.renderer.eyeZ, 
+								myGLView.renderer.eyeZMin, 
+								myGLView.renderer.eyeZMax);
+						((SeekBar) findViewById(R.id.seekZ)).setProgress(setting);
+						setting = toProgress(myGLView.renderer.lookX, 
+								myGLView.renderer.eyeXMin, 
+								myGLView.renderer.eyeXMax);
+						((SeekBar) findViewById(R.id.seekPanX)).setProgress(setting);
+						setting = toProgress(myGLView.renderer.lookY, 
+								myGLView.renderer.eyeYMin, 
+								myGLView.renderer.eyeYMax);
+						((SeekBar) findViewById(R.id.seekPanY)).setProgress(setting);
+						xOffset = myGLView.renderer.eyeX - myGLView.renderer.lookX;
+						yOffset = myGLView.renderer.eyeY - myGLView.renderer.lookY;
+					}
+				}
+			} else {
+				if (viewAdjustView != null) {
+					mainView.removeView(viewAdjustView);
+					viewAdjustView = null;
+				}
 			}
 			break;
 		case R.id.btnCredits:
@@ -174,7 +179,7 @@ public class MainActivity extends Activity implements OnClickListener,
 			btnMultipleAniSet.addListener(new AnimatorListener() {
 			    @Override 
 			    public void onAnimationEnd(Animator animation) {
-			    	//show an alertDialog
+			    	//show a spinner
 			    	chooseServerClient();
 			    }
 				@Override
@@ -196,11 +201,15 @@ public class MainActivity extends Activity implements OnClickListener,
 			break;
 
 		case R.id.btnBack:
-			if (viewAdjustView != null) {
+			if (viewSettings != null) {
 				if (rollCredits) {
+					rollCredits = !rollCredits;
 					deleteCredits();
+					myGLView.decrementAnimations();
+					myGLView.requestRender();
 				}
-				mainView.removeView(viewAdjustView);
+				mainView.removeView(viewSettings);
+				viewSettings = null;
 			}
 			break;
 			
@@ -227,7 +236,6 @@ public class MainActivity extends Activity implements OnClickListener,
     	setContentView(R.layout.activity_main);
 		mainView = (RelativeLayout) findViewById(R.id.rlMain);
 		((Button) findViewById(R.id.btnView)).setOnClickListener(this);
-		((Button) findViewById(R.id.button2)).setOnClickListener(this);
 		((ImageButton) findViewById(R.id.btnSettingsGame)).setOnClickListener(this);
 		((Button) findViewById(R.id.testUpdateScore)).setOnClickListener(this);//REMOVE this when testing updateScore is not needed
 		((Button) findViewById(R.id.testSaveScore)).setOnClickListener(this);//REMOVE this when testing saveScore is not needed
@@ -244,9 +252,9 @@ public class MainActivity extends Activity implements OnClickListener,
 	 */
 	private void viewToSettings(RelativeLayout view){
 		LayoutInflater inflater = getLayoutInflater();
-		viewAdjustView = inflater.inflate(R.layout.settings_page, null);
-		if (viewAdjustView != null) {
-			view.addView(viewAdjustView);
+		viewSettings = inflater.inflate(R.layout.settings_page, null);
+		if (viewSettings != null) {
+			view.addView(viewSettings);
 		}
 		((ImageButton) findViewById(R.id.btnBack)).setOnClickListener(this);
 		((ImageButton) findViewById(R.id.btnCredits)).setOnClickListener(this);
@@ -256,7 +264,8 @@ public class MainActivity extends Activity implements OnClickListener,
 	 * THIS IS NOT YET COMPLETE
 	 * Updates the Scores on the screen
 	 */
-	public void updateScore(){
+	//TODO: Is there a better way for this to be accessible to another class?
+	private void updateScore(){
 		int dummy = 1; //change and remove later
 		TextView textBlueScore = (TextView) findViewById(R.id.txtBlueScore);
 		TextView textRedScore = (TextView) findViewById(R.id.txtRedScore);
@@ -272,6 +281,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		Score score = dataSource.createScore( "TEST", Integer.parseInt((String) textBlueScore.getText()) );
 	}
 	
+
 	/**
 	 * Add alertDialogs for choosing server or client on multiplayer type of game
 	 */
@@ -282,8 +292,8 @@ public class MainActivity extends Activity implements OnClickListener,
 		alertDialogBuilder.setItems(R.array.multiplayer_array, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
             // The 'which' argument contains the index position of the selected item
-            	if (which == 0) { //Server. //TODO: Is there a better way? A constant or something?
-            		//Show IP Adress //TODO:PETER?
+            	if (which == 0) { //Server. /////Is there a better way? A constant or something?
+            		//Show IP Adress /////PETER?
             		AlertDialog.Builder alertIp = new AlertDialog.Builder(context);
             		alertIp.setTitle("This server's IP address");
             		alertIp.setMessage("[ip adress]" + "Input this in the other device.");
@@ -291,7 +301,7 @@ public class MainActivity extends Activity implements OnClickListener,
             			public void onClick(DialogInterface dialog, int whichButton) {
 //            			  String value = txtIp.getText().toString();
             			  // Do something with value!
-//            				 chooseBoardSize();
+//            				 viewToGame();
             			}
             		});
             		alertIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -312,7 +322,7 @@ public class MainActivity extends Activity implements OnClickListener,
             			public void onClick(DialogInterface dialog, int whichButton) {
 //            			  String value = txtIp.getText().toString();
             			  // Do something with value!
-//            				 chooseBoardSize();
+//            				 viewToGame();
             			}
             		});
             		alertInputIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -329,7 +339,7 @@ public class MainActivity extends Activity implements OnClickListener,
 	}
 	
 	/**
-	 * User chooses the board size
+	 * 
 	 */
 	private void chooseBoardSize()
 	{
@@ -497,7 +507,9 @@ public class MainActivity extends Activity implements OnClickListener,
 
 	@Override
 	protected void onPause() {
-		myGLView.onPause();
+		if (myGLView != null) {
+			myGLView.onPause();
+		}
 		super.onPause();
 	}
 
@@ -507,6 +519,26 @@ public class MainActivity extends Activity implements OnClickListener,
 			myGLView.onResume();
 		}
 		super.onResume();
+	}
+
+	@Override
+	public void onBackPressed() {
+		if (viewSettings != null) {
+			if (rollCredits) {
+				rollCredits = !rollCredits;
+				deleteCredits();
+				myGLView.decrementAnimations();
+				myGLView.requestRender();
+			}
+			mainView.removeView(viewSettings);
+			viewSettings = null;
+		} else if (viewAdjustView != null) {
+			mainView.removeView(viewAdjustView);
+			viewAdjustView = null;
+			adjustView = !adjustView;
+		} else {
+			super.onBackPressed();
+		}
 	}
 
 }
