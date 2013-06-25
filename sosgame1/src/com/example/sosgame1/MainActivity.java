@@ -199,6 +199,7 @@ public class MainActivity extends Activity implements OnClickListener,
 					rollCredits = !rollCredits;
 					deleteCredits();
 					myGLView.decrementAnimations();
+					myGLView.requestRender();
 				}
 				mainView.removeView(viewAdjustView);
 			}
