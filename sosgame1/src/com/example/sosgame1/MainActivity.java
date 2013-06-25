@@ -292,7 +292,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		alertDialogBuilder.setItems(R.array.multiplayer_array, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
             // The 'which' argument contains the index position of the selected item
-            	if (which == 0) { 
+            	if (which == 0) { //Server
             		Server server = new Server();
             		Thread serverthread = new Thread(server);
             		serverthread.start();
@@ -302,9 +302,7 @@ public class MainActivity extends Activity implements OnClickListener,
             		alertIp.setMessage("["+ip+"]" + "\nInput this in the other device.");
             		alertIp.setPositiveButton("Got it, Play!", new DialogInterface.OnClickListener() {
             			public void onClick(DialogInterface dialog, int whichButton) {
-//            			  String value = txtIp.getText().toString();
-            			  // Do something with value!
-//            				 viewToGame();
+            				 viewToGame();
             			}
             		});
             		alertIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -324,9 +322,9 @@ public class MainActivity extends Activity implements OnClickListener,
             		alertInputIp.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             			public void onClick(DialogInterface dialog, int whichButton) {
             				String temp = txtIp.getText().toString(); 
-            			 ClientThread client = new ClientThread(temp);
-            			 Thread st = new Thread(client);
-            			 st.start();
+							ClientThread client = new ClientThread(temp);
+							Thread st = new Thread(client);
+							st.start();
             			}
             		});
             		alertInputIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
