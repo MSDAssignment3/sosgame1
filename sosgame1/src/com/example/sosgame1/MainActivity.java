@@ -60,7 +60,7 @@ public class MainActivity extends Activity implements OnClickListener,
     private boolean rollCredits = false;
     private boolean adjustView = false;
     private DataSource dataSource;
-    
+    private Server server;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -288,10 +288,10 @@ public class MainActivity extends Activity implements OnClickListener,
             public void onClick(DialogInterface dialog, int which) {
             // The 'which' argument contains the index position of the selected item
             	if (which == 0) { 
-            		Server server = new Server();
+            		server = new Server();
             		Thread serverthread = new Thread(server);
             		serverthread.start();
-            		String ip = server.getLocalIpAddress();
+            		String ip = Utils.getIPAddress(true);
             		AlertDialog.Builder alertIp = new AlertDialog.Builder(context);
             		alertIp.setTitle("This server's IP address");
             		alertIp.setMessage("["+ip+"]" + "\nInput this in the other device.");
@@ -300,6 +300,8 @@ public class MainActivity extends Activity implements OnClickListener,
 //            			  String value = txtIp.getText().toString();
             			  // Do something with value!
 //            				 viewToGame();
+            				String msg = server.displayMessage();
+            				Log.d("SOSGAMGE", msg);
             			}
             		});
             		alertIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

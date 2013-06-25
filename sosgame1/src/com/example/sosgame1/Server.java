@@ -15,7 +15,7 @@ import android.util.Log;
 
 public class Server implements Runnable{
 	
-    public static String SERVERIP = "10.0.2.15"; //Default IP Address
+    public static String SERVERIP = Utils.getIPAddress(true); //Default IP Address
  
     public static final int SERVERPORT = 12345;
  
@@ -29,7 +29,7 @@ public class Server implements Runnable{
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        message = "Listening on IP: " + SERVERIP;
+                    	Log.d("Message", "Listening on IP: "+SERVERIP);
                     }
                 });
                 serverSocket = new ServerSocket(SERVERPORT);
@@ -38,24 +38,24 @@ public class Server implements Runnable{
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                        	message = "Connected.";
+                        	Log.d("Server", "Connected");
                         }
                     });
 
                     try {
                         BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                         String line = null;
-                        while ((line = in.readLine()) != null) {
+                        while ((message = in.readLine()) != null) {
                             Log.d("ServerActivity", line);
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
                                     // do whatever you want to the front end
                                     // this is where you can be creative
+                                	Log.d("ServerActivity", message);
                                 }
                             });
                         }
-                        break;
                     } catch (Exception e) {
                         handler.post(new Runnable() {
                             @Override
@@ -88,25 +88,5 @@ public class Server implements Runnable{
 	public String displayMessage()
 	{
 		return message;
-	}
-	
-	//Retrieves the Local Ip Address
-    public String getLocalIpAddress() {
-        try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
-                NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress())
-                    { 
-                    	return inetAddress.getHostAddress().toString(); 
-                    }
-                }
-            }
-        } catch (SocketException ex) {
-            Log.e("ServerActivity", ex.toString());
-        }
-        return null;
-    }
-   
+	}  
 }

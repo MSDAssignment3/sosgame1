@@ -21,16 +21,15 @@ public class ClientThread implements Runnable {
 	public void run() {
         boolean connected;
 		try {
-            InetAddress serverAddr = InetAddress.getByName(serverIpAddress);
-            Log.d("ClientActivity", "C: Connecting..."+ serverAddr);
-            socket = new Socket(serverAddr, port);
+            Log.d("ClientActivity", "C: Connecting..."+ serverIpAddress);
+            socket = new Socket(serverIpAddress, port);
             connected = true;
             while (connected) {
                 try {
-                    out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket
-                                .getOutputStream())), true);
+                    out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
                         
                         out.println("Signal Server!");
+                        break;
                 } catch (Exception e) {
                     Log.e("ClientActivity", "S: Error", e);
                 }
