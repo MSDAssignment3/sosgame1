@@ -51,12 +51,14 @@ public class MainActivity extends Activity implements OnClickListener,
     private RelativeLayout mainView;
     private RelativeLayout viewSplash;
     private View viewAdjustView = null;
+    private View viewSettings = null;
     private float xOffset;
     private float yOffset;
     private boolean isPanningX = false;
     private boolean isPanningY = false;
     private LogicControl controller = null;
-    private boolean rollCredits = false;    
+    private boolean rollCredits = false;
+    private boolean adjustView = false;
     private DataSource dataSource;
     
 	@Override
@@ -88,44 +90,46 @@ public class MainActivity extends Activity implements OnClickListener,
 		
 		switch (v.getId()) {
 		case R.id.btnView:
-			viewAdjustView = inflater.inflate(R.layout.view_adjust, null);
-			if (viewAdjustView != null) {
-				mainView.addView(viewAdjustView);
-		        ((SeekBar) findViewById(R.id.seekX)).setOnSeekBarChangeListener(this);
-		        ((SeekBar) findViewById(R.id.seekY)).setOnSeekBarChangeListener(this);
-		        ((SeekBar) findViewById(R.id.seekZ)).setOnSeekBarChangeListener(this);
-		        ((SeekBar) findViewById(R.id.seekPanX)).setOnSeekBarChangeListener(this);
-		        ((SeekBar) findViewById(R.id.seekPanY)).setOnSeekBarChangeListener(this);
-		        if (myGLView != null) {
-		        	int setting;
-		        	setting = toProgress(myGLView.renderer.eyeX, 
-		        			myGLView.renderer.eyeXMin, 
-		        			myGLView.renderer.eyeXMax);
-		        	((SeekBar) findViewById(R.id.seekX)).setProgress(setting);
-		        	setting = toProgress(myGLView.renderer.eyeY, 
-		        			myGLView.renderer.eyeYMin, 
-		        			myGLView.renderer.eyeYMax);
-		        	((SeekBar) findViewById(R.id.seekY)).setProgress(setting);
-		        	setting = toProgress(myGLView.renderer.eyeZ, 
-		        			myGLView.renderer.eyeZMin, 
-		        			myGLView.renderer.eyeZMax);
-		        	((SeekBar) findViewById(R.id.seekZ)).setProgress(setting);
-		        	setting = toProgress(myGLView.renderer.lookX, 
-		        			myGLView.renderer.eyeXMin, 
-		        			myGLView.renderer.eyeXMax);
-		        	((SeekBar) findViewById(R.id.seekPanX)).setProgress(setting);
-		        	setting = toProgress(myGLView.renderer.lookY, 
-		        			myGLView.renderer.eyeYMin, 
-		        			myGLView.renderer.eyeYMax);
-		        	((SeekBar) findViewById(R.id.seekPanY)).setProgress(setting);
-		        	xOffset = myGLView.renderer.eyeX - myGLView.renderer.lookX;
-		        	yOffset = myGLView.renderer.eyeY - myGLView.renderer.lookY;
-		        }
-			}
-			break;
-		case R.id.button2:
-			if (viewAdjustView != null) {
-				mainView.removeView(viewAdjustView);
+			adjustView = !adjustView;
+			if (adjustView) {
+				viewAdjustView = inflater.inflate(R.layout.view_adjust, null);
+				if (viewAdjustView != null) {
+					mainView.addView(viewAdjustView);
+					((SeekBar) findViewById(R.id.seekX)).setOnSeekBarChangeListener(this);
+					((SeekBar) findViewById(R.id.seekY)).setOnSeekBarChangeListener(this);
+					((SeekBar) findViewById(R.id.seekZ)).setOnSeekBarChangeListener(this);
+					((SeekBar) findViewById(R.id.seekPanX)).setOnSeekBarChangeListener(this);
+					((SeekBar) findViewById(R.id.seekPanY)).setOnSeekBarChangeListener(this);
+					if (myGLView != null) {
+						int setting;
+						setting = toProgress(myGLView.renderer.eyeX, 
+								myGLView.renderer.eyeXMin, 
+								myGLView.renderer.eyeXMax);
+						((SeekBar) findViewById(R.id.seekX)).setProgress(setting);
+						setting = toProgress(myGLView.renderer.eyeY, 
+								myGLView.renderer.eyeYMin, 
+								myGLView.renderer.eyeYMax);
+						((SeekBar) findViewById(R.id.seekY)).setProgress(setting);
+						setting = toProgress(myGLView.renderer.eyeZ, 
+								myGLView.renderer.eyeZMin, 
+								myGLView.renderer.eyeZMax);
+						((SeekBar) findViewById(R.id.seekZ)).setProgress(setting);
+						setting = toProgress(myGLView.renderer.lookX, 
+								myGLView.renderer.eyeXMin, 
+								myGLView.renderer.eyeXMax);
+						((SeekBar) findViewById(R.id.seekPanX)).setProgress(setting);
+						setting = toProgress(myGLView.renderer.lookY, 
+								myGLView.renderer.eyeYMin, 
+								myGLView.renderer.eyeYMax);
+						((SeekBar) findViewById(R.id.seekPanY)).setProgress(setting);
+						xOffset = myGLView.renderer.eyeX - myGLView.renderer.lookX;
+						yOffset = myGLView.renderer.eyeY - myGLView.renderer.lookY;
+					}
+				}
+			} else {
+				if (viewAdjustView != null) {
+					mainView.removeView(viewAdjustView);
+				}
 			}
 			break;
 		case R.id.btnCredits:
@@ -194,14 +198,14 @@ public class MainActivity extends Activity implements OnClickListener,
 			break;
 
 		case R.id.btnBack:
-			if (viewAdjustView != null) {
+			if (viewSettings != null) {
 				if (rollCredits) {
 					rollCredits = !rollCredits;
 					deleteCredits();
 					myGLView.decrementAnimations();
 					myGLView.requestRender();
 				}
-				mainView.removeView(viewAdjustView);
+				mainView.removeView(viewSettings);
 			}
 			break;
 			
@@ -228,8 +232,6 @@ public class MainActivity extends Activity implements OnClickListener,
     	setContentView(R.layout.activity_main);
 		mainView = (RelativeLayout) findViewById(R.id.rlMain);
 		((Button) findViewById(R.id.btnView)).setOnClickListener(this);
-		((Button) findViewById(R.id.button2)).setOnClickListener(this);
-//		((Button) findViewById(R.id.btnCredits)).setOnClickListener(this);
 		((ImageButton) findViewById(R.id.btnSettingsGame)).setOnClickListener(this);
 		((Button) findViewById(R.id.testUpdateScore)).setOnClickListener(this);//REMOVE this when testing updateScore is not needed
 		((Button) findViewById(R.id.testSaveScore)).setOnClickListener(this);//REMOVE this when testing saveScore is not needed
@@ -246,9 +248,9 @@ public class MainActivity extends Activity implements OnClickListener,
 	 */
 	private void viewToSettings(RelativeLayout view){
 		LayoutInflater inflater = getLayoutInflater();
-		viewAdjustView = inflater.inflate(R.layout.settings_page, null);
-		if (viewAdjustView != null) {
-			view.addView(viewAdjustView);
+		viewSettings = inflater.inflate(R.layout.settings_page, null);
+		if (viewSettings != null) {
+			view.addView(viewSettings);
 		}
 		((ImageButton) findViewById(R.id.btnBack)).setOnClickListener(this);
 		((ImageButton) findViewById(R.id.btnCredits)).setOnClickListener(this);
