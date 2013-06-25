@@ -21,6 +21,7 @@ public class ClientThread implements Runnable {
 	private String uiMsg = null;
 	private String recMsg = null;
 	private String tempMsg = "";
+	private int msgNum = -1;
 
 	public ClientThread(String ip) {
 		serverIpAddress = ip;
@@ -52,7 +53,7 @@ public class ClientThread implements Runnable {
 						{
 						case Constant.MESSAGE:
 							String mg = in.readUTF();
-							Log.d("ClientActivity", mg);
+							Log.d("Client", mg);
 							break;
 						case Constant.EXIT:
 							socket.close();
@@ -61,26 +62,27 @@ public class ClientThread implements Runnable {
 					}
 
 				} catch (Exception e) {
-					Log.e("ClientActivity", "S: Error", e);
+					Log.e("Client", "Error", e);
 				}
 			}
 		} catch (Exception e) {
-			Log.e("ClientActivity", "C: Error", e);
+			Log.e("Client", "Error", e);
 		}
 	}
 
-	public void setMessage(String message) {
+	public void setMessage(int msgtype, String message) {
 		uiMsg = message;
-		if (uiMsg != null) {
-			Log.d("ClientActivity", "C: Sending command.");
+		msgNum = msgtype;
+		if (uiMsg != null && msgNum == 0) {
+			Log.d("Client", "Sending command.");
 			try {
-				out.writeInt(Constant.MESSAGE);
+				out.writeInt(msgNum);
 				out.writeUTF(uiMsg);
 				out.flush();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			Log.d("ClientActivity", "C: Sent.");
+			Log.d("Client", "Sent");
 		}
 	}
 

@@ -66,7 +66,6 @@ public class LogicControl {
 		{
 			control = 7;
 		}
-		
 	}
 	
 	

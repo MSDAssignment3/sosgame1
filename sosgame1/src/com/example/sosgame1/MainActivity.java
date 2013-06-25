@@ -61,6 +61,9 @@ public class MainActivity extends Activity implements OnClickListener,
     private boolean adjustView = false;
     private DataSource dataSource;
     private Server server;
+	private ClientThread client;
+	private boolean sExist= false;
+	private boolean cExist = false;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -240,6 +243,12 @@ public class MainActivity extends Activity implements OnClickListener,
 		// Pass controller instance to the GLSurfaceView
 		controller = new LogicControl(myGLView.renderer.board, 7, 7);
 		myGLView.setController(controller);
+		if(sExist){
+			myGLView.setServer(server);
+		}
+		else if(cExist){
+			myGLView.setClient(client);
+		}
 	}
 	
 	/**
@@ -297,9 +306,9 @@ public class MainActivity extends Activity implements OnClickListener,
             		alertIp.setMessage("["+ip+"]" + "\nInput this in the other device.");
             		alertIp.setPositiveButton("Got it, Play!", new DialogInterface.OnClickListener() {
             			public void onClick(DialogInterface dialog, int whichButton) {
+            				sExist = true;
             				 viewToGame();
-            				String msg = server.getMessage();
-            				Log.d("SOSGAMGE", msg);
+            				 
             			}
             		});
             		alertIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -317,11 +326,14 @@ public class MainActivity extends Activity implements OnClickListener,
             		alertInputIp.setView(txtIp);
             		alertInputIp.setTitle("Enter IP address of Server device");
             		alertInputIp.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            			public void onClick(DialogInterface dialog, int whichButton) {
+
+						public void onClick(DialogInterface dialog, int whichButton) {
             				String temp = txtIp.getText().toString(); 
-            			 ClientThread client = new ClientThread(temp);
+            			 client = new ClientThread(temp);
             			 Thread st = new Thread(client);
             			 st.start();
+            			 cExist = true;
+            			 viewToGame();
             			}
             		});
             		alertInputIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

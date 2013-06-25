@@ -59,7 +59,7 @@ public class Server implements Runnable{
 									
 									@Override
 									public void run() {
-										Log.d("Server","temp");
+										Log.d("Server",temp);
 										
 									}
 								});
@@ -67,6 +67,9 @@ public class Server implements Runnable{
                       		out.writeUTF("Message recieved: "+ temp);
                       		out.flush();
                       		break;
+                      	case Constant.POINT:
+                      		temp = in.readUTF();
+                      		Log.d("Server",temp);
                       	case Constant.EXIT:
                       		client.close();
                       		break;
@@ -106,13 +109,13 @@ public class Server implements Runnable{
 		return message;
 	}  
 	
-	public void setMessage(String msgIn)
+	public void setMessage(int msgType, String msgIn)
 	{
 		message = msgIn;
 		if (message != null) {
 			Log.d("Server", "Sending message in progress");
 			try {
-				out.writeInt(Constant.MESSAGE);
+				out.writeInt(msgType);
 				out.writeUTF(message);
 				out.flush();
 			} catch (IOException e) {
