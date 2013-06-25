@@ -488,4 +488,20 @@ public class MainActivity extends Activity implements OnClickListener,
 		super.onResume();
 	}
 
+	@Override
+	public void onBackPressed() {
+		if (viewSettings != null) {
+			if (rollCredits) {
+				rollCredits = !rollCredits;
+				deleteCredits();
+				myGLView.decrementAnimations();
+				myGLView.requestRender();
+			}
+			mainView.removeView(viewSettings);
+			viewSettings = null;
+		} else {
+			super.onBackPressed();
+		}
+	}
+
 }
