@@ -19,6 +19,9 @@
  */
 package com.example.sosgame1;
 
+import java.io.IOException;
+import java.util.List;
+
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorInflater;
@@ -34,9 +37,12 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -52,6 +58,7 @@ public class MainActivity extends Activity implements OnClickListener,
     private RelativeLayout viewSplash;
     private View viewAdjustView = null;
     private View viewSettings = null;
+    private View viewScores = null;
     private float xOffset;
     private float yOffset;
     private boolean isPanningX = false;
@@ -221,12 +228,16 @@ public class MainActivity extends Activity implements OnClickListener,
 			viewToSettings(this.mainView);
 			break;
 			
-		case R.id.testUpdateScore:
-			updateScore();
-			break;
+//		case R.id.testUpdateScore:
+//			updateScore();
+//			break;
 			
-		case R.id.testSaveScore:
-			saveScore();
+//		case R.id.testSaveScore:
+//			saveScore();
+//			break;
+			
+		case R.id.testListScore:
+			viewToScore(this.mainView);
 			break;
 		}
 
@@ -243,10 +254,11 @@ public class MainActivity extends Activity implements OnClickListener,
 		((ImageButton) findViewById(R.id.btnSettingsGame)).setOnClickListener(this);
 		((Button) findViewById(R.id.testUpdateScore)).setOnClickListener(this);//REMOVE this when testing updateScore is not needed
 		((Button) findViewById(R.id.testSaveScore)).setOnClickListener(this);//REMOVE this when testing saveScore is not needed
+		((Button) findViewById(R.id.testListScore)).setOnClickListener(this);//REMOVE this when testing saveScore is not needed
 		myGLView = (GLESSurfaceView) findViewById(R.id.myGLSurfaceView1);
 		myGLView.renderer.board.reset(boardRows,boardColumns);
 		// Pass controller instance to the GLSurfaceView
-		controller = new LogicControl(myGLView.renderer.board, boardRows, boardColumns);
+		controller = new LogicControl(myGLView.renderer.board, boardRows, boardColumns, (MainActivity)this);
 		myGLView.setController(controller);
 		if(sExist){
 			myGLView.setServer(server);
@@ -271,26 +283,86 @@ public class MainActivity extends Activity implements OnClickListener,
 	}
 	
 	/**
-	 * THIS IS NOT YET COMPLETE
+	 * Show score list
+	 */
+	private void viewToScore(RelativeLayout view)
+	{
+		ListView listView = (ListView) findViewById(R.id.listScores);
+		List<Score> scores = dataSource.getAllScores();
+		ArrayAdapter<Score> adapter = new ArrayAdapter<Score>(context, android.R.layout.simple_list_item_1, scores);
+		try
+		{
+		listView.setAdapter(adapter); //TODO: Something inside gives NullPointerException
+		}
+		catch(Exception e)
+		{
+		}
+		
+		LayoutInflater inflater = getLayoutInflater();
+		viewScores = inflater.inflate(R.layout.scores_page, null);
+		if (viewScores != null) {
+			view.addView(viewScores);
+		}
+	}
+	
+	/**
 	 * Updates the Scores on the screen
 	 */
-	//TODO: Is there a better way for this to be accessible to another class?
-	private void updateScore(){
-		int dummy = 1; //change and remove later
+	public void updateScore(int playerBlueScore, int playerRedScore){
 		TextView textBlueScore = (TextView) findViewById(R.id.txtBlueScore);
 		TextView textRedScore = (TextView) findViewById(R.id.txtRedScore);
-		textBlueScore.setText(""+dummy);
-		textRedScore.setText(""+dummy);
+		textBlueScore.setText(""+playerBlueScore);
+		textRedScore.setText(""+playerRedScore);
 	}
 	
 	/**
 	 * Save score to the DB
 	 */
-	private void saveScore(){
-		TextView textBlueScore = (TextView) findViewById(R.id.txtBlueScore);
-		Score score = dataSource.createScore( "TEST", Integer.parseInt((String) textBlueScore.getText()) );
+	private void saveScore(String playerName, int playerScore){
+		Score score = dataSource.createScore( playerName, playerScore);
 	}
 	
+	/**
+	 * End game interface
+	 * Gets name of winner
+	 */
+	public void endGame() {
+		AlertDialog.Builder alertEnd = new AlertDialog.Builder(context);
+		String winner = "";
+		int winnerScore = 0;
+		TextView textBlueScore = (TextView) findViewById(R.id.txtBlueScore);
+		TextView textRedScore = (TextView) findViewById(R.id.txtRedScore);
+		if(Integer.parseInt((String) textBlueScore.getText()) > Integer.parseInt((String) textRedScore.getText())) {
+			winner = "BLUE";
+			winnerScore = Integer.parseInt((String) textBlueScore.getText());
+		}
+		else if(Integer.parseInt((String) textBlueScore.getText()) < Integer.parseInt((String) textRedScore.getText())) {
+			winner = "RED";
+			winnerScore = Integer.parseInt((String) textRedScore.getText());
+		}
+		else if(Integer.parseInt((String) textBlueScore.getText()) == Integer.parseInt((String) textRedScore.getText())) {
+			winner = "BLUE & RED";
+			winnerScore = Integer.parseInt((String) textBlueScore.getText());
+		}
+		final int finalWinnerScore = winnerScore;
+		final EditText txtWinner = new EditText(context);
+		alertEnd.setTitle("Game ended! Player " + winner + " won! Enter winner's name:");
+		alertEnd.setView(txtWinner);
+		alertEnd.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				String winnerName = txtWinner.getText().toString(); 
+				saveScore(winnerName, finalWinnerScore);
+			}
+		});
+		alertEnd.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			  public void onClick(DialogInterface dialog, int whichButton) {
+			    // Canceled.
+			  }
+		});
+		alertEnd.show();
+		//TODO:go back to menu or show highscores
+	}
+
 
 	/**
 	 * Add alertDialogs for choosing server or client on multiplayer type of game
@@ -356,7 +428,7 @@ public class MainActivity extends Activity implements OnClickListener,
 	}
 	
 	/**
-	 * 
+	 * Interface that makes the user choose a board size
 	 */
 	private void chooseBoardSize()
 	{
