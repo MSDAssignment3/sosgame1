@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.sosgame1.Board;
+import com.example.sosgame1.MainActivity;
 import com.example.sosgame1.Player;
 
 //Class for game logic
@@ -34,6 +35,8 @@ public class LogicControl {
 	private Board board = null;
 	private int numEntered = 0;
 	
+	private MainActivity mainActivity = null;
+	
 	public LogicControl()
 	{
 		
@@ -45,8 +48,9 @@ public class LogicControl {
 	}
 	
 	//change
-	public LogicControl(Board board,int i,int j)
+	public LogicControl(Board board,int i,int j,MainActivity activity)
 	{
+		mainActivity = activity;
 		this.board = board;
 		boardRows = i;  
 		boardColumns = j; 
@@ -131,7 +135,8 @@ public class LogicControl {
 		 giveTurnToFirst = false; //reset
 		 giveTurnToSecond = false; //reset
 		}
-		 
+		//update score
+		mainActivity.updateScore(firstPlayerScore, secondPlayerScore); //blue, red
 		 	if(control==3)  // this is for 5*5 Board
 			{
 				if(numEntered==25)

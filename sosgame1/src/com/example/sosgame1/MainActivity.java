@@ -217,9 +217,9 @@ public class MainActivity extends Activity implements OnClickListener,
 			viewToSettings(this.mainView);
 			break;
 			
-		case R.id.testUpdateScore:
-			updateScore();
-			break;
+//		case R.id.testUpdateScore:
+//			updateScore();
+//			break;
 			
 		case R.id.testSaveScore:
 			saveScore();
@@ -242,7 +242,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		myGLView = (GLESSurfaceView) findViewById(R.id.myGLSurfaceView1);
 		myGLView.renderer.board.reset(boardRows,boardColumns);
 		// Pass controller instance to the GLSurfaceView
-		controller = new LogicControl(myGLView.renderer.board, boardRows, boardColumns);
+		controller = new LogicControl(myGLView.renderer.board, boardRows, boardColumns, (MainActivity)this);
 		myGLView.setController(controller);
 	}
 	
@@ -265,12 +265,12 @@ public class MainActivity extends Activity implements OnClickListener,
 	 * Updates the Scores on the screen
 	 */
 	//TODO: Is there a better way for this to be accessible to another class?
-	private void updateScore(){
+	public void updateScore(int playerBlueScore, int playerRedScore){
 		int dummy = 1; //change and remove later
 		TextView textBlueScore = (TextView) findViewById(R.id.txtBlueScore);
 		TextView textRedScore = (TextView) findViewById(R.id.txtRedScore);
-		textBlueScore.setText(""+dummy);
-		textRedScore.setText(""+dummy);
+		textBlueScore.setText(""+playerBlueScore);
+		textRedScore.setText(""+playerRedScore);
 	}
 	
 	/**
