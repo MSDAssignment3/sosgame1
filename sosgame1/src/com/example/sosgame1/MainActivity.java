@@ -174,7 +174,7 @@ public class MainActivity extends Activity implements OnClickListener,
 			btnMultipleAniSet.addListener(new AnimatorListener() {
 			    @Override 
 			    public void onAnimationEnd(Animator animation) {
-			    	//show a spinner
+			    	//show an alertDialog
 			    	chooseServerClient();
 			    }
 				@Override
@@ -228,7 +228,6 @@ public class MainActivity extends Activity implements OnClickListener,
 		mainView = (RelativeLayout) findViewById(R.id.rlMain);
 		((Button) findViewById(R.id.btnView)).setOnClickListener(this);
 		((Button) findViewById(R.id.button2)).setOnClickListener(this);
-//		((Button) findViewById(R.id.btnCredits)).setOnClickListener(this);
 		((ImageButton) findViewById(R.id.btnSettingsGame)).setOnClickListener(this);
 		((Button) findViewById(R.id.testUpdateScore)).setOnClickListener(this);//REMOVE this when testing updateScore is not needed
 		((Button) findViewById(R.id.testSaveScore)).setOnClickListener(this);//REMOVE this when testing saveScore is not needed
@@ -257,8 +256,7 @@ public class MainActivity extends Activity implements OnClickListener,
 	 * THIS IS NOT YET COMPLETE
 	 * Updates the Scores on the screen
 	 */
-	//TODO: Is there a better way for this to be accessible to another class?
-	private void updateScore(){
+	public void updateScore(){
 		int dummy = 1; //change and remove later
 		TextView textBlueScore = (TextView) findViewById(R.id.txtBlueScore);
 		TextView textRedScore = (TextView) findViewById(R.id.txtRedScore);
@@ -284,8 +282,8 @@ public class MainActivity extends Activity implements OnClickListener,
 		alertDialogBuilder.setItems(R.array.multiplayer_array, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
             // The 'which' argument contains the index position of the selected item
-            	if (which == 0) { //Server. /////Is there a better way? A constant or something?
-            		//Show IP Adress /////PETER?
+            	if (which == 0) { //Server. //TODO: Is there a better way? A constant or something?
+            		//Show IP Adress //TODO:PETER?
             		AlertDialog.Builder alertIp = new AlertDialog.Builder(context);
             		alertIp.setTitle("This server's IP address");
             		alertIp.setMessage("[ip adress]" + "Input this in the other device.");
@@ -293,7 +291,7 @@ public class MainActivity extends Activity implements OnClickListener,
             			public void onClick(DialogInterface dialog, int whichButton) {
 //            			  String value = txtIp.getText().toString();
             			  // Do something with value!
-//            				 viewToGame();
+//            				 chooseBoardSize();
             			}
             		});
             		alertIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -314,7 +312,7 @@ public class MainActivity extends Activity implements OnClickListener,
             			public void onClick(DialogInterface dialog, int whichButton) {
 //            			  String value = txtIp.getText().toString();
             			  // Do something with value!
-//            				 viewToGame();
+//            				 chooseBoardSize();
             			}
             		});
             		alertInputIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -331,7 +329,7 @@ public class MainActivity extends Activity implements OnClickListener,
 	}
 	
 	/**
-	 * 
+	 * User chooses the board size
 	 */
 	private void chooseBoardSize()
 	{
