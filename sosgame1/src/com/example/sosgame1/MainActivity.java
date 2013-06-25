@@ -292,11 +292,14 @@ public class MainActivity extends Activity implements OnClickListener,
 		alertDialogBuilder.setItems(R.array.multiplayer_array, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
             // The 'which' argument contains the index position of the selected item
-            	if (which == 0) { //Server. /////Is there a better way? A constant or something?
-            		//Show IP Adress /////PETER?
+            	if (which == 0) { 
+            		Server server = new Server();
+            		Thread serverthread = new Thread(server);
+            		serverthread.start();
+            		String ip = server.getLocalIpAddress();
             		AlertDialog.Builder alertIp = new AlertDialog.Builder(context);
             		alertIp.setTitle("This server's IP address");
-            		alertIp.setMessage("[ip adress]" + "Input this in the other device.");
+            		alertIp.setMessage("["+ip+"]" + "\nInput this in the other device.");
             		alertIp.setPositiveButton("Got it, Play!", new DialogInterface.OnClickListener() {
             			public void onClick(DialogInterface dialog, int whichButton) {
 //            			  String value = txtIp.getText().toString();
@@ -320,9 +323,10 @@ public class MainActivity extends Activity implements OnClickListener,
             		alertInputIp.setTitle("Enter IP address of Server device");
             		alertInputIp.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             			public void onClick(DialogInterface dialog, int whichButton) {
-//            			  String value = txtIp.getText().toString();
-            			  // Do something with value!
-//            				 viewToGame();
+            				String temp = txtIp.getText().toString(); 
+            			 ClientThread client = new ClientThread(temp);
+            			 Thread st = new Thread(client);
+            			 st.start();
             			}
             		});
             		alertInputIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
