@@ -31,5 +31,11 @@ public class Score {
 	public void setScoreValue(int scoreValue) {
 		this.scoreValue = scoreValue;
 	}
+	@Override
+	public String toString() {
+		String score = player + " " + scoreValue;
+		return score;
+	}
 
+	
 }
