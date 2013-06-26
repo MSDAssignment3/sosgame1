@@ -76,6 +76,8 @@ public class MainActivity extends Activity implements OnClickListener,
 	private boolean cExist = false;
     private int boardColumns = 5; //default
     private int boardRows = 5;
+    private Thread serverthread;
+    private Thread clientThread;
     
     Handler handler = new Handler() {
 
@@ -413,7 +415,7 @@ public class MainActivity extends Activity implements OnClickListener,
             // The 'which' argument contains the index position of the selected item
             	if (which == 0) { 
             		server = new Server(handler);
-            		Thread serverthread = new Thread(server);
+            		serverthread = new Thread(server);
             		serverthread.start();
             		String ip = Utils.getIPAddress(true);
             		AlertDialog.Builder alertIp = new AlertDialog.Builder(context);
@@ -423,7 +425,6 @@ public class MainActivity extends Activity implements OnClickListener,
             			public void onClick(DialogInterface dialog, int whichButton) {
             				sExist = true;
             				chooseBoardSize();
-            				 
             			}
             		});
             		alertIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -443,12 +444,12 @@ public class MainActivity extends Activity implements OnClickListener,
             		alertInputIp.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 
 						public void onClick(DialogInterface dialog, int whichButton) {
-            				String temp = txtIp.getText().toString(); 
-            			 client = new ClientThread(temp, handler);
-            			 Thread st = new Thread(client);
-            			 st.start();
-            			 cExist = true;
-            			 viewToGame();
+							String temp = txtIp.getText().toString(); 
+							client = new ClientThread(temp, handler);
+							clientThread = new Thread(client);
+							clientThread.start();
+							cExist = true;
+							viewToGame();
             			}
             		});
             		alertInputIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -636,6 +637,32 @@ public class MainActivity extends Activity implements OnClickListener,
 		if (myGLView != null) {
 			myGLView.onPause();
 		}
+		if (server != null) {
+			server.running = false;
+			try {
+				server.client.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+//			serverthread.interrupt();
+//			try {
+//				serverthread.join();
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+		}
+		if (client != null) {
+			client.running = false;
+//			clientThread.interrupt();
+//			try {
+//				clientThread.join();
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+		}
 		super.onPause();
 	}
 
@@ -667,20 +694,4 @@ public class MainActivity extends Activity implements OnClickListener,
 		}
 	}
 
-	public class mainHandler extends Handler {
-
-		@Override
-		public void handleMessage(Message msg) {
-			switch (msg.arg1) {
-			case 1:
-				Log.v("Message", "arg1 = " + msg.arg1);
-				break;
-			}
-			super.handleMessage(msg);
-		}
-		
-	}
-	
-	
-	
 }

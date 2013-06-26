@@ -8,7 +8,6 @@ import java.net.Socket;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
@@ -20,12 +19,14 @@ public class Server implements Runnable{
     public static String SERVERIP = Utils.getIPAddress(true);
     String line = null;
     private Handler handler;// = new Handler();
-    private Socket client;
-    private ServerSocket serverSocket;
+    public Socket client;
+    public ServerSocket serverSocket;
     private String temp = "";
     private DataInputStream in;
     private DataOutputStream out;
     private String message = "";
+
+    public boolean running = true;
     
     public Server(Handler handler) {
     	this.handler = handler;
@@ -33,96 +34,109 @@ public class Server implements Runnable{
     
 	@Override
 	public void run() {
-        try {
-            if (SERVERIP != null) {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d("SERVER", "Listening on IP: " + SERVERIP);
-                    }
-                });
-                serverSocket = new ServerSocket(Constant.SERVER_PORT);
-                while (true) {
-                    // listen for incoming clients
-                    client = serverSocket.accept();
-                    in = new DataInputStream(client.getInputStream());
-                    out = new DataOutputStream(client.getOutputStream());
-                    out.writeInt(Constant.MESSAGE);
-                    out.writeUTF("You are connected");
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.d("SERVER","Connected.");
-                        }
-                    });
+		while (running) {
+			try {
+				if (SERVERIP != null) {
+					handler.post(new Runnable() {
+						@Override
+						public void run() {
+							Log.d("SERVER", "Listening on IP: " + SERVERIP);
+						}
+					});
+					serverSocket = new ServerSocket(Constant.SERVER_PORT);
+					while (true) {
+						// listen for incoming clients
+						client = serverSocket.accept();
+						in = new DataInputStream(client.getInputStream());
+						out = new DataOutputStream(client.getOutputStream());
+						out.writeInt(Constant.MESSAGE);
+						out.writeUTF("You are connected");
+						handler.post(new Runnable() {
+							@Override
+							public void run() {
+								Log.d("SERVER","Connected.");
+							}
+						});
 
-                    try {
-                      while(true){
-                      	int messageType = in.readInt();
-                      	switch(messageType)
-                      	{
-                      	case Constant.MESSAGE:
-                      		temp = in.readUTF();
-                      		handler.post(new Runnable() {
-									
-									@Override
-									public void run() {
-										Log.d("Server",temp);
-										
-									}
-								});
-                      		out.writeInt(Constant.MESSAGE);
-                      		out.writeUTF("Message recieved: "+ temp);
-                      		out.flush();
-                      		break;
-						case Constant.SHOW_TILES_TO_CHOOSE:
-						case Constant.CHOOSE_TILE:
-							final String msg = in.readUTF();
+						try {
+							while(true){
+								int messageType = in.readInt();
+								switch(messageType)
+								{
+								case Constant.MESSAGE:
+									temp = in.readUTF();
+									handler.post(new Runnable() {
+
+										@Override
+										public void run() {
+											Log.d("Server",temp);
+
+										}
+									});
+									out.writeInt(Constant.MESSAGE);
+									out.writeUTF("Message recieved: "+ temp);
+									out.flush();
+									break;
+								case Constant.SHOW_TILES_TO_CHOOSE:
+								case Constant.CHOOSE_TILE:
+									final String msg = in.readUTF();
+									handler.post(new Runnable() {
+										@Override
+										public void run() {
+											Log.d("Client", msg);
+										}
+									});
+									Message msgz = new Message();
+									msgz.arg1 = messageType;
+									Bundle b = new Bundle();
+									b.putString("PointF", msg);
+									msgz.obj = b;
+									handler.sendMessage(msgz);
+									break;
+								case Constant.EXIT:
+									client.close();
+									break;
+								}
+							}
+						} catch (Exception e) {
 							handler.post(new Runnable() {
 								@Override
 								public void run() {
-									Log.d("Client", msg);
+									Log.d("Server","Oops. Connection interrupted. Please reconnect your phones.");
 								}
 							});
-							Message msgz = new Message();
-							msgz.arg1 = messageType;
-							Bundle b = new Bundle();
-							b.putString("PointF", msg);
-							msgz.obj = b;
-							handler.sendMessage(msgz);
-							break;
-                      	case Constant.EXIT:
-                      		client.close();
-                      		break;
-                      	}
-                      }
-                    } catch (Exception e) {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                            	Log.d("Server","Oops. Connection interrupted. Please reconnect your phones.");
-                            }
-                        });
-                        e.printStackTrace();
-                    }
-                }
-            } else {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                    	Log.d("Server","Couldn't detect internet connection.");
-                    }
-                });
-            }
-        } catch (Exception e) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                	Log.d("Server","Error");
-                }
-            });
-            e.printStackTrace();
-        }
+							e.printStackTrace();
+						}
+					}
+				} else {
+					handler.post(new Runnable() {
+						@Override
+						public void run() {
+							Log.d("Server","Couldn't detect internet connection.");
+						}
+					});
+				}
+			} catch (Exception e) {
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						Log.d("Server","Error");
+					}
+				});
+				e.printStackTrace();
+			}
+		}
+		if (serverSocket != null) {
+			try {
+				client.shutdownInput();
+				client.shutdownOutput();
+				client.close();
+				serverSocket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
     }
 
 	public String getMessage()
