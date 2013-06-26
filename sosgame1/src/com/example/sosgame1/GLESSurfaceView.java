@@ -29,6 +29,7 @@ import android.content.Context;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.opengl.GLSurfaceView;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -59,6 +60,7 @@ public class GLESSurfaceView extends GLSurfaceView
 	
     private LogicControl controller = null;
     private Server server = null;
+    private ClientThread client = null;
     
     private static final int MODE_IDLE = 0;
     private static final int MODE_WAIT_FOR_CHOICE = 1;
@@ -72,7 +74,6 @@ public class GLESSurfaceView extends GLSurfaceView
 	private Tile chosenTile;
 	private PointF p = new PointF();
 	private int animationCounter = 0;
-	private ClientThread client = null;
 	
     public GLESSurfaceView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -114,15 +115,14 @@ public class GLESSurfaceView extends GLSurfaceView
     	this.controller = controller;
     }
     
-    public void setServer(Server aServer)
-    {
+    public void setServer(Server aServer) {
     	server = aServer;
     }
     
-    public void setClient(ClientThread aClient)
-    {
+    public void setClient(ClientThread aClient) {
     	client = aClient;
     }
+    
     private class GestureListener extends SimpleOnGestureListener {
 
 		@Override
@@ -173,9 +173,9 @@ public class GLESSurfaceView extends GLSurfaceView
 				if (tile == null) {
 					showTilesToChoose(p);
 					if (server != null && client == null) {
-						server.setMessage(Constant.POINT, p.x + ","+p.y);
+						server.setMessage(Constant.SHOW_TILES_TO_CHOOSE, p.x + ","+p.y);
 					} else if (server == null && client != null) {
-						client.setMessage(Constant.POINT, p.x + ","+p.y);
+						client.setMessage(Constant.SHOW_TILES_TO_CHOOSE, p.x + ","+p.y);
 					}
 				} else {
 					float z = tile.z;
@@ -199,9 +199,9 @@ public class GLESSurfaceView extends GLSurfaceView
 						+ GLRenderer.tileScaleFactorZ * 2);
 				chooseTile(p);
 				if (server != null && client == null) {
-					server.setMessage(Constant.POINT, p.x + ","+p.y);
+					server.setMessage(Constant.CHOOSE_TILE, p.x + ","+p.y);
 				} else if (server == null && client != null) {
-					client.setMessage(Constant.POINT, p.x + ","+p.y);
+					client.setMessage(Constant.CHOOSE_TILE, p.x + ","+p.y);
 				}
 				break;
 			case MODE_NOT_YOUR_TURN:

@@ -30,7 +30,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.PointF;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -74,6 +77,39 @@ public class MainActivity extends Activity implements OnClickListener,
     private int boardColumns = 5; //default
     private int boardRows = 5;
     
+    Handler handler = new Handler() {
+
+    	@Override
+		public void handleMessage(Message msg) {
+    		String thePoint;
+    		String[] xy;
+    		PointF p;
+			switch (msg.arg1) {
+			case Constant.SHOW_TILES_TO_CHOOSE:
+				Log.v("Message", "arg1 = " + msg.arg1);
+				thePoint = ((Bundle) msg.obj).getString("PointF");
+				xy = thePoint.split(",");
+				p = new PointF(Float.parseFloat(xy[0]),
+						Float.parseFloat(xy[1]));
+				myGLView.showTilesToChoose(p);
+				break;
+			case Constant.CHOOSE_TILE:
+				Log.v("Message", "arg1 = " + msg.arg1);
+				thePoint = ((Bundle) msg.obj).getString("PointF");
+				xy = thePoint.split(",");
+				p = new PointF(Float.parseFloat(xy[0]),
+						Float.parseFloat(xy[1]));
+				myGLView.chooseTile(p);
+				break;
+			default:
+				Log.v("Message", "received");
+				break;	
+			}
+			super.handleMessage(msg);
+		}
+
+    };
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -260,10 +296,11 @@ public class MainActivity extends Activity implements OnClickListener,
 		// Pass controller instance to the GLSurfaceView
 		controller = new LogicControl(myGLView.renderer.board, boardRows, boardColumns, (MainActivity)this);
 		myGLView.setController(controller);
-		if(sExist){
+		
+		if (sExist) {
 			myGLView.setServer(server);
 		}
-		else if(cExist){
+		else if(cExist) {
 			myGLView.setClient(client);
 		}
 	}
@@ -375,7 +412,7 @@ public class MainActivity extends Activity implements OnClickListener,
             public void onClick(DialogInterface dialog, int which) {
             // The 'which' argument contains the index position of the selected item
             	if (which == 0) { 
-            		server = new Server();
+            		server = new Server(handler);
             		Thread serverthread = new Thread(server);
             		serverthread.start();
             		String ip = Utils.getIPAddress(true);
@@ -385,7 +422,7 @@ public class MainActivity extends Activity implements OnClickListener,
             		alertIp.setPositiveButton("Got it, Play!", new DialogInterface.OnClickListener() {
             			public void onClick(DialogInterface dialog, int whichButton) {
             				sExist = true;
-            				 viewToGame();
+            				chooseBoardSize();
             				 
             			}
             		});
@@ -407,7 +444,7 @@ public class MainActivity extends Activity implements OnClickListener,
 
 						public void onClick(DialogInterface dialog, int whichButton) {
             				String temp = txtIp.getText().toString(); 
-            			 client = new ClientThread(temp);
+            			 client = new ClientThread(temp, handler);
             			 Thread st = new Thread(client);
             			 st.start();
             			 cExist = true;
@@ -630,4 +667,20 @@ public class MainActivity extends Activity implements OnClickListener,
 		}
 	}
 
+	public class mainHandler extends Handler {
+
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.arg1) {
+			case 1:
+				Log.v("Message", "arg1 = " + msg.arg1);
+				break;
+			}
+			super.handleMessage(msg);
+		}
+		
+	}
+	
+	
+	
 }

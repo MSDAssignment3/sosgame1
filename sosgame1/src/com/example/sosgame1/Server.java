@@ -6,7 +6,10 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 
 public class Server implements Runnable{
@@ -16,13 +19,18 @@ public class Server implements Runnable{
     // default ip
     public static String SERVERIP = Utils.getIPAddress(true);
     String line = null;
-    private Handler handler = new Handler();
+    private Handler handler;// = new Handler();
     private Socket client;
     private ServerSocket serverSocket;
     private String temp = "";
     private DataInputStream in;
     private DataOutputStream out;
     private String message = "";
+    
+    public Server(Handler handler) {
+    	this.handler = handler;
+    }
+    
 	@Override
 	public void run() {
         try {
@@ -50,8 +58,8 @@ public class Server implements Runnable{
 
                     try {
                       while(true){
-                      	int msg = in.readInt();
-                      	switch(msg)
+                      	int messageType = in.readInt();
+                      	switch(messageType)
                       	{
                       	case Constant.MESSAGE:
                       		temp = in.readUTF();
@@ -67,9 +75,22 @@ public class Server implements Runnable{
                       		out.writeUTF("Message recieved: "+ temp);
                       		out.flush();
                       		break;
-                      	case Constant.POINT:
-                      		temp = in.readUTF();
-                      		Log.d("Server",temp);
+						case Constant.SHOW_TILES_TO_CHOOSE:
+						case Constant.CHOOSE_TILE:
+							final String msg = in.readUTF();
+							handler.post(new Runnable() {
+								@Override
+								public void run() {
+									Log.d("Client", msg);
+								}
+							});
+							Message msgz = new Message();
+							msgz.arg1 = messageType;
+							Bundle b = new Bundle();
+							b.putString("PointF", msg);
+							msgz.obj = b;
+							handler.sendMessage(msgz);
+							break;
                       	case Constant.EXIT:
                       		client.close();
                       		break;
@@ -111,8 +132,14 @@ public class Server implements Runnable{
 	
 	public void setMessage(int msgType, String msgIn)
 	{
+		String message = msgIn;
 		if (message != null && out != null) {
-			Log.d("Server", "Sending message in progress");
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                	Log.d("Server", "Sending message in progress");
+                }
+            });
 			try {
 				out.writeInt(msgType);
 				out.writeUTF(message);
@@ -120,7 +147,12 @@ public class Server implements Runnable{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			Log.d("Server", "Sent To Client");
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                	Log.d("Server", "Sent To Client");
+                }
+            });
 		}
 	}
 }
