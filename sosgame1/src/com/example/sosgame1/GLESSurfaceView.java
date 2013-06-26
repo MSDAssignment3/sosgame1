@@ -177,6 +177,21 @@ public class GLESSurfaceView extends GLSurfaceView
 					} else if (server == null && client != null) {
 						client.setMessage(Constant.POINT, p.x + ","+p.y);
 					}
+				} else {
+					float z = tile.z;
+					anim = ObjectAnimator.ofFloat(tile, "z", z, z - 0.2f, z);
+					anim.setDuration(300);
+					anim.addListener(new AnimatorListenerAdapter() {
+						public void onAnimationEnd(Animator animation) {
+							// Stop continuous screen updates to save battery
+							decrementAnimations();
+							animationInProgress = false;
+							requestRender();
+						}
+					});
+					// Start continuous screen updates for duration of animation
+					incrementAnimations();
+					anim.start();
 				}
 				break;
 			case MODE_WAIT_FOR_CHOICE:
