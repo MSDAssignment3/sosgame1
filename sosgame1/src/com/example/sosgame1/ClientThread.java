@@ -17,7 +17,6 @@ public class ClientThread implements Runnable {
 	private Handler handler;// = new Handler();
 	public Socket socket;
 	private String serverIpAddress;
-	private String temp = null;
 	private DataInputStream in = null;
 	private DataOutputStream out = null;
 	private String uiMsg = null;

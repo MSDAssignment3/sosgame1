@@ -66,6 +66,7 @@ public class Server implements Runnable{
 							}
 						});
 
+						// Tell the connected client what the board size is.
 		            	setMessage(Constant.BOARD_SIZE, boardRows + "," 
 		            							+ boardColumns);
 

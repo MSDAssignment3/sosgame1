@@ -19,9 +19,7 @@
  */
 package com.example.sosgame1;
 
-import java.io.IOException;
 import java.util.List;
-
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorInflater;
@@ -57,7 +55,6 @@ public class MainActivity extends Activity implements OnClickListener,
 	private Context context = this;
     private GLESSurfaceView myGLView = null;
     private RelativeLayout mainView;
-    private RelativeLayout viewSplash;
     private View viewAdjustView = null;
     private View viewSettings = null;
     private View viewScores = null;
@@ -78,6 +75,9 @@ public class MainActivity extends Activity implements OnClickListener,
     private Thread serverthread;
     private Thread clientThread;
     
+    /** This message handler processes messages received from
+     * a connected device when playing the game between two devices.
+     */
     Handler handler = new Handler() {
 
     	@Override
@@ -127,7 +127,6 @@ public class MainActivity extends Activity implements OnClickListener,
 		setContentView(R.layout.splash_page);
 		((ImageButton) findViewById(R.id.btnPlay)).setOnClickListener(this);
 		((ImageButton) findViewById(R.id.btnPlayMultiple)).setOnClickListener(this);
-		viewSplash = (RelativeLayout) findViewById(R.id.rlSplash);
 		
 		//DB
 		dataSource = new DataSource(this);
@@ -645,33 +644,14 @@ public class MainActivity extends Activity implements OnClickListener,
 		if (myGLView != null) {
 			myGLView.onPause();
 		}
+		// TODO Properly terminate the server/client threads
 		if (server != null) {
 			server.running = false;
 			server.setMessage(Constant.EXIT, "");
-//			try {
-//				server.client.close();
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			serverthread.interrupt();
-//			try {
-//				serverthread.join();
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
 		}
 		if (client != null) {
 			client.running = false;
 			client.setMessage(Constant.EXIT, "");
-//			clientThread.interrupt();
-//			try {
-//				clientThread.join();
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
 		}
 		super.onPause();
 	}
