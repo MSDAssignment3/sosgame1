@@ -2,21 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center"
     android:orientation="vertical" >
 
     <ListView
         android:id="@+id/listScores"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/wood_bg" >
-
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:background="@drawable/paper_bg"
+        android:padding="50dp" >
     </ListView>
-
-    <TextView
-        android:id="@+id/textScores"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="50sp" />
 
 </LinearLayout>
