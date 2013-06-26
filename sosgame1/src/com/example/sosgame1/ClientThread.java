@@ -6,13 +6,16 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 
 public class ClientThread implements Runnable {
 
 	private static final int SERVERPORT = 12345;
-	private Handler handler = new Handler();
+	private Handler handler;// = new Handler();
 	Socket socket;
 	private String serverIpAddress;
 	private String temp = null;
@@ -27,9 +30,19 @@ public class ClientThread implements Runnable {
 		serverIpAddress = ip;
 	}
 
+	public ClientThread(String ip, Handler handler) {
+		serverIpAddress = ip;
+		this.handler = handler;
+	}
+
 	public void run() {
 		try {
-			Log.d("ClientActivity", "C: Connecting...");
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					Log.d("ClientActivity", "C: Connecting...");
+				}
+			});
 			InetAddress serverAddr = InetAddress.getByName(serverIpAddress);
 			Socket socket = new Socket(serverAddr, SERVERPORT);
 			in = new DataInputStream(socket.getInputStream());
@@ -37,44 +50,93 @@ public class ClientThread implements Runnable {
 			int num = in.readInt();
 			tempMsg = in.readUTF();
 			handler.post(new Runnable() {
-				
 				@Override
 				public void run() {
-					Log.d("MESSAGE RECEICED", tempMsg);
+					Log.d("MESSAGE RECEIVED", tempMsg);
 				}
 			});
 			while (true) {
 				try {
 					int messageType = 0;
-					while(true)
-					{
+					while(true) {
 						messageType = in.readInt();
-						switch (messageType) 
-						{
+						final int msgType = messageType;
+						handler.post(new Runnable() {
+							@Override
+							public void run() {
+								Log.d("Client", "message type: " + msgType);
+							}
+						});
+						switch (messageType) {
 						case Constant.MESSAGE:
-							String mg = in.readUTF();
-							Log.d("Client", mg);
+							final String mg = in.readUTF();
+							handler.post(new Runnable() {
+								@Override
+								public void run() {
+									Log.d("Client", mg);
+								}
+							});
+							break;
+						case Constant.SHOW_TILES_TO_CHOOSE:
+						case Constant.CHOOSE_TILE:
+							final String msg = in.readUTF();
+							handler.post(new Runnable() {
+								@Override
+								public void run() {
+									Log.d("Client", msg);
+								}
+							});
+							Message msgz = new Message();
+							msgz.arg1 = messageType;
+							Bundle b = new Bundle();
+							b.putString("PointF", msg);
+							msgz.obj = b;
+							handler.sendMessage(msgz);
 							break;
 						case Constant.EXIT:
 							socket.close();
 							break;
+						default:
+							final String msg2 = in.readUTF();
+							handler.post(new Runnable() {
+								@Override
+								public void run() {
+									Log.d("Client message", msg2);
+								}
+							});
+							break;	
 						}
 					}
 
-				} catch (Exception e) {
-					Log.e("Client", "Error", e);
+				} catch (final Exception e) {
+					handler.post(new Runnable() {
+						@Override
+						public void run() {
+							Log.e("Client", "Error", e);
+						}
+					});
 				}
 			}
-		} catch (Exception e) {
-			Log.e("Client", "Error", e);
+		} catch (final Exception e) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					Log.e("Client", "Error", e);
+				}
+			});
 		}
 	}
 
 	public void setMessage(int msgtype, String message) {
 		uiMsg = message;
 		msgNum = msgtype;
-		if (uiMsg != null && msgNum == 0 && out != null) {
-			Log.d("Client", "Sending command.");
+		if (uiMsg != null && out != null) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					Log.d("Client", "Sending command.");
+				}
+			});
 			try {
 				out.writeInt(msgNum);
 				out.writeUTF(uiMsg);
@@ -82,7 +144,12 @@ public class ClientThread implements Runnable {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			Log.d("Client", "Sent");
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					Log.d("Client", "Sent");
+				}
+			});
 		}
 	}
 
