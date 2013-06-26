@@ -72,6 +72,23 @@ public class LogicControl {
 		}
 	}
 	
+	public void setBoard(int rows, int columns) {
+		boardRows = rows;  
+		boardColumns = columns; 
+		input = new String[boardRows][boardColumns];	
+		
+		if(rows == 5) {
+			control=3;
+		}
+		
+		if(rows == 7) {
+			control = 5;
+		}
+		
+		if(rows == 9) {
+			control = 7;
+		}
+	}
 	
 	//TODO need to modify
 	public void getPlayerNames()

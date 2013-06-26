@@ -26,10 +26,18 @@ public class Server implements Runnable{
     private DataOutputStream out;
     private String message = "";
 
-    public boolean running = true;
+    public volatile boolean running = true;
+
+    private int boardRows;
+    private int boardColumns;
     
     public Server(Handler handler) {
     	this.handler = handler;
+    }
+    
+    public void setBoard(int rows, int columns) {
+    	boardRows = rows;
+    	boardColumns = columns;
     }
     
 	@Override
@@ -44,7 +52,7 @@ public class Server implements Runnable{
 						}
 					});
 					serverSocket = new ServerSocket(Constant.SERVER_PORT);
-					while (true) {
+					while (running) {
 						// listen for incoming clients
 						client = serverSocket.accept();
 						in = new DataInputStream(client.getInputStream());
@@ -58,8 +66,11 @@ public class Server implements Runnable{
 							}
 						});
 
+		            	setMessage(Constant.BOARD_SIZE, boardRows + "," 
+		            							+ boardColumns);
+
 						try {
-							while(true){
+							while(running){
 								int messageType = in.readInt();
 								switch(messageType)
 								{
@@ -94,6 +105,8 @@ public class Server implements Runnable{
 									handler.sendMessage(msgz);
 									break;
 								case Constant.EXIT:
+									client.shutdownInput();
+									client.shutdownOutput();
 									client.close();
 									break;
 								}

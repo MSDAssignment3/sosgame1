@@ -6,4 +6,5 @@ public class Constant {
 	public static final int MESSAGE = 2;
 	public static final int SHOW_TILES_TO_CHOOSE = 3;
 	public static final int CHOOSE_TILE = 4;
+	public static final int BOARD_SIZE = 5;
 }

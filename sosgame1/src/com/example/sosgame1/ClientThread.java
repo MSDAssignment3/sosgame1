@@ -24,7 +24,7 @@ public class ClientThread implements Runnable {
 	private String recMsg = null;
 	private String tempMsg = "";
 	private int msgNum = -1;
-	public boolean running = true;
+	public volatile boolean running = true;
 	
 	public ClientThread(String ip) {
 		serverIpAddress = ip;
@@ -56,11 +56,20 @@ public class ClientThread implements Runnable {
 						Log.d("MESSAGE RECEIVED", tempMsg);
 					}
 				});
-				while (true) {
+				while (running) {
 					try {
 						int messageType = 0;
-						while(true) {
+						while(running) {
+							try {
 							messageType = in.readInt();
+							} catch (final Exception e) {
+								handler.post(new Runnable() {
+									@Override
+									public void run() {
+										Log.d("Client", "Exception on readInt: " + e);
+									}
+								});
+							}
 							final int msgType = messageType;
 							handler.post(new Runnable() {
 								@Override
@@ -68,33 +77,62 @@ public class ClientThread implements Runnable {
 									Log.d("Client", "message type: " + msgType);
 								}
 							});
+							final String msg;
+							Message msgz;
+							Bundle b;
 							switch (messageType) {
 							case Constant.MESSAGE:
-								final String mg = in.readUTF();
-								handler.post(new Runnable() {
-									@Override
-									public void run() {
-										Log.d("Client", mg);
-									}
-								});
+								try {
+									final String mg = in.readUTF();
+									handler.post(new Runnable() {
+										@Override
+										public void run() {
+											Log.d("Client", mg);
+										}
+									});
+								} catch (final Exception e) {
+									handler.post(new Runnable() {
+										@Override
+										public void run() {
+											Log.d("Client", "Exception on readUTF: " + e);
+										}
+									});
+								}
 								break;
 							case Constant.SHOW_TILES_TO_CHOOSE:
 							case Constant.CHOOSE_TILE:
-								final String msg = in.readUTF();
+								msg = in.readUTF();
 								handler.post(new Runnable() {
 									@Override
 									public void run() {
 										Log.d("Client", msg);
 									}
 								});
-								Message msgz = new Message();
+								msgz = new Message();
 								msgz.arg1 = messageType;
-								Bundle b = new Bundle();
+								b = new Bundle();
 								b.putString("PointF", msg);
 								msgz.obj = b;
 								handler.sendMessage(msgz);
 								break;
+							case Constant.BOARD_SIZE:
+								msg = in.readUTF();
+								handler.post(new Runnable() {
+									@Override
+									public void run() {
+										Log.d("Client", msg);
+									}
+								});
+								msgz = new Message();
+								msgz.arg1 = messageType;
+								b = new Bundle();
+								b.putString("Size", msg);
+								msgz.obj = b;
+								handler.sendMessage(msgz);
+								break;
 							case Constant.EXIT:
+								socket.shutdownInput();
+								socket.shutdownOutput();
 								socket.close();
 								break;
 							default:

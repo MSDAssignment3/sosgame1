@@ -102,6 +102,15 @@ public class MainActivity extends Activity implements OnClickListener,
 						Float.parseFloat(xy[1]));
 				myGLView.chooseTile(p);
 				break;
+			case Constant.BOARD_SIZE:
+				Log.v("Message", "arg1 = " + msg.arg1);
+				thePoint = ((Bundle) msg.obj).getString("Size");
+				xy = thePoint.split(",");
+				boardRows = Integer.parseInt(xy[0]);
+				boardColumns = Integer.parseInt(xy[1]);
+				myGLView.renderer.board.reset(boardColumns, boardRows);
+				controller.setBoard(boardRows, boardColumns);
+				break;
 			default:
 				Log.v("Message", "received");
 				break;	
@@ -298,6 +307,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		
 		if (sExist) {
 			myGLView.setServer(server);
+			server.setBoard(boardRows, boardColumns);
 		}
 		else if(cExist) {
 			myGLView.setClient(client);
@@ -637,12 +647,13 @@ public class MainActivity extends Activity implements OnClickListener,
 		}
 		if (server != null) {
 			server.running = false;
-			try {
-				server.client.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			server.setMessage(Constant.EXIT, "");
+//			try {
+//				server.client.close();
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 //			serverthread.interrupt();
 //			try {
 //				serverthread.join();
@@ -653,6 +664,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		}
 		if (client != null) {
 			client.running = false;
+			client.setMessage(Constant.EXIT, "");
 //			clientThread.interrupt();
 //			try {
 //				clientThread.join();
