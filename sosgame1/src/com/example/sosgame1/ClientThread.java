@@ -15,7 +15,7 @@ public class ClientThread implements Runnable {
 
 	private static final int SERVERPORT = 12345;
 	private Handler handler;// = new Handler();
-	Socket socket;
+	public Socket socket;
 	private String serverIpAddress;
 	private String temp = null;
 	private DataInputStream in = null;
@@ -45,7 +45,7 @@ public class ClientThread implements Runnable {
 					}
 				});
 				InetAddress serverAddr = InetAddress.getByName(serverIpAddress);
-				Socket socket = new Socket(serverAddr, SERVERPORT);
+				socket = new Socket(serverAddr, SERVERPORT);
 				in = new DataInputStream(socket.getInputStream());
 				out = new DataOutputStream(socket.getOutputStream());
 				int num = in.readInt();
@@ -125,6 +125,16 @@ public class ClientThread implements Runnable {
 						Log.e("Client", "Error", e);
 					}
 				});
+			}
+		}
+		if (socket != null) {
+			try {
+				socket.shutdownInput();
+				socket.shutdownOutput();
+				socket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}

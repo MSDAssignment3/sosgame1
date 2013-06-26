@@ -19,8 +19,8 @@ public class Server implements Runnable{
     public static String SERVERIP = Utils.getIPAddress(true);
     String line = null;
     private Handler handler;// = new Handler();
-    private Socket client;
-    private ServerSocket serverSocket;
+    public Socket client;
+    public ServerSocket serverSocket;
     private String temp = "";
     private DataInputStream in;
     private DataOutputStream out;
@@ -123,6 +123,17 @@ public class Server implements Runnable{
 						Log.d("Server","Error");
 					}
 				});
+				e.printStackTrace();
+			}
+		}
+		if (serverSocket != null) {
+			try {
+				client.shutdownInput();
+				client.shutdownOutput();
+				client.close();
+				serverSocket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

@@ -425,7 +425,6 @@ public class MainActivity extends Activity implements OnClickListener,
             			public void onClick(DialogInterface dialog, int whichButton) {
             				sExist = true;
             				chooseBoardSize();
-            				 
             			}
             		});
             		alertIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -445,12 +444,12 @@ public class MainActivity extends Activity implements OnClickListener,
             		alertInputIp.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 
 						public void onClick(DialogInterface dialog, int whichButton) {
-            				String temp = txtIp.getText().toString(); 
-            			 client = new ClientThread(temp, handler);
-            			 Thread clientThread = new Thread(client);
-            			 clientThread.start();
-            			 cExist = true;
-            			 viewToGame();
+							String temp = txtIp.getText().toString(); 
+							client = new ClientThread(temp, handler);
+							clientThread = new Thread(client);
+							clientThread.start();
+							cExist = true;
+							viewToGame();
             			}
             		});
             		alertInputIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -641,20 +640,28 @@ public class MainActivity extends Activity implements OnClickListener,
 		if (server != null) {
 			server.running = false;
 			try {
-				serverthread.join();
-			} catch (InterruptedException e) {
+				server.client.close();
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+//			serverthread.interrupt();
+//			try {
+//				serverthread.join();
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		}
 		if (client != null) {
 			client.running = false;
-			try {
-				clientThread.join();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			clientThread.interrupt();
+//			try {
+//				clientThread.join();
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		}
 		super.onPause();
 	}
