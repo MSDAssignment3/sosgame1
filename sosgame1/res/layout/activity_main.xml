@@ -83,4 +83,24 @@
         android:layout_alignParentLeft="true"
         android:text="Test List Score" />
 
+    <ImageView
+        android:id="@+id/imgPointerBlue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/imgPlayerBlue"
+        android:layout_below="@+id/txtBlueScore"
+        android:paddingRight="20dp"
+        android:src="@drawable/pointer"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/imgPointerRed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/imgPlayerRed"
+        android:layout_below="@+id/txtRedScore"
+        android:paddingLeft="20dp"
+        android:src="@drawable/pointer"
+        android:visibility="invisible" />
+
 </RelativeLayout>

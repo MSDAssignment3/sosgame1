@@ -2,16 +2,41 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center"
-    android:orientation="vertical" >
+    android:layout_gravity="fill"
+    android:background="@drawable/paper_bg"
+    android:gravity="center"
+    android:orientation="horizontal" >
 
-    <ListView
-        android:id="@+id/listScores"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:background="@drawable/paper_bg"
-        android:padding="50dp" >
-    </ListView>
+        android:orientation="vertical" >
+
+        <ImageButton
+            android:id="@+id/btnBackToSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:background="@null"
+            android:scaleType="centerCrop"
+            android:src="@drawable/back_button" />
+
+        <TextView
+            android:id="@+id/txtScore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="High Scores"
+            android:textColor="@android:color/black"
+            android:textSize="30sp" />
+
+        <ListView
+            android:id="@+id/listScores"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="50dp" >
+        </ListView>
+
+    </LinearLayout>
 
 </LinearLayout>

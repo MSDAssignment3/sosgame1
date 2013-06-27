@@ -70,6 +70,7 @@ public class LogicControl {
 		{
 			control = 7;
 		}
+		mainActivity.pointBlue(); //BLUE is always the first player
 	}
 	
 	public void setBoard(int rows, int columns) {
@@ -140,12 +141,14 @@ public class LogicControl {
 			 secondPlayer = true;
 			 firstPlayer = false;
 			 currentPlayerColour = Player.COLOUR_RED;
+			 mainActivity.pointRed();
 		 }
 		 else if(secondPlayer == true && giveTurnToSecond ==false)
 		 {
 			 firstPlayer = true;
 			 secondPlayer = false;
 			 currentPlayerColour = Player.COLOUR_BLUE;
+			 mainActivity.pointBlue();
 		 }
 		 
 		 giveTurnToFirst = false; //reset

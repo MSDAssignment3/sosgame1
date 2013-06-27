@@ -16,13 +16,24 @@
         android:src="@drawable/credits_button" />
 
     <ImageButton
+        android:id="@+id/btnScores"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnCredits"
+        android:layout_alignParentRight="true"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:scaleType="centerCrop"
+        android:src="@drawable/scores_button" />
+
+    <ImageButton
         android:id="@+id/btnBack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="88dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginTop="150dp"
         android:background="@null"
         android:scaleType="centerCrop"
         android:src="@drawable/back_button" />

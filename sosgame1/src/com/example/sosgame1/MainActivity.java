@@ -25,6 +25,7 @@ import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -39,10 +40,12 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.animation.BounceInterpolator;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -193,16 +196,40 @@ public class MainActivity extends Activity implements OnClickListener,
 			}
 			break;
 		case R.id.btnCredits:
-			rollCredits = !rollCredits;
-			if (rollCredits) {
-				createCredits();
-				myGLView.incrementAnimations();
-			} else {
-				deleteCredits();
-				myGLView.decrementAnimations();
-				myGLView.requestRender();
-			}
+			ImageButton buttonCredis = (ImageButton) findViewById(R.id.btnCredits); //can't put before switch it will be null
+			AnimatorSet btnCreditsAniSet = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.button_rotate); //can't reuse
+			btnCreditsAniSet.setTarget(buttonCredis);
+			btnCreditsAniSet.addListener(new AnimatorListener() {
+			    @Override 
+			    public void onAnimationEnd(Animator animation) {
+					rollCredits = !rollCredits;
+					if (rollCredits) {
+						createCredits();
+						myGLView.incrementAnimations();
+					} else {
+						deleteCredits();
+						myGLView.decrementAnimations();
+						myGLView.requestRender();
+					}
+			    }
+				@Override
+				public void onAnimationCancel(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+
+				@Override
+				public void onAnimationRepeat(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+
+				@Override
+				public void onAnimationStart(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+			});
+			btnCreditsAniSet.start();
 			break;
+
 		case R.id.btnPlay:
 			// animate first
 			ImageButton buttonPlay = (ImageButton) findViewById(R.id.btnPlay); //can't put before switch it will be null
@@ -270,17 +297,66 @@ public class MainActivity extends Activity implements OnClickListener,
 			}
 			break;
 			
-		case R.id.btnSettingsGame:
-			viewToSettings(this.mainView);
+		case R.id.btnBackToSettings:
+			if (viewScores != null) {
+				mainView.removeView(viewScores);
+				viewScores = null;
+			}
 			break;
 			
-//		case R.id.testUpdateScore:
-//			updateScore();
-//			break;
+		case R.id.btnSettingsGame:
+			ImageButton btnSettings = (ImageButton) findViewById(R.id.btnSettingsGame); //can't put before switch it will be null
+			AnimatorSet btnSettingsAniSet = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.button_rotate); //can't reuse
+			btnSettingsAniSet.setTarget(btnSettings);
+			btnSettingsAniSet.addListener(new AnimatorListener() {
+			    @Override 
+			    public void onAnimationEnd(Animator animation) {
+					viewToSettings(mainView);
+			    }
+				@Override
+				public void onAnimationCancel(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+
+				@Override
+				public void onAnimationRepeat(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+
+				@Override
+				public void onAnimationStart(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+			});
+			btnSettingsAniSet.start();
+			break;
 			
-//		case R.id.testSaveScore:
-//			saveScore();
-//			break;
+		case R.id.btnScores:
+			ImageButton buttonScores = (ImageButton) findViewById(R.id.btnScores); //can't put before switch it will be null
+			AnimatorSet btnScoresAniSet = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.button_rotate); //can't reuse
+			btnScoresAniSet.setTarget(buttonScores);
+			btnScoresAniSet.addListener(new AnimatorListener() {
+			    @Override 
+			    public void onAnimationEnd(Animator animation) {
+					viewToScore(mainView);
+			    }
+				@Override
+				public void onAnimationCancel(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+
+				@Override
+				public void onAnimationRepeat(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+
+				@Override
+				public void onAnimationStart(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+			});
+			btnScoresAniSet.start();
+			break;
 			
 		case R.id.testListScore:
 			viewToScore(this.mainView);
@@ -326,6 +402,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		}
 		((ImageButton) findViewById(R.id.btnBack)).setOnClickListener(this);
 		((ImageButton) findViewById(R.id.btnCredits)).setOnClickListener(this);
+		((ImageButton) findViewById(R.id.btnScores)).setOnClickListener(this);
 	}
 	
 	/**
@@ -351,6 +428,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		catch(Exception e)
 		{
 		}
+		((ImageButton) findViewById(R.id.btnBackToSettings)).setOnClickListener(this);
 	}
 	
 	/**
@@ -502,6 +580,30 @@ public class MainActivity extends Activity implements OnClickListener,
 		});
 		AlertDialog alertDialog = alertBoardSize.create();
 		alertDialog.show();
+	}
+	
+	/**
+	 * 
+	 */
+	public void pointRed()
+	{
+		ImageView arrowRed = (ImageView) findViewById(R.id.imgPointerRed);
+		ImageView arrowBlue = (ImageView) findViewById(R.id.imgPointerBlue);
+		arrowRed.setVisibility(View.VISIBLE);
+		arrowBlue.setVisibility(View.INVISIBLE);
+		//TODO: bouncing animation would be nice but doesn't seem to work
+//		ObjectAnimator anim = ObjectAnimator.ofFloat(arrowRed, "position", 100f, 100f);
+//		anim.setDuration(1000);
+//		anim.setInterpolator(new BounceInterpolator ());
+//		anim.start();
+	}
+	
+	public void pointBlue()
+	{
+		ImageView arrowRed = (ImageView) findViewById(R.id.imgPointerRed);
+		ImageView arrowBlue = (ImageView) findViewById(R.id.imgPointerBlue);
+		arrowRed.setVisibility(View.INVISIBLE);
+		arrowBlue.setVisibility(View.VISIBLE);
 	}
 
 	/** Create credits cubes */
