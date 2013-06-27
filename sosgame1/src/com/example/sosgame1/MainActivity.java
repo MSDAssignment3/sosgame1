@@ -333,6 +333,11 @@ public class MainActivity extends Activity implements OnClickListener,
 	 */
 	private void viewToScore(RelativeLayout view)
 	{
+		LayoutInflater inflater = getLayoutInflater();
+		viewScores = inflater.inflate(R.layout.scores_page, null);
+		if (viewScores != null) {
+			view.addView(viewScores);
+		}
 		ListView listView = (ListView) findViewById(R.id.listScores);
 		List<Score> scores = dataSource.getAllScores();
 		ArrayAdapter<Score> adapter = new ArrayAdapter<Score>(context, android.R.layout.simple_list_item_1, scores);
@@ -346,12 +351,6 @@ public class MainActivity extends Activity implements OnClickListener,
 		catch(Exception e)
 		{
 		}
-		LayoutInflater inflater = getLayoutInflater();
-		viewScores = inflater.inflate(R.layout.scores_page, null);
-		if (viewScores != null) {
-			view.addView(viewScores);
-
-		}
 	}
 	
 	/**
@@ -362,6 +361,10 @@ public class MainActivity extends Activity implements OnClickListener,
 		TextView textRedScore = (TextView) findViewById(R.id.txtRedScore);
 		textBlueScore.setText(""+playerBlueScore);
 		textRedScore.setText(""+playerRedScore);
+		Score score = new Score();
+		score.setPlayer("Player Blue");
+		score.setScoreValue(playerBlueScore);
+		dataSource.addScore(score);
 	}
 	
 	/**

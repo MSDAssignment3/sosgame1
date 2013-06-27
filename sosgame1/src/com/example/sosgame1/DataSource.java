@@ -8,6 +8,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 /**
  * Serves as DAO
@@ -61,8 +62,9 @@ public class DataSource {
 	public List<Score> getAllScores() {
 		List<Score> scores = new ArrayList<Score>();
 
+		String orderBy = DatabaseHelper.COLUMN_VALUE + " DESC";
 		Cursor cursor = database.query(DatabaseHelper.TABLE_SCORE,
-        allColumns, null, null, null, null, null);
+        allColumns, null, null, null, null, orderBy);
 
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
@@ -82,4 +84,30 @@ public class DataSource {
 		return score;
 	}
 
+	public void addScore(Score score) {
+		String selection = DatabaseHelper.COLUMN_PLAYER + "=?";
+		String[] selectionArgs = new String[]{score.getPlayer()};
+		Cursor cursor = database.query(DatabaseHelper.TABLE_SCORE, allColumns, 
+				selection, selectionArgs, null, null, null, null);
+		int newScore;
+		ContentValues values = new ContentValues();
+		cursor.moveToFirst();
+		if (!cursor.isAfterLast()) {
+			newScore = cursor.getInt(2) + score.getScoreValue();
+			cursor.close();
+			values.put(DatabaseHelper.COLUMN_PLAYER, score.getPlayer());
+			values.put(DatabaseHelper.COLUMN_VALUE, newScore);
+			String whereClause = DatabaseHelper.COLUMN_PLAYER + "=?";
+			String[] whereArgs = new String[]{score.getPlayer()};
+			database.update(DatabaseHelper.TABLE_SCORE, values, whereClause,
+					whereArgs);
+		} else {
+			cursor.close();
+			newScore =  + score.getScoreValue();
+			values.put(DatabaseHelper.COLUMN_PLAYER, score.getPlayer());
+			values.put(DatabaseHelper.COLUMN_VALUE, newScore);
+			database.insert(DatabaseHelper.TABLE_SCORE, null, values);
+		}
+	}
+	
 }
