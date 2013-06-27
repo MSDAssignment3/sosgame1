@@ -106,6 +106,7 @@ public class Server implements Runnable{
 									handler.sendMessage(msgz);
 									break;
 								case Constant.EXIT:
+									running = false;
 									client.shutdownInput();
 									client.shutdownOutput();
 									client.close();

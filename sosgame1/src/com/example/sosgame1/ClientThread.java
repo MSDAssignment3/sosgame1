@@ -130,6 +130,7 @@ public class ClientThread implements Runnable {
 								handler.sendMessage(msgz);
 								break;
 							case Constant.EXIT:
+								running = false;
 								socket.shutdownInput();
 								socket.shutdownOutput();
 								socket.close();

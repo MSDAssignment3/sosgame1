@@ -19,6 +19,7 @@
  */
 package com.example.sosgame1;
 
+import java.io.IOException;
 import java.util.List;
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
@@ -648,10 +649,22 @@ public class MainActivity extends Activity implements OnClickListener,
 		if (server != null) {
 			server.running = false;
 			server.setMessage(Constant.EXIT, "");
+			try {
+				server.client.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		if (client != null) {
 			client.running = false;
 			client.setMessage(Constant.EXIT, "");
+			try {
+				client.socket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		super.onPause();
 	}
