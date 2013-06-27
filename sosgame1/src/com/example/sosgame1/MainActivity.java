@@ -307,7 +307,6 @@ public class MainActivity extends Activity implements OnClickListener,
 		
 		if (sExist) {
 			myGLView.setServer(server);
-			server.setBoard(boardRows, boardColumns);
 		}
 		else if(cExist) {
 			myGLView.setClient(client);
@@ -496,6 +495,9 @@ public class MainActivity extends Activity implements OnClickListener,
             	else if (which == 2) { //9x9
             		boardRows = 9;
             		boardColumns = 9;
+            	}
+            	if (sExist) {
+            		server.setBoard(boardRows, boardColumns);
             	}
             	viewToGame();
             }

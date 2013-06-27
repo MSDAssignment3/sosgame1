@@ -76,18 +76,7 @@ public class LogicControl {
 		boardRows = rows;  
 		boardColumns = columns; 
 		input = new String[boardRows][boardColumns];	
-		
-		if(rows == 5) {
-			control=3;
-		}
-		
-		if(rows == 7) {
-			control = 5;
-		}
-		
-		if(rows == 9) {
-			control = 7;
-		}
+		control = rows - 2;
 	}
 	
 	//TODO need to modify

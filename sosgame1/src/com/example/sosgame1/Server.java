@@ -66,6 +66,11 @@ public class Server implements Runnable{
 							}
 						});
 
+						// Wait here in case the client started and connected 
+						// before we have the board size.
+						while (boardRows == 0 || boardColumns == 0) {
+							Thread.sleep(20);
+						}
 						// Tell the connected client what the board size is.
 		            	setMessage(Constant.BOARD_SIZE, boardRows + "," 
 		            							+ boardColumns);
