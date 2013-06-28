@@ -591,11 +591,11 @@ public class MainActivity extends Activity implements OnClickListener,
 		ImageView arrowBlue = (ImageView) findViewById(R.id.imgPointerBlue);
 		arrowRed.setVisibility(View.VISIBLE);
 		arrowBlue.setVisibility(View.INVISIBLE);
-		//TODO: bouncing animation would be nice but doesn't seem to work
-//		ObjectAnimator anim = ObjectAnimator.ofFloat(arrowRed, "position", 100f, 100f);
-//		anim.setDuration(1000);
-//		anim.setInterpolator(new BounceInterpolator ());
-//		anim.start();
+		float endY = arrowRed.getY();
+		ObjectAnimator anim = ObjectAnimator.ofFloat(arrowRed, "y", arrowRed.getY()+20f, endY);
+		anim.setDuration(1000);
+		anim.setInterpolator(new BounceInterpolator ());
+		anim.start();
 	}
 	
 	public void pointBlue()
@@ -604,6 +604,12 @@ public class MainActivity extends Activity implements OnClickListener,
 		ImageView arrowBlue = (ImageView) findViewById(R.id.imgPointerBlue);
 		arrowRed.setVisibility(View.INVISIBLE);
 		arrowBlue.setVisibility(View.VISIBLE);
+		//TODO: bouncing animation would be nice but doesn't seem to work
+//		float endY = arrowBlue.getY();
+//		ObjectAnimator anim = ObjectAnimator.ofFloat(arrowBlue, "y", arrowBlue.getY()+20f, endY);
+//		anim.setDuration(1000);
+//		anim.setInterpolator(new BounceInterpolator ());
+//		anim.start();
 	}
 
 	/** Create credits cubes */
