@@ -28,8 +28,11 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.os.Handler;
@@ -72,12 +75,13 @@ public class MainActivity extends Activity implements OnClickListener,
     private DataSource dataSource;
     private Server server;
 	private ClientThread client;
-	private boolean sExist= false;
-	private boolean cExist = false;
+	private boolean serverExists= false;
+	private boolean clientExists = false;
     private int boardColumns = 5; //default
     private int boardRows = 5;
-    private Thread serverthread;
+    private Thread serverThread;
     private Thread clientThread;
+    private boolean boardIsReady = false;
     
     /** This message handler processes messages received from
      * a connected device when playing the game between two devices.
@@ -92,7 +96,7 @@ public class MainActivity extends Activity implements OnClickListener,
 			switch (msg.arg1) {
 			case Constant.SHOW_TILES_TO_CHOOSE:
 				Log.v("Message", "arg1 = " + msg.arg1);
-				thePoint = ((Bundle) msg.obj).getString("PointF");
+				thePoint = ((Bundle) msg.obj).getString("Message");
 				xy = thePoint.split(",");
 				p = new PointF(Float.parseFloat(xy[0]),
 						Float.parseFloat(xy[1]));
@@ -100,20 +104,50 @@ public class MainActivity extends Activity implements OnClickListener,
 				break;
 			case Constant.CHOOSE_TILE:
 				Log.v("Message", "arg1 = " + msg.arg1);
-				thePoint = ((Bundle) msg.obj).getString("PointF");
+				thePoint = ((Bundle) msg.obj).getString("Message");
 				xy = thePoint.split(",");
 				p = new PointF(Float.parseFloat(xy[0]),
 						Float.parseFloat(xy[1]));
 				myGLView.chooseTile(p);
 				break;
 			case Constant.BOARD_SIZE:
+				if (alertDialog != null) {
+					alertDialog.dismiss();
+				}
 				Log.v("Message", "arg1 = " + msg.arg1);
-				thePoint = ((Bundle) msg.obj).getString("Size");
+				if (myGLView == null) {
+					viewToGame();
+				}
+				thePoint = ((Bundle) msg.obj).getString("Message");
 				xy = thePoint.split(",");
 				boardRows = Integer.parseInt(xy[0]);
 				boardColumns = Integer.parseInt(xy[1]);
 				myGLView.renderer.board.reset(boardColumns, boardRows);
 				controller.setBoard(boardRows, boardColumns);
+				boardIsReady = true;
+				break;
+			case Constant.CLIENT_CONNECTED:
+				if (alertDialog != null) {
+					alertDialog.dismiss();
+				}
+				showWaitingForBoardSize();
+				break;
+			case Constant.SERVER_CONNECTED:
+				if (alertDialog2 != null) {
+					alertDialog2.dismiss();
+				}
+				break;
+			case Constant.MESSAGE:
+				TextView txtStatus = (TextView) findViewById(R.id.txtStatus);
+				if (txtStatus != null) {
+					String text = ((Bundle) msg.obj).getString("Message");
+					txtStatus.setText(text);
+				}
+				break;
+			case Constant.QUERY_BOARD_SIZE:
+				if (server != null && boardRows > 0 && boardColumns > 0) {
+					server.setMessage(Constant.BOARD_SIZE, boardRows + "," + boardColumns);
+				}
 				break;
 			default:
 				Log.v("Message", "received");
@@ -381,11 +415,11 @@ public class MainActivity extends Activity implements OnClickListener,
 		controller = new LogicControl(myGLView.renderer.board, boardRows, boardColumns, (MainActivity)this);
 		myGLView.setController(controller);
 		
-		if (sExist) {
+		if (serverExists) {
 			myGLView.setServer(server);
 			server.setBoard(boardRows, boardColumns);
 		}
-		else if(cExist) {
+		else if(clientExists) {
 			myGLView.setClient(client);
 		}
 	}
@@ -504,17 +538,18 @@ public class MainActivity extends Activity implements OnClickListener,
             public void onClick(DialogInterface dialog, int which) {
             // The 'which' argument contains the index position of the selected item
             	if (which == 0) { 
-            		server = new Server(handler);
-            		serverthread = new Thread(server);
-            		serverthread.start();
             		String ip = Utils.getIPAddress(true);
             		AlertDialog.Builder alertIp = new AlertDialog.Builder(context);
             		alertIp.setTitle("This server's IP address");
             		alertIp.setMessage("["+ip+"]" + "\nInput this in the other device.");
             		alertIp.setPositiveButton("Got it, Play!", new DialogInterface.OnClickListener() {
             			public void onClick(DialogInterface dialog, int whichButton) {
-            				sExist = true;
+                    		server = new Server(handler);
+                    		serverThread = new Thread(server, "Server");
+                    		serverThread.start();
+            				serverExists = true;
             				chooseBoardSize();
+            				showWaitingForClient();
             			}
             		});
             		alertIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -529,16 +564,18 @@ public class MainActivity extends Activity implements OnClickListener,
             		AlertDialog.Builder alertInputIp = new AlertDialog.Builder(context);
             		// Set an EditText view to get user input 
             		final EditText txtIp = new EditText(context);
+            		txtIp.setText("10.1.1.27");
             		alertInputIp.setView(txtIp);
             		alertInputIp.setTitle("Enter IP address of Server device");
             		alertInputIp.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							String temp = txtIp.getText().toString(); 
-							client = new ClientThread(temp, handler);
-							clientThread = new Thread(client);
+							showConnecting(temp);
+							client = new ClientThread(temp, handler, (MainActivity) context);
+							clientThread = new Thread(client, "Client");
 							clientThread.start();
-							cExist = true;
-							viewToGame();
+							clientExists = true;
+//							viewToGame();
             			}
             		});
             		alertInputIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -602,14 +639,13 @@ public class MainActivity extends Activity implements OnClickListener,
 	{
 		ImageView arrowRed = (ImageView) findViewById(R.id.imgPointerRed);
 		ImageView arrowBlue = (ImageView) findViewById(R.id.imgPointerBlue);
-		arrowRed.setVisibility(View.INVISIBLE);
 		arrowBlue.setVisibility(View.VISIBLE);
-		//TODO: bouncing animation would be nice but doesn't seem to work
-//		float endY = arrowBlue.getY();
-//		ObjectAnimator anim = ObjectAnimator.ofFloat(arrowBlue, "y", arrowBlue.getY()+20f, endY);
-//		anim.setDuration(1000);
-//		anim.setInterpolator(new BounceInterpolator ());
-//		anim.start();
+		arrowRed.setVisibility(View.INVISIBLE);
+		float endY = arrowBlue.getY();
+		ObjectAnimator anim = ObjectAnimator.ofFloat(arrowBlue, "y", arrowBlue.getY()+20f, endY);
+		anim.setDuration(1000);
+		anim.setInterpolator(new BounceInterpolator ());
+		anim.start();
 	}
 
 	/** Create credits cubes */
@@ -756,26 +792,49 @@ public class MainActivity extends Activity implements OnClickListener,
 		if (myGLView != null) {
 			myGLView.onPause();
 		}
-		// TODO Properly terminate the server/client threads
 		if (server != null) {
 			server.running = false;
-			server.setMessage(Constant.EXIT, "");
-			try {
-				server.client.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (server.socket != null && !server.socket.isClosed()) {
+				Log.v("Server", "trying to close");
+//				server.setMessage(Constant.EXIT, "");
+				try {
+					// Stackoverflow mentions a bug in socket.close() which
+					// is avoided by shutting down first.
+					server.socket.shutdownInput();
+				} catch (IOException e) {
+					Log.d("Client socket", "failed to shutdownInput", e);
+					e.printStackTrace();
+				}
+				try {
+					server.socket.close();
+				} catch (IOException e) {
+					Log.d("Client socket", "failed to close", e);
+					e.printStackTrace();
+				}
 			}
 		}
 		if (client != null) {
 			client.running = false;
-			client.setMessage(Constant.EXIT, "");
-			try {
-				client.socket.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (client.socket!= null && !client.socket.isClosed()) {
+//				client.setMessage(Constant.EXIT, "");
+				try {
+					// Stackoverflow mentions a bug in socket.close() which
+					// is avoided by shutting down first.
+					client.socket.shutdownInput();
+				} catch (IOException e) {
+					Log.d("Client socket", "failed to shutdownInput", e);
+					e.printStackTrace();
+				}
+				try {
+					client.socket.close();
+				} catch (IOException e) {
+					Log.d("Client socket", "failed to close", e);
+					e.printStackTrace();
+				}
 			}
+		}
+		if (dataSource != null) {
+			dataSource.close();
 		}
 		super.onPause();
 	}
@@ -808,4 +867,61 @@ public class MainActivity extends Activity implements OnClickListener,
 		}
 	}
 
+	public AlertDialog alertDialog;
+	
+	public void showConnecting(String ipAddress) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Connecting to " + ipAddress + " ...");
+		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				client.running = false;
+				dialog.dismiss();
+			}
+		});
+		alertDialog = builder.create();
+		alertDialog.setOnCancelListener(listener2);
+		alertDialog.show();
+	}
+	
+	OnCancelListener listener2 = new OnCancelListener() {
+		@Override
+		public void onCancel(DialogInterface dialog) {
+			client.running = false;
+			Log.v("Trying", "to kill client");
+		}
+	};
+	
+	public void showWaitingForBoardSize() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Connected. Waiting for board size ...");
+		alertDialog = builder.create();
+		alertDialog.show();
+	}
+	
+	private AlertDialog alertDialog2;
+	
+	private OnCancelListener listener = new OnCancelListener() {
+		@Override
+		public void onCancel(DialogInterface dialog) {
+			server.running = false;
+			Log.v("Trying", "to kill server");
+		}
+	};
+	
+	public void showWaitingForClient() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Waiting for client to connect ...");
+		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				server.running = false;
+				dialog.dismiss();
+			}
+		});
+		alertDialog2 = builder.create();
+		alertDialog2.setOnCancelListener(listener);
+		alertDialog2.show();
+	}
+	
 }

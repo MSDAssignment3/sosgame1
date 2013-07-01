@@ -5,6 +5,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,52 +15,77 @@ import android.util.Log;
 
 public class Server implements Runnable{
 	
-   //Default IP Address
- 
-    // default ip
+	//Default IP Address
     public static String SERVERIP = Utils.getIPAddress(true);
-    String line = null;
-    private Handler handler;// = new Handler();
-    public Socket client;
+    private Handler handler;
+    public Socket socket;
     public ServerSocket serverSocket;
-    private String temp = "";
     private DataInputStream in;
     private DataOutputStream out;
     private String message = "";
 
+    private int boardRows = 0;
+    private int boardColumns = 0;
+    
     public volatile boolean running = true;
 
-    private int boardRows;
-    private int boardColumns;
+    private String remoteIPAddress;
     
     public Server(Handler handler) {
     	this.handler = handler;
     }
     
-    public void setBoard(int rows, int columns) {
-    	boardRows = rows;
-    	boardColumns = columns;
+    public void setBoard(int boardRows, int boardColumns) {
+    	this.boardRows = boardRows;
+    	this.boardColumns = boardColumns;
     }
+    
+    private boolean connected = false;
     
 	@Override
 	public void run() {
 		while (running) {
-			try {
-				if (SERVERIP != null) {
-					handler.post(new Runnable() {
-						@Override
-						public void run() {
-							Log.d("SERVER", "Listening on IP: " + SERVERIP);
-						}
-					});
+			if (SERVERIP != null) {
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						Log.d("SERVER", "Listening on IP: " + SERVERIP);
+					}
+				});
+				try {
 					serverSocket = new ServerSocket(Constant.SERVER_PORT);
-					while (running) {
-						// listen for incoming clients
-						client = serverSocket.accept();
-						in = new DataInputStream(client.getInputStream());
-						out = new DataOutputStream(client.getOutputStream());
-						out.writeInt(Constant.MESSAGE);
-						out.writeUTF("You are connected");
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				while (running) {
+					// Must set a timeout otherwise serverSocket.accept()
+					// will block infinitely and the thread cannot be ended.
+					int timeout = 3000;
+					try {
+						serverSocket.setSoTimeout(timeout);
+					} catch (SocketException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+					// listen for incoming clients
+					try {
+						socket = serverSocket.accept();
+						connected = true;
+						remoteIPAddress = socket.getRemoteSocketAddress().toString();
+						in = new DataInputStream(socket.getInputStream());
+						out = new DataOutputStream(socket.getOutputStream());
+					} catch (final Exception e1) {
+						handler.post(new Runnable() {
+							@Override
+							public void run() {
+								Log.e("SERVER", "Exception", e1);
+							}
+						});
+					}
+					
+					if (connected) {
+						setMessage(Constant.MESSAGE, "You are connected");
 						handler.post(new Runnable() {
 							@Override
 							public void run() {
@@ -66,89 +93,65 @@ public class Server implements Runnable{
 							}
 						});
 
-						while (boardRows == 0 || boardColumns == 0 && running) {
-							Thread.sleep(20);
-						}
-						// Tell the connected client what the board size is.
-		            	setMessage(Constant.BOARD_SIZE, boardRows + "," 
-		            							+ boardColumns);
+						Message message = new Message();
+						message.arg1 = Constant.SERVER_CONNECTED;
+						handler.sendMessage(message);
 
-						try {
-							while(running){
-								int messageType = in.readInt();
-								switch(messageType)
-								{
-								case Constant.MESSAGE:
-									temp = in.readUTF();
-									handler.post(new Runnable() {
-
-										@Override
-										public void run() {
-											Log.d("Server",temp);
-
-										}
-									});
-									out.writeInt(Constant.MESSAGE);
-									out.writeUTF("Message recieved: "+ temp);
-									out.flush();
-									break;
-								case Constant.SHOW_TILES_TO_CHOOSE:
-								case Constant.CHOOSE_TILE:
-									final String msg = in.readUTF();
-									handler.post(new Runnable() {
-										@Override
-										public void run() {
-											Log.d("Client", msg);
-										}
-									});
-									Message msgz = new Message();
-									msgz.arg1 = messageType;
-									Bundle b = new Bundle();
-									b.putString("PointF", msg);
-									msgz.obj = b;
-									handler.sendMessage(msgz);
-									break;
-								case Constant.EXIT:
-									running = false;
-									client.shutdownInput();
-									client.shutdownOutput();
-									client.close();
-									break;
-								}
+						// Wait here in case the client connected before
+						// we have the board size.
+						while ((boardRows == 0 || boardColumns == 0) && running) {
+							try {
+								Thread.sleep(100);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
 							}
-						} catch (Exception e) {
+						}
+						setMessage(Constant.BOARD_SIZE, boardRows + "," + boardColumns);
+					}
+					
+					while (running && connected) {
+						try {
+							int messageType = in.readInt();
+							getAndProcessMessage(messageType);
+						} catch (final Exception e) {
+							connected = false;
 							handler.post(new Runnable() {
 								@Override
 								public void run() {
-									Log.d("Server","Oops. Connection interrupted. Please reconnect your phones.");
+									Log.e("Server", "exception:", e);
+//									Log.d("Server","Oops. Connection interrupted. Please reconnect your phones.");
 								}
 							});
 							e.printStackTrace();
 						}
 					}
-				} else {
-					handler.post(new Runnable() {
-						@Override
-						public void run() {
-							Log.d("Server","Couldn't detect internet connection.");
-						}
-					});
 				}
-			} catch (Exception e) {
+			} else {
 				handler.post(new Runnable() {
 					@Override
 					public void run() {
-						Log.d("Server","Error");
+						Log.d("Server","Couldn't detect internet connection.");
 					}
 				});
+				try {
+					Thread.sleep(200);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		if (socket != null) {
+			try {
+				socket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		if (serverSocket != null) {
 			try {
-				client.shutdownInput();
-				client.shutdownOutput();
-				client.close();
 				serverSocket.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -156,6 +159,53 @@ public class Server implements Runnable{
 			}
 		}
     }
+
+	private void getAndProcessMessage(int messageType) throws IOException {
+		String msg = "";
+		try {
+			msg = in.readUTF();
+		} catch (final Exception e) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					Log.d("Server", "Exception on readUTF: " + e);
+				}
+			});
+		}
+		final String msgF = msg;
+		switch(messageType) {
+		case Constant.MESSAGE:
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					Log.d("Server", msgF);
+				}
+			});
+			setMessage(Constant.MESSAGE, "Message received: " + message);
+			break;
+		case Constant.SHOW_TILES_TO_CHOOSE:
+		case Constant.CHOOSE_TILE:
+		case Constant.QUERY_BOARD_SIZE:
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					Log.d("Server", msgF);
+				}
+			});
+			Message message = new Message();
+			message.arg1 = messageType;
+			Bundle bundle = new Bundle();
+			bundle.putString("Message", msg);
+			message.obj = bundle;
+			handler.sendMessage(message);
+			break;
+		case Constant.EXIT:
+			running = false;
+			setMessage(Constant.EXIT, "Exit");
+			socket.close();
+			break;
+		}
+	}
 
 	public String getMessage()
 	{
@@ -173,18 +223,20 @@ public class Server implements Runnable{
                 }
             });
 			try {
-				out.writeInt(msgType);
-				out.writeUTF(message);
-				out.flush();
+				if (!socket.isOutputShutdown()) {
+					out.writeInt(msgType);
+					out.writeUTF(message);
+					out.flush();
+					handler.post(new Runnable() {
+						@Override
+						public void run() {
+							Log.d("Server", "Sent To Client");
+						}
+					});
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                	Log.d("Server", "Sent To Client");
-                }
-            });
 		}
 	}
 }

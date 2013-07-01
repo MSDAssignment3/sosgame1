@@ -127,7 +127,23 @@ public class GLESSurfaceView extends GLSurfaceView
 
 		@Override
 		public boolean onSingleTapConfirmed(MotionEvent e) {
-			doSingleTap(e);
+//			if (server == null && client == null) {
+			if ((server == null && client == null) || 
+					(server != null && !server.running) || 
+					(client != null && !client.running)) {
+				// Single device play
+				doSingleTap(e);
+			} else {
+				// Two device play
+				if (server != null && server.running &&
+						controller.currentPlayerColour == Player.COLOUR_BLUE) {
+					doSingleTap(e);
+				}
+				if (client != null && client.running &&
+						controller.currentPlayerColour == Player.COLOUR_RED) {
+					doSingleTap(e);
+				}
+			}
 			return super.onSingleTapConfirmed(e);
 		}
 
