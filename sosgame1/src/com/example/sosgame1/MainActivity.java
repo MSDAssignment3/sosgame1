@@ -28,8 +28,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
@@ -73,15 +71,20 @@ public class MainActivity extends Activity implements OnClickListener,
     private boolean rollCredits = false;
     private boolean adjustView = false;
     private DataSource dataSource;
-    private Server server;
-	private ClientThread client;
-	private boolean serverExists= false;
-	private boolean clientExists = false;
+    private Server server = null;
+	private ClientThread client = null;
     private int boardColumns = 5; //default
     private int boardRows = 5;
     private Thread serverThread;
     private Thread clientThread;
-    private boolean boardIsReady = false;
+    public static final int PLAY_SINGLE_DEVICE = 1;
+    public static final int PLAY_SERVER = 2;
+    public static final int PLAY_CLIENT = 3;
+    public static final int PLAY_AI = 4;
+    public int playMode = PLAY_SINGLE_DEVICE;
+    private String lastIPAddress = "10.1.1.27";
+    public AI theAI;
+    public Thread AIThread;
     
     /** This message handler processes messages received from
      * a connected device when playing the game between two devices.
@@ -100,7 +103,9 @@ public class MainActivity extends Activity implements OnClickListener,
 				xy = thePoint.split(",");
 				p = new PointF(Float.parseFloat(xy[0]),
 						Float.parseFloat(xy[1]));
-				myGLView.showTilesToChoose(p);
+				if (myGLView != null) {
+					myGLView.showTilesToChoose(p);
+				}
 				break;
 			case Constant.CHOOSE_TILE:
 				Log.v("Message", "arg1 = " + msg.arg1);
@@ -108,7 +113,9 @@ public class MainActivity extends Activity implements OnClickListener,
 				xy = thePoint.split(",");
 				p = new PointF(Float.parseFloat(xy[0]),
 						Float.parseFloat(xy[1]));
-				myGLView.chooseTile(p);
+				if (myGLView != null) {
+					myGLView.chooseTile(p);
+				}
 				break;
 			case Constant.BOARD_SIZE:
 				if (alertDialog != null) {
@@ -124,7 +131,6 @@ public class MainActivity extends Activity implements OnClickListener,
 				boardColumns = Integer.parseInt(xy[1]);
 				myGLView.renderer.board.reset(boardColumns, boardRows);
 				controller.setBoard(boardRows, boardColumns);
-				boardIsReady = true;
 				break;
 			case Constant.CLIENT_CONNECTED:
 				if (alertDialog != null) {
@@ -138,11 +144,6 @@ public class MainActivity extends Activity implements OnClickListener,
 				}
 				break;
 			case Constant.MESSAGE:
-				TextView txtStatus = (TextView) findViewById(R.id.txtStatus);
-				if (txtStatus != null) {
-					String text = ((Bundle) msg.obj).getString("Message");
-					txtStatus.setText(text);
-				}
 				break;
 			case Constant.QUERY_BOARD_SIZE:
 				if (server != null && boardRows > 0 && boardColumns > 0) {
@@ -162,15 +163,27 @@ public class MainActivity extends Activity implements OnClickListener,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.splash_page);
-		((ImageButton) findViewById(R.id.btnPlay)).setOnClickListener(this);
-		((ImageButton) findViewById(R.id.btnPlayMultiple)).setOnClickListener(this);
+		viewToSplash();
 		
 		//DB
 		dataSource = new DataSource(this);
 	    dataSource.open();
 	    //get all Scores, to be diplayed
 //	    List<Score> scores = dataSource.getAllScores(); //TEST LATER
+	}
+
+	private void viewToSplash() {
+		if (myGLView != null) {
+			mainView.removeView(myGLView);
+			myGLView = null;
+		}
+		if (theAI != null) {
+			theAI.running = false;
+		}
+		setContentView(R.layout.splash_page);
+		((ImageButton) findViewById(R.id.btnPlay)).setOnClickListener(this);
+		((ImageButton) findViewById(R.id.btnPlayAI)).setOnClickListener(this);
+		((ImageButton) findViewById(R.id.btnPlayMultiple)).setOnClickListener(this);
 	}
 
 	@Override
@@ -183,6 +196,8 @@ public class MainActivity extends Activity implements OnClickListener,
 	public void onClick(View v) {
 		
 		LayoutInflater inflater = getLayoutInflater();
+		ImageButton buttonPlay;
+		AnimatorSet btnPlayAniSet;
 		
 		switch (v.getId()) {
 		case R.id.btnView:
@@ -230,10 +245,10 @@ public class MainActivity extends Activity implements OnClickListener,
 			}
 			break;
 		case R.id.btnCredits:
-			ImageButton buttonCredis = (ImageButton) findViewById(R.id.btnCredits); //can't put before switch it will be null
-			AnimatorSet btnCreditsAniSet = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.button_rotate); //can't reuse
-			btnCreditsAniSet.setTarget(buttonCredis);
-			btnCreditsAniSet.addListener(new AnimatorListener() {
+			buttonPlay = (ImageButton) findViewById(R.id.btnCredits);
+			btnPlayAniSet = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.button_rotate);
+			btnPlayAniSet.setTarget(buttonPlay);
+			btnPlayAniSet.addListener(new AnimatorListener() {
 			    @Override 
 			    public void onAnimationEnd(Animator animation) {
 					rollCredits = !rollCredits;
@@ -261,17 +276,19 @@ public class MainActivity extends Activity implements OnClickListener,
 					// TODO Auto-generated method stub
 				}
 			});
-			btnCreditsAniSet.start();
+			btnPlayAniSet.start();
 			break;
 
 		case R.id.btnPlay:
 			// animate first
-			ImageButton buttonPlay = (ImageButton) findViewById(R.id.btnPlay); //can't put before switch it will be null
-			AnimatorSet btnPlayAniSet = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.button_rotate); //can't reuse
+			buttonPlay = (ImageButton) findViewById(R.id.btnPlay);
+			btnPlayAniSet = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.button_rotate);
 			btnPlayAniSet.setTarget(buttonPlay);
 			btnPlayAniSet.addListener(new Animator.AnimatorListener() {
 			    @Override 
 			    public void onAnimationEnd(Animator animation) {
+			    	killClient();
+			    	killServer();
 			    	chooseBoardSize();
 			    }
 				@Override
@@ -290,15 +307,49 @@ public class MainActivity extends Activity implements OnClickListener,
 			btnPlayAniSet.start();
 			break;  
 
+		case R.id.btnPlayAI:
+			playMode = PLAY_AI;
+			buttonPlay = (ImageButton) findViewById(R.id.btnPlayAI);
+			btnPlayAniSet = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.button_rotate);
+			btnPlayAniSet.setTarget(buttonPlay);
+			btnPlayAniSet.addListener(new Animator.AnimatorListener() {
+			    @Override 
+			    public void onAnimationEnd(Animator animation) {
+			    	killClient();
+			    	killServer();
+			    	chooseBoardSize();
+			    }
+				@Override
+				public void onAnimationCancel(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+				@Override
+				public void onAnimationRepeat(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+				@Override
+				public void onAnimationStart(Animator animation) {
+					// TODO Auto-generated method stub
+				}
+			});
+			btnPlayAniSet.start();
+			break;
+			
 		case R.id.btnPlayMultiple:
-			ImageButton btnPlayMultiple = (ImageButton) findViewById(R.id.btnPlayMultiple); //can't put before switch it will be null
-			AnimatorSet btnMultipleAniSet = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.button_rotate); //can't reuse
-			btnMultipleAniSet.setTarget(btnPlayMultiple);
-			btnMultipleAniSet.addListener(new AnimatorListener() {
+			buttonPlay = (ImageButton) findViewById(R.id.btnPlayMultiple);
+			btnPlayAniSet = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.button_rotate);
+			btnPlayAniSet.setTarget(buttonPlay);
+			btnPlayAniSet.addListener(new AnimatorListener() {
 			    @Override 
 			    public void onAnimationEnd(Animator animation) {
 			    	//show a spinner
-			    	chooseServerClient();
+			    	if (server == null && client == null) {
+			    		chooseServerClient();
+			    	} else if (server != null) {
+			    		chooseBoardSize();
+			    	} else if (client != null) {
+			    		showWaitingForBoardSize();
+			    	}
 			    }
 				@Override
 				public void onAnimationCancel(Animator animation) {
@@ -315,7 +366,7 @@ public class MainActivity extends Activity implements OnClickListener,
 					// TODO Auto-generated method stub
 				}
 			});
-			btnMultipleAniSet.start();
+			btnPlayAniSet.start();
 			break;
 
 		case R.id.btnBack:
@@ -372,7 +423,12 @@ public class MainActivity extends Activity implements OnClickListener,
 			btnScoresAniSet.addListener(new AnimatorListener() {
 			    @Override 
 			    public void onAnimationEnd(Animator animation) {
-					viewToScore(mainView);
+			    	if (viewScores == null) {
+			    		viewToScore(mainView);
+			    	} else {
+			    		mainView.removeView(viewScores);
+			    		viewScores = null;
+			    	}
 			    }
 				@Override
 				public void onAnimationCancel(Animator animation) {
@@ -391,12 +447,8 @@ public class MainActivity extends Activity implements OnClickListener,
 			});
 			btnScoresAniSet.start();
 			break;
-			
-		case R.id.testListScore:
-			viewToScore(this.mainView);
-			break;
 		}
-
+			
 	}
 	
 	/**
@@ -408,19 +460,23 @@ public class MainActivity extends Activity implements OnClickListener,
 		mainView = (RelativeLayout) findViewById(R.id.rlMain);
 		((Button) findViewById(R.id.btnView)).setOnClickListener(this);
 		((ImageButton) findViewById(R.id.btnSettingsGame)).setOnClickListener(this);
-		((Button) findViewById(R.id.testListScore)).setOnClickListener(this);//REMOVE this when testing saveScore is not needed
 		myGLView = (GLESSurfaceView) findViewById(R.id.myGLSurfaceView1);
 		myGLView.renderer.board.reset(boardRows,boardColumns);
 		// Pass controller instance to the GLSurfaceView
 		controller = new LogicControl(myGLView.renderer.board, boardRows, boardColumns, (MainActivity)this);
 		myGLView.setController(controller);
 		
-		if (serverExists) {
+		if (server != null) {
 			myGLView.setServer(server);
 			server.setBoard(boardRows, boardColumns);
 		}
-		else if(clientExists) {
+		else if(client != null) {
 			myGLView.setClient(client);
+		} else if (playMode == PLAY_AI) {
+			// Start the AI
+			theAI = new AI(myGLView.renderer.board, controller, myGLView);
+			AIThread = new Thread(theAI, "AI");
+			AIThread.start();
 		}
 	}
 	
@@ -473,10 +529,6 @@ public class MainActivity extends Activity implements OnClickListener,
 		TextView textRedScore = (TextView) findViewById(R.id.txtRedScore);
 		textBlueScore.setText(""+playerBlueScore);
 		textRedScore.setText(""+playerRedScore);
-		Score score = new Score();
-		score.setPlayer("Player Blue");
-		score.setScoreValue(playerBlueScore);
-		dataSource.addScore(score);
 	}
 	
 	/**
@@ -496,35 +548,52 @@ public class MainActivity extends Activity implements OnClickListener,
 		int winnerScore = 0;
 		TextView textBlueScore = (TextView) findViewById(R.id.txtBlueScore);
 		TextView textRedScore = (TextView) findViewById(R.id.txtRedScore);
+		boolean showEnterNameDialog = false;
 		if(Integer.parseInt((String) textBlueScore.getText()) > Integer.parseInt((String) textRedScore.getText())) {
 			winner = "BLUE";
 			winnerScore = Integer.parseInt((String) textBlueScore.getText());
+			if (playMode == PLAY_SINGLE_DEVICE || playMode == PLAY_SERVER || playMode == PLAY_AI) {
+				showEnterNameDialog = true;
+			}
 		}
 		else if(Integer.parseInt((String) textBlueScore.getText()) < Integer.parseInt((String) textRedScore.getText())) {
 			winner = "RED";
 			winnerScore = Integer.parseInt((String) textRedScore.getText());
+			if (playMode == PLAY_SINGLE_DEVICE || playMode == PLAY_CLIENT || playMode == PLAY_AI) {
+				showEnterNameDialog = true;
+			}
 		}
 		else if(Integer.parseInt((String) textBlueScore.getText()) == Integer.parseInt((String) textRedScore.getText())) {
 			winner = "BLUE & RED";
 			winnerScore = Integer.parseInt((String) textBlueScore.getText());
+			showEnterNameDialog = true;
 		}
-		final int finalWinnerScore = winnerScore;
-		final EditText txtWinner = new EditText(context);
-		alertEnd.setTitle("Game ended! Player " + winner + " won! Enter winner's name:");
-		alertEnd.setView(txtWinner);
-		alertEnd.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int whichButton) {
-				String winnerName = txtWinner.getText().toString(); 
-				saveScore(winnerName, finalWinnerScore);
-			}
-		});
-		alertEnd.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-			  public void onClick(DialogInterface dialog, int whichButton) {
-			    // Canceled.
-			  }
-		});
-		alertEnd.show();
-		//TODO:go back to menu or show highscores
+		if (showEnterNameDialog) {
+			final int finalWinnerScore = winnerScore;
+			final EditText txtWinner = new EditText(context);
+			alertEnd.setTitle("Game ended! Player " + winner + " won! Enter winner's name:");
+			alertEnd.setView(txtWinner);
+			alertEnd.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					String winnerName = txtWinner.getText().toString(); 
+//					saveScore(winnerName, finalWinnerScore);
+					Score score = new Score();
+					score.setPlayer(winnerName);
+					score.setScoreValue(finalWinnerScore);
+					dataSource.addScore(score);
+					viewToSplash();
+				}
+			});
+			alertEnd.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					viewToSplash();
+				}
+			});
+			alertEnd.show();
+		} else {
+			showYouLost(winner);
+			viewToSplash();
+		}
 	}
 
 	/**
@@ -544,12 +613,12 @@ public class MainActivity extends Activity implements OnClickListener,
             		alertIp.setMessage("["+ip+"]" + "\nInput this in the other device.");
             		alertIp.setPositiveButton("Got it, Play!", new DialogInterface.OnClickListener() {
             			public void onClick(DialogInterface dialog, int whichButton) {
-                    		server = new Server(handler);
-                    		serverThread = new Thread(server, "Server");
-                    		serverThread.start();
-            				serverExists = true;
+            				server = new Server(handler);
+            				serverThread = new Thread(server, "Server");
+            				serverThread.start();
             				chooseBoardSize();
             				showWaitingForClient();
+            				playMode = PLAY_SERVER;
             			}
             		});
             		alertIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -564,18 +633,18 @@ public class MainActivity extends Activity implements OnClickListener,
             		AlertDialog.Builder alertInputIp = new AlertDialog.Builder(context);
             		// Set an EditText view to get user input 
             		final EditText txtIp = new EditText(context);
-            		txtIp.setText("10.1.1.27");
+            		txtIp.setText(lastIPAddress);
             		alertInputIp.setView(txtIp);
             		alertInputIp.setTitle("Enter IP address of Server device");
             		alertInputIp.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
-							String temp = txtIp.getText().toString(); 
+							String temp = txtIp.getText().toString();
+							lastIPAddress = temp;
 							showConnecting(temp);
 							client = new ClientThread(temp, handler, (MainActivity) context);
 							clientThread = new Thread(client, "Client");
 							clientThread.start();
-							clientExists = true;
-//							viewToGame();
+							playMode = PLAY_CLIENT;
             			}
             		});
             		alertInputIp.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -612,6 +681,9 @@ public class MainActivity extends Activity implements OnClickListener,
             		boardRows = 9;
             		boardColumns = 9;
             	}
+            	if (server != null) {
+            		server.setMessage(Constant.BOARD_SIZE, boardRows + "," + boardColumns);
+            	}
             	viewToGame();
             }
 		});
@@ -619,15 +691,12 @@ public class MainActivity extends Activity implements OnClickListener,
 		alertDialog.show();
 	}
 	
-	/**
-	 * 
-	 */
 	public void pointRed()
 	{
 		ImageView arrowRed = (ImageView) findViewById(R.id.imgPointerRed);
 		ImageView arrowBlue = (ImageView) findViewById(R.id.imgPointerBlue);
-		arrowRed.setVisibility(View.VISIBLE);
 		arrowBlue.setVisibility(View.INVISIBLE);
+		arrowRed.setVisibility(View.VISIBLE);
 		float endY = arrowRed.getY();
 		ObjectAnimator anim = ObjectAnimator.ofFloat(arrowRed, "y", arrowRed.getY()+20f, endY);
 		anim.setDuration(1000);
@@ -792,31 +861,21 @@ public class MainActivity extends Activity implements OnClickListener,
 		if (myGLView != null) {
 			myGLView.onPause();
 		}
-		if (server != null) {
-			server.running = false;
-			if (server.socket != null && !server.socket.isClosed()) {
-				Log.v("Server", "trying to close");
-//				server.setMessage(Constant.EXIT, "");
-				try {
-					// Stackoverflow mentions a bug in socket.close() which
-					// is avoided by shutting down first.
-					server.socket.shutdownInput();
-				} catch (IOException e) {
-					Log.d("Client socket", "failed to shutdownInput", e);
-					e.printStackTrace();
-				}
-				try {
-					server.socket.close();
-				} catch (IOException e) {
-					Log.d("Client socket", "failed to close", e);
-					e.printStackTrace();
-				}
-			}
+		if (theAI != null) {
+			theAI.running = false;
 		}
+		killServer();
+		killClient();
+		if (dataSource != null) {
+			dataSource.close();
+		}
+		super.onPause();
+	}
+
+	private void killClient() {
 		if (client != null) {
 			client.running = false;
 			if (client.socket!= null && !client.socket.isClosed()) {
-//				client.setMessage(Constant.EXIT, "");
 				try {
 					// Stackoverflow mentions a bug in socket.close() which
 					// is avoided by shutting down first.
@@ -832,11 +891,32 @@ public class MainActivity extends Activity implements OnClickListener,
 					e.printStackTrace();
 				}
 			}
+			client = null;
 		}
-		if (dataSource != null) {
-			dataSource.close();
+	}
+
+	private void killServer() {
+		if (server != null) {
+			server.running = false;
+			if (server.socket != null && !server.socket.isClosed()) {
+				Log.v("Server", "trying to close");
+				try {
+					// Stackoverflow mentions a bug in socket.close() which
+					// is avoided by shutting down first.
+					server.socket.shutdownInput();
+				} catch (IOException e) {
+					Log.d("Client socket", "failed to shutdownInput", e);
+					e.printStackTrace();
+				}
+				try {
+					server.socket.close();
+				} catch (IOException e) {
+					Log.d("Client socket", "failed to close", e);
+					e.printStackTrace();
+				}
+			}
+			server = null;
 		}
-		super.onPause();
 	}
 
 	@Override
@@ -849,7 +929,10 @@ public class MainActivity extends Activity implements OnClickListener,
 
 	@Override
 	public void onBackPressed() {
-		if (viewSettings != null) {
+		if (viewScores != null) {
+			mainView.removeView(viewScores);
+			viewScores = null;
+		} else if (viewSettings != null) {
 			if (rollCredits) {
 				rollCredits = !rollCredits;
 				deleteCredits();
@@ -862,6 +945,8 @@ public class MainActivity extends Activity implements OnClickListener,
 			mainView.removeView(viewAdjustView);
 			viewAdjustView = null;
 			adjustView = !adjustView;
+		} else if (myGLView != null) {
+			viewToSplash();
 		} else {
 			super.onBackPressed();
 		}
@@ -869,7 +954,7 @@ public class MainActivity extends Activity implements OnClickListener,
 
 	public AlertDialog alertDialog;
 	
-	public void showConnecting(String ipAddress) {
+	private void showConnecting(String ipAddress) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Connecting to " + ipAddress + " ...");
 		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -884,7 +969,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		alertDialog.show();
 	}
 	
-	OnCancelListener listener2 = new OnCancelListener() {
+	private OnCancelListener listener2 = new OnCancelListener() {
 		@Override
 		public void onCancel(DialogInterface dialog) {
 			client.running = false;
@@ -892,7 +977,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		}
 	};
 	
-	public void showWaitingForBoardSize() {
+	private void showWaitingForBoardSize() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Connected. Waiting for board size ...");
 		alertDialog = builder.create();
@@ -909,7 +994,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		}
 	};
 	
-	public void showWaitingForClient() {
+	private void showWaitingForClient() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Waiting for client to connect ...");
 		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -921,6 +1006,19 @@ public class MainActivity extends Activity implements OnClickListener,
 		});
 		alertDialog2 = builder.create();
 		alertDialog2.setOnCancelListener(listener);
+		alertDialog2.show();
+	}
+
+	private void showYouLost(String winner) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Player " + winner + " has won the game.\nClick OK to start a new game.");
+		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		alertDialog2 = builder.create();
 		alertDialog2.show();
 	}
 	

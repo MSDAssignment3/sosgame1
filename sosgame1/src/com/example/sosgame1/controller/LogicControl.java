@@ -14,11 +14,8 @@ import com.example.sosgame1.Player;
 //Class for game logic
 public class LogicControl {
 	
-	private String one;
-	private String two;
-	private String three;
 	private int totalCorrect = 0;
-	private String input [][];
+	public String input [][];
 	
 	private int boardRows =0;
 	private int boardColumns = 0;
@@ -77,6 +74,9 @@ public class LogicControl {
 		boardColumns = columns; 
 		input = new String[boardRows][boardColumns];	
 		control = rows - 2;
+		firstPlayer = true;
+		secondPlayer = false;
+		currentPlayerColour = Player.COLOUR_BLUE;
 	}
 	
 	//TODO need to modify

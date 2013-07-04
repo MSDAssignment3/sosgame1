@@ -40,7 +40,7 @@ public class Server implements Runnable{
     	this.boardColumns = boardColumns;
     }
     
-    private boolean connected = false;
+    public boolean connected = false;
     
 	@Override
 	public void run() {

@@ -89,24 +89,25 @@ public class DataSource {
 		String[] selectionArgs = new String[]{score.getPlayer()};
 		Cursor cursor = database.query(DatabaseHelper.TABLE_SCORE, allColumns, 
 				selection, selectionArgs, null, null, null, null);
-		int newScore;
 		ContentValues values = new ContentValues();
 		cursor.moveToFirst();
 		if (!cursor.isAfterLast()) {
-			newScore = cursor.getInt(2) + score.getScoreValue();
+			// Player already exists in database
+			int newScore = cursor.getInt(2) + score.getScoreValue();
 			cursor.close();
-			values.put(DatabaseHelper.COLUMN_PLAYER, score.getPlayer());
 			values.put(DatabaseHelper.COLUMN_VALUE, newScore);
 			String whereClause = DatabaseHelper.COLUMN_PLAYER + "=?";
 			String[] whereArgs = new String[]{score.getPlayer()};
 			database.update(DatabaseHelper.TABLE_SCORE, values, whereClause,
 					whereArgs);
+			Log.v("Datasource", "Updated score for " + score.getPlayer());
 		} else {
+			// Player does not already exist in the database
 			cursor.close();
-			newScore =  + score.getScoreValue();
 			values.put(DatabaseHelper.COLUMN_PLAYER, score.getPlayer());
-			values.put(DatabaseHelper.COLUMN_VALUE, newScore);
+			values.put(DatabaseHelper.COLUMN_VALUE, score.getScoreValue());
 			database.insert(DatabaseHelper.TABLE_SCORE, null, values);
+			Log.v("Datasource", "Added new score for " + score.getPlayer());
 		}
 	}
 	

@@ -29,13 +29,13 @@ import android.content.Context;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.opengl.GLSurfaceView;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.View.*;
 
@@ -45,7 +45,7 @@ public class GLESSurfaceView extends GLSurfaceView
 	public GLRenderer renderer;
 	private ObjectAnimator anim;
 	private ObjectAnimator anim2;
-	private boolean animationInProgress = false;
+	public boolean animationInProgress = false;
     
 	/** Handles pinch gestures for zooming. */
 	private ScaleGestureDetector scaleDetector;
@@ -108,7 +108,6 @@ public class GLESSurfaceView extends GLSurfaceView
 
         // Create the board
         renderer.setBoard(new Board(renderer, this, 5, 5));
-
     }
     
     public void setController(LogicControl controller) {
@@ -127,7 +126,6 @@ public class GLESSurfaceView extends GLSurfaceView
 
 		@Override
 		public boolean onSingleTapConfirmed(MotionEvent e) {
-//			if (server == null && client == null) {
 			if ((server == null && client == null) || 
 					(server != null && !server.running) || 
 					(client != null && !client.running)) {
@@ -201,7 +199,6 @@ public class GLESSurfaceView extends GLSurfaceView
 						public void onAnimationEnd(Animator animation) {
 							// Stop continuous screen updates to save battery
 							decrementAnimations();
-							animationInProgress = false;
 							requestRender();
 						}
 					});
@@ -239,7 +236,6 @@ public class GLESSurfaceView extends GLSurfaceView
 			synchronized (renderer.board.tiles) {
 				renderer.board.tiles.add(chosenTile);
 			}
-			animationInProgress = true;
 			AnimatorSet animSet = new AnimatorSet();
 			anim = ObjectAnimator.ofFloat(chosenTile, "z",
 					chosenTile.z, 
@@ -252,7 +248,6 @@ public class GLESSurfaceView extends GLSurfaceView
 				public void onAnimationEnd(Animator animation) {
 					// Stop continuous screen updates to save battery
 					decrementAnimations();
-					animationInProgress = false;
 					requestRender();
 				}
 			});
@@ -268,6 +263,14 @@ public class GLESSurfaceView extends GLSurfaceView
 			PointF pt = new PointF(chosenTile.x, chosenTile.y);
 			Point pt2 = renderer.board.worldToBoardXY(pt);
 			controller.getAndCheck(pt2.y, pt2.x, "" + chosenTile.letter);
+			
+//			while (controller.currentPlayerColour == Player.COLOUR_RED) {
+//				AI.PointAndLetter p1 = theAI.makeMove();
+//				if (p1.p.x >= 0) {
+//					renderer.board.addTile(p1.p.y, p1.p.x, Tile.COLOUR_RED, p1.letter);
+//				}
+//				controller.getAndCheck(p1.p.y, p1.p.x, "" + p1.letter);
+//			}
 
 		} else {
 			// Clean up if player touches anywhere not on the two tiles
@@ -342,21 +345,23 @@ public class GLESSurfaceView extends GLSurfaceView
     /** Called when a 3D animation is started. If the number of animations is
      * one then start continuous rendering.
      */
-    public void incrementAnimations() {
+    public synchronized void incrementAnimations() {
     	animationCounter++;
     	if (animationCounter == 1) {
     		setRenderMode(RENDERMODE_CONTINUOUSLY);
+    		animationInProgress = true;
     	}
     }
     
     /** Called when a 3D animation ends. If the number of animations is
      * zero then stop continuous rendering.
      */
-    public void decrementAnimations() {
+    public synchronized void decrementAnimations() {
     	animationCounter--;
     	if (animationCounter == 0) {
     		setRenderMode(RENDERMODE_WHEN_DIRTY);
+    		animationInProgress = false;
     	}
     }
-    
+
 }

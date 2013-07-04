@@ -23,6 +23,7 @@ public class ClientThread implements Runnable {
 	private int msgNum = -1;
 	public volatile boolean running = true;
 	private MainActivity activity;
+	public boolean connected = false;
 	
 	public ClientThread(String ip) {
 		serverIpAddress = ip;
@@ -37,7 +38,6 @@ public class ClientThread implements Runnable {
 	public void run() {
 		Message message;
 		int connectionAttempts;
-		boolean connected = false;
 		while (running) {
 			connectionAttempts = 0;
 			
