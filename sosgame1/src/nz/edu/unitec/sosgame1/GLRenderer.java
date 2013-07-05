@@ -17,7 +17,7 @@
  * This class is derived from the code described at
  * http://www.learnopengles.com/android-lesson-four-introducing-basic-texturing/
  */
-package com.example.sosgame1;
+package nz.edu.unitec.sosgame1;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -26,9 +26,11 @@ import java.util.ArrayList;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import com.example.sosgame1.renderutils.RawResourceReader;
-import com.example.sosgame1.renderutils.ShaderHelper;
-import com.example.sosgame1.renderutils.TextureHelper;
+import nz.edu.unitec.sosgame1.R;
+import nz.edu.unitec.sosgame1.renderutils.RawResourceReader;
+import nz.edu.unitec.sosgame1.renderutils.ShaderHelper;
+import nz.edu.unitec.sosgame1.renderutils.TextureHelper;
+
 
 import android.content.Context;
 import android.graphics.PointF;

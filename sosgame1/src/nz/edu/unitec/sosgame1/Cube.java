@@ -17,7 +17,7 @@
  * Portions of this class are derived from the code described at
  * http://www.learnopengles.com/android-lesson-four-introducing-basic-texturing/
  */
-package com.example.sosgame1;
+package nz.edu.unitec.sosgame1;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;

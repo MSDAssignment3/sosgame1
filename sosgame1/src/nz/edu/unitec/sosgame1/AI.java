@@ -1,9 +1,10 @@
-package com.example.sosgame1;
+package nz.edu.unitec.sosgame1;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
-import com.example.sosgame1.controller.LogicControl;
+
+import nz.edu.unitec.sosgame1.controller.LogicControl;
 import android.graphics.Point;
 import android.os.Handler;
 import android.util.Log;

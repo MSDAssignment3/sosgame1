@@ -17,10 +17,13 @@
  * Portions of this class are derived from the sample code at
  * http://developer.android.com/training/graphics/opengl/index.html
  */
-package com.example.sosgame1;
+package nz.edu.unitec.sosgame1;
 
 import java.io.IOException;
 import java.util.List;
+
+import nz.edu.unitec.sosgame1.R;
+import nz.edu.unitec.sosgame1.controller.LogicControl;
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorInflater;
@@ -52,7 +55,6 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.example.sosgame1.controller.LogicControl;
 
 public class MainActivity extends Activity implements OnClickListener,
 	SeekBar.OnSeekBarChangeListener {

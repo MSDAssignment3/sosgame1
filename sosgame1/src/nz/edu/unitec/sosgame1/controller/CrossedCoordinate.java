@@ -1,4 +1,4 @@
-package com.example.sosgame1.controller;
+package nz.edu.unitec.sosgame1.controller;
 
 //This class will store the crossed coordinate value of cells where line has been made
 public class CrossedCoordinate {

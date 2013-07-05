@@ -1,4 +1,4 @@
-package com.example.sosgame1;
+package nz.edu.unitec.sosgame1;
 
 import java.util.ArrayList;
 import java.util.List;

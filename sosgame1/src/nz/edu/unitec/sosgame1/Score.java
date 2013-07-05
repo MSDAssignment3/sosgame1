@@ -1,4 +1,4 @@
-package com.example.sosgame1;
+package nz.edu.unitec.sosgame1;
 
 /**
  * This is the individual final score of player.

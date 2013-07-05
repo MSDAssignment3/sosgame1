@@ -1,4 +1,4 @@
-package com.example.sosgame1;
+package nz.edu.unitec.sosgame1;
 
 /** This class is used to show tiles with the letter S or O on the game board.
  * @author David Moore

@@ -17,10 +17,10 @@
  * Portions of this class are derived from the sample code at
  * http://developer.android.com/training/graphics/opengl/index.html
  */
-package com.example.sosgame1;
+package nz.edu.unitec.sosgame1;
 
 
-import com.example.sosgame1.controller.LogicControl;
+import nz.edu.unitec.sosgame1.controller.LogicControl;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;

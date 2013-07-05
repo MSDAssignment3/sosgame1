@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package com.example.sosgame1.renderutils;
+package nz.edu.unitec.sosgame1.renderutils;
 
 import android.opengl.GLES20;
 import android.util.Log;

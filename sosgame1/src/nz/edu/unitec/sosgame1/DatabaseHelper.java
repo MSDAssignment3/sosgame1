@@ -1,4 +1,4 @@
-package com.example.sosgame1;
+package nz.edu.unitec.sosgame1;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

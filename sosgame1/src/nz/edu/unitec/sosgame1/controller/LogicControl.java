@@ -1,4 +1,4 @@
-package com.example.sosgame1.controller;
+package nz.edu.unitec.sosgame1.controller;
 
 
 import java.io.BufferedReader;
@@ -7,9 +7,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.sosgame1.Board;
-import com.example.sosgame1.MainActivity;
-import com.example.sosgame1.Player;
+import nz.edu.unitec.sosgame1.Board;
+import nz.edu.unitec.sosgame1.MainActivity;
+import nz.edu.unitec.sosgame1.Player;
+
 
 //Class for game logic
 public class LogicControl {
