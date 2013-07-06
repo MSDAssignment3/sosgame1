@@ -20,9 +20,7 @@
 package nz.edu.unitec.sosgame1;
 
 import java.io.IOException;
-import java.security.spec.MGF1ParameterSpec;
 import java.util.List;
-
 import nz.edu.unitec.sosgame1.R;
 import nz.edu.unitec.sosgame1.controller.LogicControl;
 import android.animation.Animator;
