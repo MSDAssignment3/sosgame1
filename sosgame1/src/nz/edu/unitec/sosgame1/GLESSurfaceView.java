@@ -35,7 +35,6 @@ import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
-import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.View.*;
 
@@ -74,6 +73,7 @@ public class GLESSurfaceView extends GLSurfaceView
 	private Tile chosenTile;
 	private PointF p = new PointF();
 	private int animationCounter = 0;
+	private int playMode = MainActivity.PLAY_SINGLE_DEVICE;
 	
     public GLESSurfaceView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -122,23 +122,34 @@ public class GLESSurfaceView extends GLSurfaceView
     	client = aClient;
     }
     
+    public void setPlayMode(int playMode) {
+    	this.playMode = playMode;
+    }
+    
     private class GestureListener extends SimpleOnGestureListener {
 
 		@Override
 		public boolean onSingleTapConfirmed(MotionEvent e) {
-			if ((server == null && client == null) || 
-					(server != null && !server.running) || 
-					(client != null && !client.running)) {
+//			if ((server == null && client == null) || 
+//					(server != null && !server.running) || 
+//					(client != null && !client.running)) {
+			if (playMode == MainActivity.PLAY_SINGLE_DEVICE) {
 				// Single device play
 				doSingleTap(e);
 			} else {
 				// Two device play
-				if (server != null && server.running &&
+//				if (server != null && server.running &&
+				if (playMode == MainActivity.PLAY_SERVER &&
 						controller.currentPlayerColour == Player.COLOUR_BLUE) {
 					doSingleTap(e);
 				}
-				if (client != null && client.running &&
+//				if (client != null && client.running &&
+				if (playMode == MainActivity.PLAY_CLIENT &&
 						controller.currentPlayerColour == Player.COLOUR_RED) {
+					doSingleTap(e);
+				}
+				if (playMode == MainActivity.PLAY_AI &&
+						controller.currentPlayerColour == Player.COLOUR_BLUE) {
 					doSingleTap(e);
 				}
 			}
@@ -263,15 +274,6 @@ public class GLESSurfaceView extends GLSurfaceView
 			PointF pt = new PointF(chosenTile.x, chosenTile.y);
 			Point pt2 = renderer.board.worldToBoardXY(pt);
 			controller.getAndCheck(pt2.y, pt2.x, "" + chosenTile.letter);
-			
-//			while (controller.currentPlayerColour == Player.COLOUR_RED) {
-//				AI.PointAndLetter p1 = theAI.makeMove();
-//				if (p1.p.x >= 0) {
-//					renderer.board.addTile(p1.p.y, p1.p.x, Tile.COLOUR_RED, p1.letter);
-//				}
-//				controller.getAndCheck(p1.p.y, p1.p.x, "" + p1.letter);
-//			}
-
 		} else {
 			// Clean up if player touches anywhere not on the two tiles
 			synchronized (renderer.board.tempTiles) {

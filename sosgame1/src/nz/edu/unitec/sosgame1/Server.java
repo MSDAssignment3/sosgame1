@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,8 +28,6 @@ public class Server implements Runnable{
     
     public volatile boolean running = true;
 
-    private String remoteIPAddress;
-    
     public Server(Handler handler) {
     	this.handler = handler;
     }
@@ -72,7 +69,6 @@ public class Server implements Runnable{
 					try {
 						socket = serverSocket.accept();
 						connected = true;
-						remoteIPAddress = socket.getRemoteSocketAddress().toString();
 						in = new DataInputStream(socket.getInputStream());
 						out = new DataOutputStream(socket.getOutputStream());
 					} catch (final Exception e1) {

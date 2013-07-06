@@ -15,6 +15,7 @@
         android:layout_alignParentRight="true"
         android:adjustViewBounds="true"
         android:background="@null"
+        android:maxHeight="100dp"
         android:scaleType="centerCrop"
         android:src="@drawable/play_button" />
 
@@ -26,17 +27,9 @@
         android:layout_alignParentRight="true"
         android:adjustViewBounds="true"
         android:background="@null"
+        android:maxHeight="150dp"
         android:scaleType="centerCrop"
         android:src="@drawable/multiplayer_button" />
-
-    <ImageView
-        android:id="@+id/imgLogo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="-40dp"
-        android:src="@drawable/sos_logo" />
 
     <ImageButton
         android:id="@+id/btnPlayAI"
@@ -48,7 +41,15 @@
         android:layout_alignParentTop="false"
         android:adjustViewBounds="true"
         android:background="@null"
+        android:maxHeight="100dp"
         android:scaleType="centerCrop"
         android:src="@drawable/play_ai_button" />
+
+    <ImageView
+        android:id="@+id/imgLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-40dp"
+        android:src="@drawable/sos_logo" />
 
 </RelativeLayout>

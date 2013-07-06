@@ -20,6 +20,7 @@
 package nz.edu.unitec.sosgame1;
 
 import java.io.IOException;
+import java.security.spec.MGF1ParameterSpec;
 import java.util.List;
 
 import nz.edu.unitec.sosgame1.R;
@@ -35,6 +36,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.graphics.PointF;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -465,8 +467,9 @@ public class MainActivity extends Activity implements OnClickListener,
 		myGLView = (GLESSurfaceView) findViewById(R.id.myGLSurfaceView1);
 		myGLView.renderer.board.reset(boardRows,boardColumns);
 		// Pass controller instance to the GLSurfaceView
-		controller = new LogicControl(myGLView.renderer.board, boardRows, boardColumns, (MainActivity)this);
+		controller = new LogicControl(myGLView.renderer.board, boardRows, boardColumns, (MainActivity) this);
 		myGLView.setController(controller);
+		myGLView.setPlayMode(playMode);
 		
 		if (server != null) {
 			myGLView.setServer(server);
@@ -507,19 +510,18 @@ public class MainActivity extends Activity implements OnClickListener,
 		if (viewScores != null) {
 			view.addView(viewScores);
 		}
-		ListView listView = (ListView) findViewById(R.id.listScores);
-		List<Score> scores = dataSource.getAllScores();
-		ArrayAdapter<Score> adapter = new ArrayAdapter<Score>(context, android.R.layout.simple_list_item_1, scores);
 
-		adapter.notifyDataSetChanged();
+		try {
+			ListView listView = (ListView) findViewById(R.id.listScores);
+			List<Score> scores = dataSource.getAllScores();
+			ArrayAdapter<Score> adapter = new ArrayAdapter<Score>(context, android.R.layout.simple_list_item_1, scores);
 
-		try
-		{
-		listView.setAdapter(adapter); //TODO: Something inside gives NullPointerException
+			adapter.notifyDataSetChanged();
+			listView.setAdapter(adapter);
+		} catch (Exception e) {
+			Log.e("Datasource", "exception listing scores:", e);
 		}
-		catch(Exception e)
-		{
-		}
+
 		((ImageButton) findViewById(R.id.btnBackToSettings)).setOnClickListener(this);
 	}
 	
@@ -533,18 +535,41 @@ public class MainActivity extends Activity implements OnClickListener,
 		textRedScore.setText(""+playerRedScore);
 	}
 	
-	/**
-	 * Save score to the DB
+	/** Waits for animations to end without blocking the UI thread.
+	 * @author David Moore
 	 */
-	private void saveScore(String playerName, int playerScore){
-		Score score = dataSource.createScore( playerName, playerScore);
+	private class waitForAnimEnd extends AsyncTask<Void, Void, Void> {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			while (myGLView.animationInProgress) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			endGame2();
+			super.onPostExecute(result);
+		}
+		
+	}
+	
+	public void endGame() {
+		new waitForAnimEnd().execute(null, null, null);
 	}
 	
 	/**
 	 * End game interface
 	 * Gets name of winner
 	 */
-	public void endGame() {
+	public void endGame2() {
 		AlertDialog.Builder alertEnd = new AlertDialog.Builder(context);
 		String winner = "";
 		int winnerScore = 0;
@@ -578,11 +603,14 @@ public class MainActivity extends Activity implements OnClickListener,
 			alertEnd.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichButton) {
 					String winnerName = txtWinner.getText().toString(); 
-//					saveScore(winnerName, finalWinnerScore);
 					Score score = new Score();
 					score.setPlayer(winnerName);
 					score.setScoreValue(finalWinnerScore);
-					dataSource.addScore(score);
+					try {
+						dataSource.addScore(score);
+					} catch (Exception e) {
+						Log.e("Datasource", "exception updating score:", e);
+					}
 					viewToSplash();
 				}
 			});

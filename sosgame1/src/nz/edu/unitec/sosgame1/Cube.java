@@ -119,10 +119,10 @@ public class Cube {
 
 	/** Draws a cube. Code (with textureOffset modification) from:<br>
 	 * http://www.learnopengles.com/android-lesson-two-ambient-and-diffuse-lighting/
-	 * @param ModelMatrix The model matrix which specifies translation, 
+	 * @param modelMatrix The model matrix which specifies translation, 
 	 * rotation and scale.
 	 */
-	protected void draw(float[] ModelMatrix)
+	protected void draw(float[] modelMatrix)
 	{		
 		// Pass in the position information
 		renderer.mCubePositions.position(0);		
@@ -154,7 +154,7 @@ public class Cube {
         
 		// This multiplies the view matrix by the model matrix, and stores the result in the MVP matrix
         // (which currently contains model * view).
-        Matrix.multiplyMM(renderer.mMVPMatrix, 0, renderer.mViewMatrix, 0, ModelMatrix, 0);   
+        Matrix.multiplyMM(renderer.mMVPMatrix, 0, renderer.mViewMatrix, 0, modelMatrix, 0);   
         
         // Pass in the modelview matrix.
         GLES20.glUniformMatrix4fv(renderer.mMVMatrixHandle, 1, false, renderer.mMVPMatrix, 0);                

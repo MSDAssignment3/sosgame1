@@ -61,9 +61,13 @@ public class GLRenderer implements GLSurfaceView.Renderer
 	 * it positions things relative to our eye.
 	 */
 	public float[] mViewMatrix = new float[16];
+	public float[] backgroundViewMatrix = new float[16];
 
 	/** Store the projection matrix. This is used to project the scene onto a 2D viewport. */
 	public float[] mProjectionMatrix = new float[16];
+	
+	/** Store the ortho projection matrix. This is used for the background. */
+	public float[] orthoProjectionMatrix = new float[16];
 	
 	/** Allocate storage for the final combined matrix. This will be passed into the shader program. */
 	public float[] mMVPMatrix = new float[16];
@@ -142,6 +146,9 @@ public class GLRenderer implements GLSurfaceView.Renderer
 	
 	/** This is a handle to another program without texture. */
 	public int noTexProgramHandle;
+	
+	/** This is a handle to another simple program. */
+	public int simpleProgramHandle;
 	
 	/** This is a handle to the cube texture data. */
 	public int cubeTextureDataHandle;
@@ -237,6 +244,9 @@ public class GLRenderer implements GLSurfaceView.Renderer
 	/** Offset into the texture coordinates array. */
 	public static final int textureOffsetCredits = 6 * 6 * 6;
 	
+	/** Offset into the texture coordinates array. */
+	public static final int textureOffsetBackground = 8 * 6 * 6;
+	
 	/** The board holds the cell, tile and line collections. */
 	public Board board = null;
 	
@@ -258,7 +268,7 @@ public class GLRenderer implements GLSurfaceView.Renderer
 				// usually represent the backside of an object and aren't visible anyways.
 				
 				// Front face
-				-1.0f, 1.0f, 1.0f,				
+				-1.0f, 1.0f, 1.0f,
 				-1.0f, -1.0f, 1.0f,
 				1.0f, 1.0f, 1.0f, 
 				-1.0f, -1.0f, 1.0f, 				
@@ -718,7 +728,16 @@ public class GLRenderer implements GLSurfaceView.Renderer
 				1.0f, 0.5f,
 				0.5f, 1.0f,
 				1.0f, 1.0f,
-				1.0f, 0.5f
+				1.0f, 0.5f,
+				
+				// Background
+				0.0f, 0.0f, 				
+				0.0f, 0.5f,
+				0.5f, 0.0f,
+				0.0f, 0.5f,
+				0.5f, 0.5f,
+				0.5f, 0.0f
+
 		};
 		
 		// Initialize the buffers.
@@ -801,6 +820,15 @@ public class GLRenderer implements GLSurfaceView.Renderer
         noTexProgramHandle = ShaderHelper.createAndLinkProgram(noTexVertexShaderHandle, noTexFragmentShaderHandle, 
         		new String[] {"a_Position"}); 
         
+        // Define a simple shader program for drawing the background.
+        final String simpleVertexShader = getShader(R.raw.simple_vertex_shader);        	       
+        final String simpleFragmentShader = getShader(R.raw.simple_fragment_shader);
+        
+        final int simpleVertexShaderHandle = ShaderHelper.compileShader(GLES20.GL_VERTEX_SHADER, simpleVertexShader);
+        final int simpleFragmentShaderHandle = ShaderHelper.compileShader(GLES20.GL_FRAGMENT_SHADER, simpleFragmentShader);
+        simpleProgramHandle = ShaderHelper.createAndLinkProgram(simpleVertexShaderHandle, simpleFragmentShaderHandle, 
+        		new String[] {"a_Position", "a_TexCoordinate"}); 
+        
         // Load the texture atlas
         cubeTextureDataHandle = TextureHelper.loadTexture(mActivityContext,
         		R.drawable.atlas2);
@@ -834,7 +862,9 @@ public class GLRenderer implements GLSurfaceView.Renderer
 		}
 		
 		Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
-        
+		
+        Matrix.orthoM(orthoProjectionMatrix, 0, left, right, bottom, top, near, far);
+        Matrix.setLookAtM(backgroundViewMatrix, 0, 0, 0, 3.4f, 0, 0, 0, 0, 1, 0);
 }	
 
 	@Override
@@ -846,6 +876,36 @@ public class GLRenderer implements GLSurfaceView.Renderer
 		// Clear the screen and the depth buffer
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 		
+        // Set simple program.
+        GLES20.glUseProgram(simpleProgramHandle);
+        
+        // Set program handles for background drawing.
+        mMVPMatrixHandle = GLES20.glGetUniformLocation(simpleProgramHandle, "u_MVPMatrix");
+        mMVMatrixHandle = GLES20.glGetUniformLocation(simpleProgramHandle, "u_MVMatrix"); 
+        mTextureUniformHandle = GLES20.glGetUniformLocation(simpleProgramHandle, "u_Texture");
+        mPositionHandle = GLES20.glGetAttribLocation(simpleProgramHandle, "a_Position");
+        mTextureCoordinateHandle = GLES20.glGetAttribLocation(simpleProgramHandle, "a_TexCoordinate");
+        
+        // Set the active texture unit to texture unit 0.
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        
+        // Bind the texture to this unit.
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, cubeTextureDataHandle);
+        
+        // Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
+        GLES20.glUniform1i(mTextureUniformHandle, 0);        
+        
+        // Draw background
+        for (int i = -3; i < 4; i += 2) {
+        	for (int j = -3; j < 4; j += 2) {
+        		float scale = 0.25f;
+        		Matrix.setIdentityM(mModelMatrix, 0);
+        		Matrix.translateM(mModelMatrix, 0, i * scale, j * scale, -far + 2.5f);
+        		Matrix.scaleM(mModelMatrix, 0, scale, scale, 1);
+        		drawBackground(mModelMatrix, textureOffsetBackground);
+        	}
+        }
+        
         // Set our per-vertex lighting program.
         GLES20.glUseProgram(mProgramHandle);
         
@@ -858,15 +918,6 @@ public class GLRenderer implements GLSurfaceView.Renderer
         mColorHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_Color");
         mNormalHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_Normal"); 
         mTextureCoordinateHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_TexCoordinate");
-        
-        // Set the active texture unit to texture unit 0.
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        
-        // Bind the texture to this unit.
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, cubeTextureDataHandle);
-        
-        // Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
-        GLES20.glUniform1i(mTextureUniformHandle, 0);        
         
         // Calculate position of the light. Rotate and then push into the distance.
         Matrix.setIdentityM(mLightModelMatrix, 0);
@@ -1063,15 +1114,50 @@ public class GLRenderer implements GLSurfaceView.Renderer
     public Cube getSelectedCube(PointF p, ArrayList<Cube> cubes) {
     	float dx;
     	float dy;
-		for (Cube cube: cubes) {
-			dx = cube.scaleFactorX;
-			dy = cube.scaleFactorY;
-			if (p.x >= cube.x - dx && p.x <= cube.x + dx
-					&& p.y >= cube.y - dy && p.y <= cube.y + dy) {
-				return cube;
-			}
-		}
+    	synchronized (cubes) {
+    		for (Cube cube: cubes) {
+    			dx = cellScaleFactorX;
+    			dy = cellScaleFactorY;
+    			if (p.x >= cube.x - dx && p.x <= cube.x + dx
+    					&& p.y >= cube.y - dy && p.y <= cube.y + dy) {
+    				return cube;
+    			}
+    		}
+    	}
 		return null;
+    }
+
+    private void drawBackground(float[] modelMatrix, int textureOffset) {
+		// Pass in the position information
+		mCubePositions.position(0);		
+        GLES20.glVertexAttribPointer(mPositionHandle, mPositionDataSize, GLES20.GL_FLOAT, false,
+        		0, mCubePositions);        
+                
+        GLES20.glEnableVertexAttribArray(mPositionHandle);
+        
+        // Pass in the texture coordinate information
+        mCubeTextureCoordinates.position(textureOffset);
+        GLES20.glVertexAttribPointer(mTextureCoordinateHandle, mTextureCoordinateDataSize, GLES20.GL_FLOAT, false, 
+        		0, mCubeTextureCoordinates);
+        
+        GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle);
+        
+		// This multiplies the view matrix by the model matrix, and stores the result in the MVP matrix
+        // (which currently contains model * view).
+        Matrix.multiplyMM(mMVPMatrix, 0, backgroundViewMatrix, 0, modelMatrix, 0);   
+        
+        // Pass in the modelview matrix.
+        GLES20.glUniformMatrix4fv(mMVMatrixHandle, 1, false, mMVPMatrix, 0);                
+        
+        // This multiplies the modelview matrix by the projection matrix, and stores the result in the MVP matrix
+        // (which now contains model * view * projection).
+        Matrix.multiplyMM(mMVPMatrix, 0, orthoProjectionMatrix, 0, mMVPMatrix, 0);
+
+        // Pass in the combined matrix.
+        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
+        
+        // Draw the background.
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);                               
     }
     
 }
