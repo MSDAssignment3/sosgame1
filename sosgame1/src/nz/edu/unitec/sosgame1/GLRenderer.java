@@ -879,6 +879,11 @@ public class GLRenderer implements GLSurfaceView.Renderer
         // Set simple program.
         GLES20.glUseProgram(simpleProgramHandle);
         
+        // Need to enable alpha blending here so alpha adjustment in the fragment
+        // shader works.
+        GLES20.glEnable(GLES20.GL_BLEND);
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+        
         // Set program handles for background drawing.
         mMVPMatrixHandle = GLES20.glGetUniformLocation(simpleProgramHandle, "u_MVPMatrix");
         mMVMatrixHandle = GLES20.glGetUniformLocation(simpleProgramHandle, "u_MVMatrix"); 
@@ -906,7 +911,9 @@ public class GLRenderer implements GLSurfaceView.Renderer
         	}
         }
         
-        // Set our per-vertex lighting program.
+		GLES20.glDisable(GLES20.GL_BLEND);
+
+		// Set our per-vertex lighting program.
         GLES20.glUseProgram(mProgramHandle);
         
         // Set program handles for cube drawing.
@@ -919,7 +926,7 @@ public class GLRenderer implements GLSurfaceView.Renderer
         mNormalHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_Normal"); 
         mTextureCoordinateHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_TexCoordinate");
         
-        // Calculate position of the light. Rotate and then push into the distance.
+      // Calculate position of the light. Rotate and then push into the distance.
         Matrix.setIdentityM(mLightModelMatrix, 0);
         Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, tileZ);      
         Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
