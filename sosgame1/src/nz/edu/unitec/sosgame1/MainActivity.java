@@ -182,6 +182,8 @@ public class MainActivity extends Activity implements OnClickListener,
 		if (theAI != null) {
 			theAI.running = false;
 		}
+		killClient();
+		killServer();
 		setContentView(R.layout.splash_page);
 		((ImageButton) findViewById(R.id.btnPlay)).setOnClickListener(this);
 		((ImageButton) findViewById(R.id.btnPlayAI)).setOnClickListener(this);
@@ -988,7 +990,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				client.running = false;
+				killClient();
 				dialog.dismiss();
 			}
 		});
@@ -1000,7 +1002,7 @@ public class MainActivity extends Activity implements OnClickListener,
 	private OnCancelListener listener2 = new OnCancelListener() {
 		@Override
 		public void onCancel(DialogInterface dialog) {
-			client.running = false;
+			killClient();
 			Log.v("Trying", "to kill client");
 		}
 	};
@@ -1017,7 +1019,7 @@ public class MainActivity extends Activity implements OnClickListener,
 	private OnCancelListener listener = new OnCancelListener() {
 		@Override
 		public void onCancel(DialogInterface dialog) {
-			server.running = false;
+			killServer();
 			Log.v("Trying", "to kill server");
 		}
 	};
@@ -1028,7 +1030,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				server.running = false;
+				killServer();
 				dialog.dismiss();
 			}
 		});
